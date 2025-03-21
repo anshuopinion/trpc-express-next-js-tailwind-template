@@ -11,6 +11,7 @@ import {httpBatchLink, loggerLink} from "@trpc/client";
 import {baseURl} from "@/constant/env";
 import {fetcher, getAccessToken} from "@/trpc/utils/refreshHeaderToken";
 import {trpc} from "@/trpc/client";
+import {CookiesProvider} from "react-cookie";
 export function TrpcWrapper(props: TrpcWrapperProps) {
 	const {children} = props;
 	const [queryClient] = useState(
@@ -19,6 +20,7 @@ export function TrpcWrapper(props: TrpcWrapperProps) {
 				defaultOptions: {
 					queries: {
 						retry: 0,
+						staleTime: 60 * 1000,
 					},
 				},
 			})
@@ -47,13 +49,13 @@ export function TrpcWrapper(props: TrpcWrapperProps) {
 	);
 
 	return (
-		<>
+		<CookiesProvider>
 			<trpc.Provider client={trpcClient} queryClient={queryClient}>
 				<QueryClientProvider client={queryClient}>
 					{children}
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</trpc.Provider>
-		</>
+		</CookiesProvider>
 	);
 }

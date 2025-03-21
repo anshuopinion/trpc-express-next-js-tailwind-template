@@ -12,11 +12,14 @@ import Link from "next/link";
 import {EyeIcon, EyeOffIcon, Loader2} from "lucide-react";
 import {useState} from "react";
 import {useRouter} from "next/navigation";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {UserRole} from "@/types/user";
 
 function Signup() {
 	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.STUDENT);
 
 	const signupUserMutation = trpc.auth.signup.useMutation({
 		onSuccess: () => {
@@ -52,6 +55,7 @@ function Signup() {
 							confirmPassword: Yup.string()
 								.oneOf([Yup.ref("password"), ""], "Passwords must match")
 								.required("Please confirm your password"),
+							role: Yup.string().oneOf(Object.values(UserRole)).required("Role is required"),
 						})}
 						initialValues={{
 							email: "",
@@ -59,6 +63,7 @@ function Signup() {
 							first_name: "",
 							last_name: "",
 							confirmPassword: "",
+							role: UserRole.STUDENT,
 						}}
 						onSubmit={async values => {
 							signupUserMutation.mutate({
@@ -66,131 +71,156 @@ function Signup() {
 								password: values.password,
 								first_name: values.first_name,
 								last_name: values.last_name,
+								role: values.role as UserRole,
 							});
 						}}
 					>
-						<Form className='space-y-5 w-full'>
-							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-								<FormikField name='first_name'>
+						{({setFieldValue}) => (
+							<Form className='space-y-5 w-full'>
+								<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+									<FormikField name='first_name'>
+										{({field, meta}: FieldProps) => (
+											<div className='space-y-2'>
+												<Label htmlFor='first_name'>First Name</Label>
+												<Input
+													id='first_name'
+													placeholder='John'
+													{...field}
+													className={meta.touched && meta.error ? "border-destructive" : ""}
+													autoComplete='given-name'
+												/>
+												{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+											</div>
+										)}
+									</FormikField>
+
+									<FormikField name='last_name'>
+										{({field, meta}: FieldProps) => (
+											<div className='space-y-2'>
+												<Label htmlFor='last_name'>Last Name</Label>
+												<Input
+													id='last_name'
+													placeholder='Doe'
+													{...field}
+													className={meta.touched && meta.error ? "border-destructive" : ""}
+													autoComplete='family-name'
+												/>
+												{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+											</div>
+										)}
+									</FormikField>
+								</div>
+
+								<FormikField name='email'>
 									{({field, meta}: FieldProps) => (
 										<div className='space-y-2'>
-											<Label htmlFor='first_name'>First Name</Label>
+											<Label htmlFor='email'>Email</Label>
 											<Input
-												id='first_name'
-												placeholder='John'
+												id='email'
+												type='email'
+												placeholder='name@example.com'
 												{...field}
 												className={meta.touched && meta.error ? "border-destructive" : ""}
-												autoComplete='given-name'
+												autoComplete='email'
 											/>
 											{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
 										</div>
 									)}
 								</FormikField>
 
-								<FormikField name='last_name'>
+								<div className='space-y-2'>
+									<Label htmlFor='role'>Account Type</Label>
+									<Select
+										value={selectedRole}
+										onValueChange={value => {
+											setSelectedRole(value as UserRole);
+											setFieldValue("role", value);
+										}}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder='Select account type' />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value={UserRole.STUDENT}>Student</SelectItem>
+											<SelectItem value={UserRole.SCHOOL}>School</SelectItem>
+										</SelectContent>
+									</Select>
+									<p className='text-sm text-muted-foreground'>
+										{selectedRole === UserRole.SCHOOL ? "Register as a school to manage students" : "Register as a student to access learning resources"}
+									</p>
+								</div>
+
+								<FormikField name='password'>
 									{({field, meta}: FieldProps) => (
 										<div className='space-y-2'>
-											<Label htmlFor='last_name'>Last Name</Label>
-											<Input
-												id='last_name'
-												placeholder='Doe'
-												{...field}
-												className={meta.touched && meta.error ? "border-destructive" : ""}
-												autoComplete='family-name'
-											/>
+											<Label htmlFor='password'>Password</Label>
+											<div className='relative'>
+												<Input
+													id='password'
+													type={showPassword ? "text" : "password"}
+													placeholder='••••••••'
+													{...field}
+													className={meta.touched && meta.error ? "border-destructive pr-10" : "pr-10"}
+													autoComplete='new-password'
+												/>
+												<button
+													type='button'
+													className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+													onClick={() => setShowPassword(!showPassword)}
+												>
+													{showPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
+												</button>
+											</div>
 											{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
 										</div>
 									)}
 								</FormikField>
-							</div>
 
-							<FormikField name='email'>
-								{({field, meta}: FieldProps) => (
-									<div className='space-y-2'>
-										<Label htmlFor='email'>Email</Label>
-										<Input
-											id='email'
-											type='email'
-											placeholder='name@example.com'
-											{...field}
-											className={meta.touched && meta.error ? "border-destructive" : ""}
-											autoComplete='email'
-										/>
-										{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
-									</div>
-								)}
-							</FormikField>
-
-							<FormikField name='password'>
-								{({field, meta}: FieldProps) => (
-									<div className='space-y-2'>
-										<Label htmlFor='password'>Password</Label>
-										<div className='relative'>
-											<Input
-												id='password'
-												type={showPassword ? "text" : "password"}
-												placeholder='••••••••'
-												{...field}
-												className={meta.touched && meta.error ? "border-destructive pr-10" : "pr-10"}
-												autoComplete='new-password'
-											/>
-											<button
-												type='button'
-												className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
-												onClick={() => setShowPassword(!showPassword)}
-											>
-												{showPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
-											</button>
+								<FormikField name='confirmPassword'>
+									{({field, meta}: FieldProps) => (
+										<div className='space-y-2'>
+											<Label htmlFor='confirmPassword'>Confirm Password</Label>
+											<div className='relative'>
+												<Input
+													id='confirmPassword'
+													type={showConfirmPassword ? "text" : "password"}
+													placeholder='••••••••'
+													{...field}
+													className={meta.touched && meta.error ? "border-destructive pr-10" : "pr-10"}
+													autoComplete='new-password'
+												/>
+												<button
+													type='button'
+													className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+													onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+												>
+													{showConfirmPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
+												</button>
+											</div>
+											{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
 										</div>
-										{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
-									</div>
-								)}
-							</FormikField>
+									)}
+								</FormikField>
 
-							<FormikField name='confirmPassword'>
-								{({field, meta}: FieldProps) => (
-									<div className='space-y-2'>
-										<Label htmlFor='confirmPassword'>Confirm Password</Label>
-										<div className='relative'>
-											<Input
-												id='confirmPassword'
-												type={showConfirmPassword ? "text" : "password"}
-												placeholder='••••••••'
-												{...field}
-												className={meta.touched && meta.error ? "border-destructive pr-10" : "pr-10"}
-												autoComplete='new-password'
-											/>
-											<button
-												type='button'
-												className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
-												onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-											>
-												{showConfirmPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
-											</button>
-										</div>
-										{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
-									</div>
-								)}
-							</FormikField>
+								<Button className='w-full font-medium' type='submit' disabled={signupUserMutation.isPending}>
+									{signupUserMutation.isPending ? (
+										<>
+											<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+											Creating account...
+										</>
+									) : (
+										"Create account"
+									)}
+								</Button>
 
-							<Button className='w-full font-medium' type='submit' disabled={signupUserMutation.isPending}>
-								{signupUserMutation.isPending ? (
-									<>
-										<Loader2 className='mr-2 h-4 w-4 animate-spin' />
-										Creating account...
-									</>
-								) : (
-									"Create account"
-								)}
-							</Button>
-
-							<div className='text-center text-sm'>
-								<span className='text-muted-foreground'>Already have an account? </span>
-								<Link href='/signin' className='text-primary font-medium hover:underline'>
-									Sign in
-								</Link>
-							</div>
-						</Form>
+								<div className='text-center text-sm'>
+									<span className='text-muted-foreground'>Already have an account? </span>
+									<Link href='/signin' className='text-primary font-medium hover:underline'>
+										Sign in
+									</Link>
+								</div>
+							</Form>
+						)}
 					</Formik>
 				</div>
 			</Card>

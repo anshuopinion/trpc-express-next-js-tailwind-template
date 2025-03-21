@@ -4,18 +4,20 @@ import {z} from "zod";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {TRPCError} from "@trpc/server";
-import {UserModel} from "../model/user";
-const generateAccessToken = (userId: string, email: string) => {
-	return jwt.sign({userId, email}, process.env.ACCESS_TOKEN_SECRET!, {
+import {UserModel, UserRole} from "../model/user";
+
+const generateAccessToken = (userId: string, email: string, role: UserRole) => {
+	return jwt.sign({userId, email, role}, process.env.ACCESS_TOKEN_SECRET!, {
 		expiresIn: "15m",
 	});
 };
 
-const generateRefreshToken = (userId: string, email: string) => {
-	return jwt.sign({userId, email}, process.env.REFRESH_TOKEN_SECRET!, {
+const generateRefreshToken = (userId: string, email: string, role: UserRole) => {
+	return jwt.sign({userId, email, role}, process.env.REFRESH_TOKEN_SECRET!, {
 		expiresIn: "7d",
 	});
 };
+
 const hashData = async (token: string) => {
 	return await bcrypt.hash(token, 10);
 };
@@ -28,8 +30,8 @@ const updateRefreshToken = async (userId: string, refreshToken: string) => {
 	});
 };
 
-const getTokens = async (userId: string, email: string) => {
-	const [access_token, refresh_token] = await Promise.all([generateAccessToken(userId, email), generateRefreshToken(userId, email)]);
+const getTokens = async (userId: string, email: string, role: UserRole) => {
+	const [access_token, refresh_token] = await Promise.all([generateAccessToken(userId, email, role), generateRefreshToken(userId, email, role)]);
 	return {
 		access_token,
 		refresh_token,
@@ -53,10 +55,11 @@ export const authRouter = router({
 				last_name: z.string({
 					required_error: "Last name is required",
 				}),
+				role: z.nativeEnum(UserRole).optional().default(UserRole.STUDENT),
 			})
 		)
 		.mutation(async opts => {
-			const {email, first_name, last_name, password} = opts.input;
+			const {email, first_name, last_name, password, role} = opts.input;
 
 			const existingUser = await UserModel.findOne({email});
 			if (existingUser)
@@ -72,6 +75,7 @@ export const authRouter = router({
 				first_name,
 				last_name,
 				password: hashedPassword,
+				role,
 			});
 			return user;
 		}),
@@ -107,7 +111,7 @@ export const authRouter = router({
 					message: "Password is incorrect",
 				});
 
-			const tokens = await getTokens(user.id, user.email);
+			const tokens = await getTokens(user.id, user.email, user.role);
 			await updateRefreshToken(user.id, tokens.refresh_token);
 
 			return {
@@ -115,6 +119,7 @@ export const authRouter = router({
 				last_name: user.last_name,
 				email: user.email,
 				id: user.id,
+				role: user.role,
 				...tokens,
 			};
 		}),
@@ -163,13 +168,14 @@ export const authRouter = router({
 					code: "UNAUTHORIZED",
 					message: "Access Denied ",
 				});
-			const tokens = await getTokens(user.id, user.email);
+			const tokens = await getTokens(user.id, user.email, user.role);
 			await updateRefreshToken(user.id, tokens.refresh_token);
 			return {
 				first_name: user.first_name,
 				last_name: user.last_name,
 				email: user.email,
 				id: user.id,
+				role: user.role,
 				...tokens,
 			};
 		}),

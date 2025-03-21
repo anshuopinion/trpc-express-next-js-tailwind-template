@@ -1,5 +1,11 @@
 import {getModelForClass, modelOptions, prop} from "@typegoose/typegoose";
 
+export enum UserRole {
+	ADMIN = "admin",
+	SCHOOL = "school",
+	STUDENT = "student",
+}
+
 export class BrokerSettings {
 	@prop({type: String})
 	public client_id!: string;
@@ -37,6 +43,9 @@ export class UserClass {
 
 	@prop({type: String})
 	public verify_token?: string | null;
+
+	@prop({enum: UserRole, default: UserRole.STUDENT, type: String})
+	public role: UserRole;
 }
 
 export type IUser = UserClass & {id: string};

@@ -4,11 +4,19 @@ import Sidenav from "@/layout/dashboard-layout/side-nav";
 import SideDrawer from "@/layout/dashboard-layout/side-drawer";
 import Topnav from "@/layout/dashboard-layout/top-nav";
 import useUser from "../../hooks/useUser";
-import {useRouter} from "next/navigation";
+import {useRouter, usePathname} from "next/navigation";
+
+// Define role-based route access
+const roleRouteAccess = {
+	admin: ["/admin", "/school", "/student"],
+	school: ["/school", "/student"],
+	student: ["/student"],
+};
 
 const DashboardLayout = (props: {children: React.ReactNode}) => {
 	const {user} = useUser();
 	const router = useRouter();
+	const pathname = usePathname();
 	const {children} = props;
 	const [open, setOpen] = React.useState(false);
 
@@ -18,8 +26,25 @@ const DashboardLayout = (props: {children: React.ReactNode}) => {
 	useEffect(() => {
 		if (!user) {
 			router.replace("/");
+		} else {
+			// Check role-based access
+			const userRole = user.role || "student";
+			const allowedRoutes = roleRouteAccess[userRole as keyof typeof roleRouteAccess] || [];
+
+			// Check if the current path starts with any allowed route prefix
+			const hasAccess = allowedRoutes.some(route => pathname.startsWith(route));
+
+			if (!hasAccess) {
+				// Redirect to the first allowed route for their role
+				if (allowedRoutes.length > 0) {
+					router.replace(allowedRoutes[0]);
+				} else {
+					// Fallback if no routes are allowed (shouldn't happen)
+					router.replace("/");
+				}
+			}
 		}
-	}, [user, router]);
+	}, [user, router, pathname]);
 
 	if (!user) {
 		return null;

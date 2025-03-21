@@ -29,9 +29,9 @@ function SigninPage() {
 			router.replace("/dashboard");
 		},
 		onError: err => {
-			// toast.error("Authentication failed", {
-			// 	description: err.message,
-			// });
+			toast.error("Authentication failed", {
+				description: err.message,
+			});
 		},
 	});
 

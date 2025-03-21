@@ -1,6 +1,6 @@
 import React from "react";
 import Sidenav from "./side-nav";
-import {Drawer, DrawerClose, DrawerContent, DrawerTrigger} from "@/components/ui/drawer";
+import {Drawer, DrawerClose, DrawerContent} from "@/components/ui/drawer";
 
 interface SideDrawerProps {
 	open: boolean;

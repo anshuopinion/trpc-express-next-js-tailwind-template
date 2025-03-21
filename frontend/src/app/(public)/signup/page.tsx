@@ -7,160 +7,192 @@ import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Card, CardContent} from "@/components/ui/card";
+import {Card} from "@/components/ui/card";
 import Link from "next/link";
-import {EyeIcon, EyeOffIcon} from "lucide-react";
+import {EyeIcon, EyeOffIcon, Loader2} from "lucide-react";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 function Signup() {
+	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	const signupUserMutation = trpc.auth.signup.useMutation({
 		onSuccess: () => {
-			toast.success("Account created successfully");
+			toast.success("Account created successfully", {
+				description: "You can now sign in with your credentials",
+			});
+			setTimeout(() => {
+				router.push("/signin");
+			}, 1500);
 		},
 		onError: err => {
-			toast.error(`An error occurred: ${err.message}`);
+			toast.error("Registration failed", {
+				description: err.message,
+			});
 		},
 	});
 
 	return (
 		<AuthLayout>
-			<Card className='min-h-[410px] pb-4 flex-1'>
-				<CardContent className='py-3 px-4'>
-					<div className='space-y-2'>
-						<h2 className='text-xl font-bold'>Sign Up</h2>
-						<div className='text-sm'>
-							<span className='text-gray-500'>Do you have account already? </span>
-							<Link href='/signin' className='text-primary underline'>
-								Sign In
-							</Link>
-						</div>
-
-						<Formik
-							validationSchema={Yup.object({
-								email: Yup.string().email("Invalid email address").required("Required"),
-								password: Yup.string().min(6, "Password must be at least 6 characters").required("Required"),
-								first_name: Yup.string().required("Required"),
-								last_name: Yup.string().required("Required"),
-								confirmPassword: Yup.string()
-									.oneOf([Yup.ref("password"), ""], "Passwords must match")
-									.required("Required"),
-							})}
-							initialValues={{
-								email: "",
-								password: "",
-								first_name: "",
-								last_name: "",
-								confirmPassword: "",
-							}}
-							onSubmit={async values => {
-								signupUserMutation.mutate({
-									email: values.email,
-									password: values.password,
-									first_name: values.first_name,
-									last_name: values.last_name,
-								});
-							}}
-						>
-							<Form>
-								<div className='grid grid-cols-2 gap-4 mt-4'></div>
-								<div className='col-span-2 md:col-span-1'>
-									<FormikField name='first_name'>
-										{({field, meta}: FieldProps) => (
-											<div className='space-y-2'>
-												<Label htmlFor='first_name'>First Name</Label>
-												<Input id='first_name' placeholder='Anshu' {...field} className={meta.touched && meta.error ? "border-red-500" : ""} />
-												{meta.touched && meta.error && <p className='text-sm text-red-500'>{meta.error}</p>}
-											</div>
-										)}
-									</FormikField>
-								</div>
-
-								<div className='col-span-2 md:col-span-1'>
-									<FormikField name='last_name'>
-										{({field, meta}: FieldProps) => (
-											<div className='space-y-2'>
-												<Label htmlFor='last_name'>Last Name</Label>
-												<Input id='last_name' placeholder='Raj' {...field} className={meta.touched && meta.error ? "border-red-500" : ""} />
-												{meta.touched && meta.error && <p className='text-sm text-red-500'>{meta.error}</p>}
-											</div>
-										)}
-									</FormikField>
-								</div>
-
-								<div className='col-span-2'>
-									<FormikField name='email'>
-										{({field, meta}: FieldProps) => (
-											<div className='space-y-2'>
-												<Label htmlFor='email'>Email</Label>
-												<Input id='email' type='email' placeholder='me@example.com' {...field} className={meta.touched && meta.error ? "border-red-500" : ""} />
-												{meta.touched && meta.error && <p className='text-sm text-red-500'>{meta.error}</p>}
-											</div>
-										)}
-									</FormikField>
-								</div>
-
-								<div className='col-span-2'>
-									<FormikField name='password'>
-										{({field, meta}: FieldProps) => (
-											<div className='space-y-2'>
-												<Label htmlFor='password'>Password</Label>
-												<div className='relative'>
-													<Input
-														id='password'
-														type={showPassword ? "text" : "password"}
-														placeholder='Password'
-														{...field}
-														className={meta.touched && meta.error ? "border-red-500 pr-10" : "pr-10"}
-													/>
-													<button type='button' className='absolute right-3 top-1/2 transform -translate-y-1/2' onClick={() => setShowPassword(!showPassword)}>
-														{showPassword ? <EyeOffIcon className='h-4 w-4 text-gray-500' /> : <EyeIcon className='h-4 w-4 text-gray-500' />}
-													</button>
-												</div>
-												{meta.touched && meta.error && <p className='text-sm text-red-500'>{meta.error}</p>}
-											</div>
-										)}
-									</FormikField>
-								</div>
-
-								<div className='col-span-2'>
-									<FormikField name='confirmPassword'>
-										{({field, meta}: FieldProps) => (
-											<div className='space-y-2'>
-												<Label htmlFor='confirmPassword'>Confirm Password</Label>
-												<div className='relative'>
-													<Input
-														id='confirmPassword'
-														type={showConfirmPassword ? "text" : "password"}
-														placeholder='Confirm Password'
-														{...field}
-														className={meta.touched && meta.error ? "border-red-500 pr-10" : "pr-10"}
-													/>
-													<button
-														type='button'
-														className='absolute right-3 top-1/2 transform -translate-y-1/2'
-														onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-													>
-														{showConfirmPassword ? <EyeOffIcon className='h-4 w-4 text-gray-500' /> : <EyeIcon className='h-4 w-4 text-gray-500' />}
-													</button>
-												</div>
-												{meta.touched && meta.error && <p className='text-sm text-red-500'>{meta.error}</p>}
-											</div>
-										)}
-									</FormikField>
-								</div>
-
-								<div className='col-span-2'>
-									<Button className='w-full' type='submit' disabled={signupUserMutation.isPending}>
-										{signupUserMutation.isPending ? "Signing up..." : "Sign Up"}
-									</Button>
-								</div>
-							</Form>
-						</Formik>
+			<Card className='min-h-[410px] flex-1 p-8 shadow-lg'>
+				<div className='space-y-6 max-w-full  '>
+					<div className='text-center mb-6'>
+						<h2 className='text-2xl font-bold tracking-tight'>Create an account</h2>
+						<p className='text-sm text-muted-foreground mt-1'>Enter your information to get started</p>
 					</div>
-				</CardContent>
+
+					<Formik
+						validationSchema={Yup.object({
+							email: Yup.string().email("Please enter a valid email address").required("Email is required"),
+							password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+							first_name: Yup.string().required("First name is required"),
+							last_name: Yup.string().required("Last name is required"),
+							confirmPassword: Yup.string()
+								.oneOf([Yup.ref("password"), ""], "Passwords must match")
+								.required("Please confirm your password"),
+						})}
+						initialValues={{
+							email: "",
+							password: "",
+							first_name: "",
+							last_name: "",
+							confirmPassword: "",
+						}}
+						onSubmit={async values => {
+							signupUserMutation.mutate({
+								email: values.email,
+								password: values.password,
+								first_name: values.first_name,
+								last_name: values.last_name,
+							});
+						}}
+					>
+						<Form className='space-y-5 w-full'>
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+								<FormikField name='first_name'>
+									{({field, meta}: FieldProps) => (
+										<div className='space-y-2'>
+											<Label htmlFor='first_name'>First Name</Label>
+											<Input
+												id='first_name'
+												placeholder='John'
+												{...field}
+												className={meta.touched && meta.error ? "border-destructive" : ""}
+												autoComplete='given-name'
+											/>
+											{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+										</div>
+									)}
+								</FormikField>
+
+								<FormikField name='last_name'>
+									{({field, meta}: FieldProps) => (
+										<div className='space-y-2'>
+											<Label htmlFor='last_name'>Last Name</Label>
+											<Input
+												id='last_name'
+												placeholder='Doe'
+												{...field}
+												className={meta.touched && meta.error ? "border-destructive" : ""}
+												autoComplete='family-name'
+											/>
+											{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+										</div>
+									)}
+								</FormikField>
+							</div>
+
+							<FormikField name='email'>
+								{({field, meta}: FieldProps) => (
+									<div className='space-y-2'>
+										<Label htmlFor='email'>Email</Label>
+										<Input
+											id='email'
+											type='email'
+											placeholder='name@example.com'
+											{...field}
+											className={meta.touched && meta.error ? "border-destructive" : ""}
+											autoComplete='email'
+										/>
+										{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+									</div>
+								)}
+							</FormikField>
+
+							<FormikField name='password'>
+								{({field, meta}: FieldProps) => (
+									<div className='space-y-2'>
+										<Label htmlFor='password'>Password</Label>
+										<div className='relative'>
+											<Input
+												id='password'
+												type={showPassword ? "text" : "password"}
+												placeholder='••••••••'
+												{...field}
+												className={meta.touched && meta.error ? "border-destructive pr-10" : "pr-10"}
+												autoComplete='new-password'
+											/>
+											<button
+												type='button'
+												className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+												onClick={() => setShowPassword(!showPassword)}
+											>
+												{showPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
+											</button>
+										</div>
+										{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+									</div>
+								)}
+							</FormikField>
+
+							<FormikField name='confirmPassword'>
+								{({field, meta}: FieldProps) => (
+									<div className='space-y-2'>
+										<Label htmlFor='confirmPassword'>Confirm Password</Label>
+										<div className='relative'>
+											<Input
+												id='confirmPassword'
+												type={showConfirmPassword ? "text" : "password"}
+												placeholder='••••••••'
+												{...field}
+												className={meta.touched && meta.error ? "border-destructive pr-10" : "pr-10"}
+												autoComplete='new-password'
+											/>
+											<button
+												type='button'
+												className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+												onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+											>
+												{showConfirmPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
+											</button>
+										</div>
+										{meta.touched && meta.error && <p className='text-sm text-destructive'>{meta.error}</p>}
+									</div>
+								)}
+							</FormikField>
+
+							<Button className='w-full font-medium' type='submit' disabled={signupUserMutation.isPending}>
+								{signupUserMutation.isPending ? (
+									<>
+										<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+										Creating account...
+									</>
+								) : (
+									"Create account"
+								)}
+							</Button>
+
+							<div className='text-center text-sm'>
+								<span className='text-muted-foreground'>Already have an account? </span>
+								<Link href='/signin' className='text-primary font-medium hover:underline'>
+									Sign in
+								</Link>
+							</div>
+						</Form>
+					</Formik>
+				</div>
 			</Card>
 		</AuthLayout>
 	);

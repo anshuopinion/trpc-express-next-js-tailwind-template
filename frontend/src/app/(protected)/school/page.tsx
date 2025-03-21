@@ -217,12 +217,10 @@ const SchoolPage = () => {
 									{searchTerm ? "No students match your search criteria." : "Start by adding your first student."}
 								</p>
 								{!searchTerm && (
-									<DialogTrigger asChild>
-										<Button>
-											<UserPlus className='mr-2 h-4 w-4' />
-											Add Student
-										</Button>
-									</DialogTrigger>
+									<Button onClick={() => setOpen(true)}>
+										<UserPlus className='mr-2 h-4 w-4' />
+										Add Student
+									</Button>
 								)}
 							</div>
 						)}

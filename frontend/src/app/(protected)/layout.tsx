@@ -8,9 +8,9 @@ import {useRouter, usePathname} from "next/navigation";
 
 // Define role-based route access
 const roleRouteAccess = {
-	admin: ["/admin", "/school", "/student"],
-	school: ["/school", "/student"],
-	student: ["/student"],
+	admin: ["/admin", "/school", "/student", "/dashboard"],
+	school: ["/school", "/student", "/dashboard"],
+	student: ["/student", "/dashboard"],
 };
 
 const DashboardLayout = (props: {children: React.ReactNode}) => {

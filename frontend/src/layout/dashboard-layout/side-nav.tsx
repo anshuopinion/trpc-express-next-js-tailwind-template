@@ -8,22 +8,66 @@ import {IoIosArrowDropright, IoIosArrowDropleft} from "react-icons/io";
 import {WEB_APP, WEB_SHORT_NAME} from "@/constant/env";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
+import {GraduationCap, Shield, School, User} from "lucide-react";
+import useUser from "@/hooks/useUser";
 
 const Sidenav = ({onClose, isDrawer = false}: {onClose?: () => void; isDrawer?: boolean}) => {
 	const pathname = usePathname();
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const {user} = useUser();
 
 	const isActiveLink = (link: string) => {
-		return pathname === link;
+		// Check if the pathname starts with the link (for nested routes)
+		return pathname === link || pathname.startsWith(`${link}/`);
 	};
 
-	const navLinks = [
+	// Base navigation links that everyone sees
+	const baseNavLinks = [
 		{
 			icon: RxDashboard,
 			text: "Dashboard",
 			link: "/dashboard",
 		},
+		{
+			icon: User,
+			text: "Profile",
+			link: "/dashboard/profile",
+		},
 	];
+
+	// Role-based navigation links
+	const roleNavLinks = [
+		...(user?.role === "admin" || user?.role === "school"
+			? [
+					{
+						icon: School,
+						text: "School",
+						link: "/school",
+					},
+			  ]
+			: []),
+		...(user?.role === "admin"
+			? [
+					{
+						icon: Shield,
+						text: "Admin",
+						link: "/admin",
+					},
+			  ]
+			: []),
+		...(user?.role === "student" || user?.role === "admin" || user?.role === "school"
+			? [
+					{
+						icon: GraduationCap,
+						text: "Student",
+						link: "/student",
+					},
+			  ]
+			: []),
+	];
+
+	// Combine the base and role-based navigation links
+	const navLinks = [...baseNavLinks, ...roleNavLinks];
 
 	const bottomLinks = [
 		{

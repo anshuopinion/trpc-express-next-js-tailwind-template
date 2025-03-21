@@ -13,7 +13,7 @@ import {UserRole} from "@/types/user";
 
 const DashboardPage = () => {
 	const {user} = useUser();
-	const utils = trpc.useContext();
+	const utils = trpc.useUtils();
 
 	// Only admins can fetch all users
 	const {data: allUsers, isLoading: isLoadingUsers} = trpc.user.getAllUsers.useQuery(undefined, {enabled: user?.role === "admin"});

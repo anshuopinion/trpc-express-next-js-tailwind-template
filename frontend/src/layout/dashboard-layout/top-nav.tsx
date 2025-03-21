@@ -4,6 +4,7 @@ import useUser from "../../hooks/useUser";
 // import { ThemeSwitch } from "@/components/ThemeSwitch";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
+import Link from "next/link";
 
 const Topnav = ({title, onOpen}: {title: string; onOpen: () => void}) => {
 	const {logout} = useUser();
@@ -28,7 +29,11 @@ const Topnav = ({title, onOpen}: {title: string; onOpen: () => void}) => {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align='end'>
 							<DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+
 							<DropdownMenuItem>Support</DropdownMenuItem>
+							<Link href='/dashboard/profile'>
+								<DropdownMenuItem>Profile</DropdownMenuItem>
+							</Link>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>

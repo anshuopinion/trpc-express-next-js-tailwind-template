@@ -1,4 +1,5 @@
-import {getModelForClass, modelOptions, prop} from "@typegoose/typegoose";
+import {getModelForClass, modelOptions, prop, Ref} from "@typegoose/typegoose";
+import {UserClass} from "./user";
 
 @modelOptions({
 	schemaOptions: {
@@ -20,6 +21,9 @@ export class TodoClass {
 
 	@prop({type: Date})
 	public updated_at?: Date | null;
+
+	@prop({ref: () => UserClass})
+	public user: Ref<UserClass>;
 }
 
 export type ITodo = TodoClass & {id: string};

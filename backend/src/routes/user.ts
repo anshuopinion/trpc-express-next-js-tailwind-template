@@ -4,18 +4,9 @@ import {z} from "zod";
 
 export const userRouter = router({
 	getProfile: privateProcedure.query(async ({ctx}) => {
-		const userId = ctx.user?.id;
-		if (!userId) {
-			throw new Error("Unauthorized");
-		}
-
-		const user = await UserModel.findById(userId);
-		if (!user) {
-			throw new Error("User not found");
-		}
-
+		const user = ctx.user;
 		return {
-			id: user._id.toString(),
+			id: user.id.toString(),
 			first_name: user.first_name,
 			last_name: user.last_name,
 			email: user.email,

@@ -1,4 +1,4 @@
-import {TodoModel} from "../model/todo";
+import {ITodo, TodoModel} from "../model/todo";
 import {privateProcedure, router} from "../trpc";
 import {z} from "zod";
 
@@ -9,7 +9,8 @@ export const todoRouter = router({
 	getAllTodos: privateProcedure.query(async ({ctx}) => {
 		const userId = ctx.user?.id;
 		const todos = await TodoModel.find({user: userId}).populate("user");
-		return todos;
+
+		return todos as unknown as ITodo[];
 	}),
 
 	// create todo
@@ -32,7 +33,7 @@ export const todoRouter = router({
 
 			await todo.save();
 
-			return todo;
+			return todo as unknown as ITodo;
 		}),
 
 	// update todo
@@ -50,7 +51,7 @@ export const todoRouter = router({
 
 			const todo = await TodoModel.findOneAndUpdate({_id: input.id, user: userId}, input, {new: true});
 
-			return todo;
+			return todo as unknown as ITodo;
 		}),
 
 	// delete todo
@@ -65,7 +66,7 @@ export const todoRouter = router({
 
 			const todo = await TodoModel.findOneAndDelete({_id: input.id, user: userId});
 
-			return todo;
+			return todo as unknown as ITodo;
 		}),
 	// get todo by id
 	getTodoById: privateProcedure
@@ -79,6 +80,6 @@ export const todoRouter = router({
 
 			const todo = await TodoModel.findOne({_id: input.id, user: userId}).populate("user");
 
-			return todo;
+			return todo as unknown as ITodo;
 		}),
 });

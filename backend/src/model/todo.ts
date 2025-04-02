@@ -26,5 +26,5 @@ export class TodoClass {
 	public user: Ref<UserClass>;
 }
 
-export type ITodo = TodoClass & {id: string};
+export type ITodo = TodoClass & {_id: string};
 export const TodoModel = getModelForClass(TodoClass);

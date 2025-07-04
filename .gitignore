@@ -14,7 +14,6 @@ types/
 .next/
 
 # IDE
-.vscode/
 .idea/
 
 # OS

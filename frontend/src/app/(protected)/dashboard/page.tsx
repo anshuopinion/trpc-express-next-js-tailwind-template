@@ -18,7 +18,7 @@ export default function DashboardPage() {
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-foreground">Dashboard</h2>
           <p className="text-muted-foreground mt-1">
-            Welcome back, {user?.first_name}! Here's your tRPC template dashboard.
+            Welcome back, {user?.first_name}! Here&apos;s your tRPC template dashboard.
           </p>
         </div>
 

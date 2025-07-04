@@ -4,7 +4,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
 import { useMemo } from 'react';
-import type { AppRouter } from '../../../backend/src/routes';
+import type { AppRouter } from '../../../backend/types/routes';
 
 // Create a query client
 export const queryClient = new QueryClient({
@@ -46,7 +46,7 @@ export function useTRPC() {
 }
 
 // Export types for type inference
-export type { AppRouter } from '../../../backend/src/routes';
+export type { AppRouter } from '../../../backend/types/routes';
 
 // Type inference helpers
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';

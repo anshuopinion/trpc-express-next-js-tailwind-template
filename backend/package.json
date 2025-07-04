@@ -47,6 +47,7 @@
 		"mongoose": "^8.12.1",
 		"node-cron": "^3.0.3",
 		"nodemon": "^3.1.9",
+		"openai": "^4.20.0",
 		"papaparse": "^5.5.2",
 		"socket.io": "^4.8.1",
 		"user-agents": "^1.1.485",

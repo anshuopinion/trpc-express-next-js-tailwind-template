@@ -1,13 +1,14 @@
 import {router} from "../trpc";
 import {authRouter} from "./auth";
-import {typeRouter} from "./type";
-import {userRouter} from "./user";
+import {aiRouter} from "./ai";
+import {gigsRouter} from "./gigs";
+// Import other routers here
 
-const appRouter = router({
-	user: userRouter,
+export const appRouter = router({
 	auth: authRouter,
-	type: typeRouter,
+	ai: aiRouter,
+	gigs: gigsRouter,
+	// Register other routers here
 });
 
-export {appRouter};
 export type AppRouter = typeof appRouter;

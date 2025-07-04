@@ -1,39 +1,65 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import {createContext} from "./trpc";
-import {appRouter} from "./routes";
-import http from "http";
+import { createContext } from "./trpc";
+import { appRouter } from "./routes";
 import cors from "cors";
-import mongoose from "mongoose";
-import {DATABASE_URL} from "./config";
+import { connectDB } from "./config";
 
 const app = express();
-const server = http.createServer(app);
 
-app.use(cors({origin: [process.env.FRONTEND_URL!], credentials: true}));
+// Middleware
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL || "http://localhost:3005",
+    "http://localhost:3000",
+    "http://localhost:3003",
+    "http://localhost:3005"
+  ],
+  credentials: true
+}));
 
-mongoose.connect(DATABASE_URL);
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
-	console.log("Connected to MongoDB");
+app.use(express.json());
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
+// tRPC endpoint
 app.use(
-	"/trpc",
-	trpcExpress.createExpressMiddleware({
-		router: appRouter,
-		createContext,
-	})
+  "/trpc",
+  trpcExpress.createExpressMiddleware({
+    router: appRouter,
+    createContext,
+  })
 );
 
-const port = process.env.PORT || 4000;
+// Start server
+const startServer = async () => {
+  try {
+    // Connect to database
+    await connectDB();
+    
+    const port = process.env.PORT || 4000;
+    app.listen(port, () => {
+      console.log(`🚀 tRPC Template Server`);
+      console.log(`======================`);
+      console.log(`🌐 Server: http://localhost:${port}`);
+      console.log(`📡 tRPC API: http://localhost:${port}/trpc`);
+      console.log(`🏥 Health: http://localhost:${port}/health`);
+      console.log(`\n✅ Server is running and ready!`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+};
 
-server.listen(port, () => {
-	console.log(`Server listening at http://localhost:${port}`);
-	console.log(`Socket.IO server enabled`);
-});
-
-process.on("SIGTERM", () => {
-	server.close();
-});
+startServer();

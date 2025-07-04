@@ -1,15 +1,13 @@
 import React from "react";
 import {FaBars, FaUserTie} from "react-icons/fa";
-import useUser from "../../hooks/useUser";
+import {useAuth} from "@/hooks/useAuth";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
-import {trpc} from "@/trpc/client";
 
 const Topnav = ({title, onOpen}: {title: string; onOpen: () => void}) => {
-	const {logout, user} = useUser();
-	const {data: userData, isLoading: isUserLoading} = trpc.user.getProfile.useQuery();
+	const {logout, user} = useAuth();
 
 	const getFullName = () => {
 		if (!user) return "User";
@@ -32,8 +30,8 @@ const Topnav = ({title, onOpen}: {title: string; onOpen: () => void}) => {
 						<DropdownMenuTrigger asChild>
 							<Button variant='ghost' size='icon' className='rounded-full hover:cursor-pointer hover:bg-secondary'>
 								<Avatar>
-									{userData?.avatar ? (
-										<AvatarImage src={userData.avatar} alt={getFullName()} />
+									{user?.avatar ? (
+										<AvatarImage src={user.avatar} alt={getFullName()} />
 									) : (
 										<AvatarFallback>
 											<FaUserTie className='h-5 w-5' />
@@ -45,8 +43,8 @@ const Topnav = ({title, onOpen}: {title: string; onOpen: () => void}) => {
 						<DropdownMenuContent align='end' className='w-56'>
 							<div className='flex items-center p-3 gap-3'>
 								<Avatar className='h-10 w-10 border'>
-									{userData?.avatar ? (
-										<AvatarImage src={userData.avatar} alt={getFullName()} />
+									{user?.avatar ? (
+										<AvatarImage src={user.avatar} alt={getFullName()} />
 									) : (
 										<AvatarFallback>
 											<FaUserTie className='h-5 w-5' />

@@ -9,11 +9,12 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {EyeIcon, EyeOffIcon, Loader2} from "lucide-react";
 import AuthLayout from "@/layout/auth-layout/auth-layout";
-import {trpc} from "@/trpc/client";
-import useUser from "../../../hooks/useUser";
+import {useTRPC} from "@/trpc/client";
+import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
 import {useState} from "react";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {useAuth} from "@/hooks/useAuth";
 
 // Create a schema for form validation
 const formSchema = z.object({
@@ -23,8 +24,9 @@ const formSchema = z.object({
 
 function SigninPage() {
 	const router = useRouter();
-	const {logIn} = useUser();
+	const {login} = useAuth();
 	const [showPassword, setShowPassword] = useState(false);
+	const trpc = useTRPC();
 
 	// Define form with react-hook-form
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -35,20 +37,22 @@ function SigninPage() {
 		},
 	});
 
-	const signinUserMutation = trpc.auth.signin.useMutation({
-		onSuccess: data => {
-			logIn(data);
-			toast.success("Login successful", {
-				description: "Redirecting to dashboard...",
-			});
-			router.replace("/dashboard");
-		},
-		onError: err => {
-			toast.error("Authentication failed", {
-				description: err.message,
-			});
-		},
-	});
+	const signinUserMutation = useMutation(
+		trpc.auth.signin.mutationOptions({
+			onSuccess: data => {
+				login(data);
+				toast.success("Login successful", {
+					description: "Redirecting to scanner dashboard...",
+				});
+				router.replace("/dashboard");
+			},
+			onError: err => {
+				toast.error("Authentication failed", {
+					description: err.message,
+				});
+			},
+		})
+	);
 
 	// Form submission handler
 	function onSubmit(values: z.infer<typeof formSchema>) {
@@ -63,8 +67,8 @@ function SigninPage() {
 			<Card className='min-h-[410px] flex-1 p-8 shadow-lg'>
 				<div className='space-y-6  max-w-md '>
 					<div className='text-center mb-6'>
-						<h1 className='text-2xl font-bold tracking-tight'>Welcome back</h1>
-						<p className='text-sm text-muted-foreground mt-1'>Enter your credentials to access your account</p>
+						<h1 className='text-2xl font-bold tracking-tight'>Welcome back to Stock Scanner</h1>
+						<p className='text-sm text-muted-foreground mt-1'>Sign in to access your scanner dashboard and monitor live market data</p>
 					</div>
 
 					<Form {...form}>

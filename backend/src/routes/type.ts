@@ -1,16 +1,37 @@
-// routes/log.router.ts
-import {router, publicProcedure} from "../trpc";
-// please don't use this router for any backend calls only use it for gettting types on the frontend
+import { publicProcedure, router } from "../trpc";
+import { z } from "zod";
+
 export const typeRouter = router({
-	getTypes: publicProcedure.query(async () => {
-		// let stockDetailUpdateType: StockDetailUpdate = {} as StockDetailUpdate;
+  getAppInfo: publicProcedure.query(() => {
+    return {
+      name: "tRPC Template",
+      version: "1.0.0",
+      description: "A clean tRPC template with authentication",
+    };
+  }),
 
-		// let swingPointType = {} as SwingPoint;
-		// let positionType = {} as Position;
-		// let positonClassType = {} as IPositionModel;
-		// let srLevelType = {} as SRLevel;
-		// let levelType = {} as LevelType;
+  getEnvironment: publicProcedure.query(() => {
+    return {
+      environment: process.env.NODE_ENV || "development",
+      timestamp: new Date().toISOString(),
+    };
+  }),
 
-		return {};
-	}),
+  validateEmail: publicProcedure
+    .input(z.object({ email: z.string() }))
+    .query(({ input }) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return {
+        email: input.email,
+        isValid: emailRegex.test(input.email),
+      };
+    }),
+
+  healthCheck: publicProcedure.query(() => {
+    return {
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    };
+  }),
 });

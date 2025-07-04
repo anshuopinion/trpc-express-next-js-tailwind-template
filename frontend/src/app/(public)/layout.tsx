@@ -1,6 +1,6 @@
 import Navigation from "@/layout/main-layout/navigation";
 
-export default function MainLayout({
+export default function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

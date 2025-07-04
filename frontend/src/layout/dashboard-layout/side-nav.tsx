@@ -23,6 +23,11 @@ const Sidenav = ({onClose, isDrawer = false}: {onClose?: () => void; isDrawer?: 
 			text: "Dashboard",
 			link: "/dashboard",
 		},
+		{
+			icon: RxDashboard,
+			text: "Scanner",
+			link: "/dashboard/scanner",
+		},
 	];
 
 	const bottomLinks = [

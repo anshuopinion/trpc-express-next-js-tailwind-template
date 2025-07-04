@@ -1,43 +1,35 @@
-import {getModelForClass, modelOptions, prop} from "@typegoose/typegoose";
-
-export class BrokerSettings {
-	@prop({type: String})
-	public client_id!: string;
-
-	@prop({type: String})
-	public access_token!: string;
-}
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
 @modelOptions({
-	schemaOptions: {
-		collection: "users",
-	},
+  schemaOptions: {
+    collection: "users",
+  },
 })
 export class UserClass {
-	@prop({required: true, type: String})
-	public first_name: string;
+  @prop({ required: true, type: String })
+  public first_name: string;
 
-	@prop({required: true, type: String})
-	public last_name: string;
+  @prop({ required: true, type: String })
+  public last_name: string;
 
-	@prop({type: String})
-	public avatar?: string | null;
+  @prop({ type: String })
+  public avatar?: string | null;
 
-	@prop({required: true, unique: true, type: String})
-	public email: string;
+  @prop({ required: true, unique: true, type: String })
+  public email: string;
 
-	@prop({required: true, type: String})
-	public password: string;
+  @prop({ required: true, type: String })
+  public password: string;
 
-	@prop({type: String})
-	public refresh_token?: string | null;
+  @prop({ type: String })
+  public refresh_token?: string | null;
 
-	@prop({default: false, type: Boolean})
-	public is_email_verified: boolean;
+  @prop({ default: false, type: Boolean })
+  public is_email_verified: boolean;
 
-	@prop({type: String})
-	public verify_token?: string | null;
+  @prop({ type: String })
+  public verify_token?: string | null;
 }
 
-export type IUser = UserClass & {id: string};
+export type IUser = UserClass & { id: string };
 export const UserModel = getModelForClass(UserClass);

@@ -21,11 +21,11 @@ const AuthLayout = ({children}: AuthLayoutProps) => {
 			>
 				<div className='max-w-[440px] relative z-10 '>
 					<div className='h-8 w-8 rounded-full bg-primary flex mb-2 items-center justify-center'>
-						<span className='text-primary-foreground font-bold'>T</span>
+						<span className='text-primary-foreground font-bold'>S</span>
 					</div>
-					<h1 className='text-4xl font-bold text-foreground'>Welcome to our platform</h1>
+					<h1 className='text-4xl font-bold text-foreground'>Welcome to Stock Scanner</h1>
 					<p className='text-lg text-muted-foreground max-w-[400px]'>
-						A comprehensive tRPC + Express + Next.js template with Tailwind CSS and shadcn/ui components.
+						Real-time stock monitoring platform with advanced filtering capabilities. Create custom scanners, set alerts, and never miss trading opportunities.
 					</p>
 				</div>
 
@@ -38,7 +38,7 @@ const AuthLayout = ({children}: AuthLayoutProps) => {
 					</figure>
 				</div>
 
-				<div className='relative z-10 text-sm text-muted-foreground'>&copy; {new Date().getFullYear()} Template Project. All rights reserved.</div>
+				<div className='relative z-10 text-sm text-muted-foreground'>&copy; {new Date().getFullYear()} Stock Scanner. All rights reserved.</div>
 			</motion.div>
 
 			{/* Right Section with Auth Form */}
@@ -50,13 +50,13 @@ const AuthLayout = ({children}: AuthLayoutProps) => {
 			>
 				<div className='max-w-[440px] mx-auto w-full  '>
 					<div className='mb-6 hidden md:block'>
-						<h2 className='text-2xl font-bold tracking-tight'>Authentication</h2>
-						<p className='text-muted-foreground mt-1'>Enter your credentials to access your account</p>
+						<h2 className='text-2xl font-bold tracking-tight'>Scanner Authentication</h2>
+						<p className='text-muted-foreground mt-1'>Access your trading dashboard and scanner tools</p>
 					</div>
 					{children}
 				</div>
 
-				<div className='mt-8 text-center text-sm text-muted-foreground lg:hidden'>&copy; {new Date().getFullYear()} Template Project. All rights reserved.</div>
+				<div className='mt-8 text-center text-sm text-muted-foreground lg:hidden'>&copy; {new Date().getFullYear()} Stock Scanner. All rights reserved.</div>
 			</motion.div>
 		</div>
 	);

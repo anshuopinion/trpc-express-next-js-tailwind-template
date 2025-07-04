@@ -2,15 +2,16 @@
 import React, {useEffect} from "react";
 import {FaBars} from "react-icons/fa";
 import {AiOutlineClose} from "react-icons/ai";
-import useUser from "../../hooks/useUser";
+
 import {Button} from "@/components/ui/button";
 import {WEB_APP} from "@/constant/env";
 import Link from "next/link";
 import {Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger} from "@/components/ui/drawer";
+import {useAuth} from "@/hooks/useAuth";
 
 const Navigation = () => {
 	const [open, setOpen] = React.useState(false);
-	const {isLogIn} = useUser();
+	const {isAuthenticated} = useAuth();
 
 	// Close drawer when pressing escape key
 	useEffect(() => {
@@ -55,7 +56,7 @@ const Navigation = () => {
 
 						<div className='flex items-center gap-3'>
 							{/* <ThemeSwitch /> */}
-							{isLogIn ? (
+							{isAuthenticated ? (
 								<Link href='/dashboard'>
 									<Button className='px-5 py-2 transition-all duration-200 hover:scale-105'>Dashboard</Button>
 								</Link>
@@ -122,7 +123,7 @@ const Navigation = () => {
 							</div>
 
 							<DrawerFooter className='mt-auto border-t pt-5'>
-								{isLogIn ? (
+								{isAuthenticated ? (
 									<Link href='/dashboard' className='block w-full mb-4' onClick={() => setOpen(false)}>
 										<Button className='w-full h-12'>Dashboard</Button>
 									</Link>

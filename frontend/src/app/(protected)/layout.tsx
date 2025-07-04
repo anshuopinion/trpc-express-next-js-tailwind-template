@@ -1,42 +1,68 @@
 "use client";
-import React, {useEffect} from "react";
-import Sidenav from "@/layout/dashboard-layout/side-nav";
-import SideDrawer from "@/layout/dashboard-layout/side-drawer";
-import Topnav from "@/layout/dashboard-layout/top-nav";
-import useUser from "../../hooks/useUser";
-import {useRouter} from "next/navigation";
 
-const DashboardLayout = (props: {children: React.ReactNode}) => {
-	const {user} = useUser();
-	const router = useRouter();
-	const {children} = props;
-	const [open, setOpen] = React.useState(false);
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { AppSidebar } from "@/components/app-sidebar";
+import { MobileTopBar } from "@/components/mobile-top-bar";
 
-	const onOpen = () => setOpen(true);
-	const onClose = () => setOpen(false);
+export default function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-	useEffect(() => {
-		if (!user) {
-			router.replace("/");
-		}
-	}, [user, router]);
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/signin");
+    }
+  }, [isAuthenticated, isLoading, router]);
 
-	if (!user) {
-		return null;
-	}
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-lg text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
-	return (
-		<div className='flex'>
-			<div className='hidden lg:flex'>
-				<Sidenav />
-			</div>
-			<SideDrawer open={open} onClose={onClose} />
-			<div className='flex-grow'>
-				<Topnav title='' onOpen={onOpen} />
-				<div className='py-2 px-0 h-[calc(100vh-64px)] max-w-full overflow-x-hidden overflow-y-auto flex flex-col'>{children}</div>
-			</div>
-		</div>
-	);
-};
+  if (!isAuthenticated) {
+    return null;
+  }
 
-export default DashboardLayout;
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Mobile Top Bar */}
+      <MobileTopBar onMenuClick={() => setSidebarOpen(true)} />
+      
+      {/* Desktop Sidebar - Fixed Position */}
+      <AppSidebar className="hidden md:flex fixed inset-y-0 left-0 z-30" />
+      
+      {/* Mobile Sidebar Overlay */}
+      <AppSidebar 
+        className={`md:hidden fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        onClose={() => setSidebarOpen(false)}
+      />
+      
+      {/* Mobile Backdrop */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
+      {/* Main Content */}
+      <div className="md:ml-[200px] min-h-screen">
+        <div className="p-4 pt-20 md:pt-4">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}

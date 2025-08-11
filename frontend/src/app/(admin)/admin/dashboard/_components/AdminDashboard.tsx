@@ -13,7 +13,6 @@ interface AppInfo {
   name: string;
   version: string;
   description: string;
-  environment: string;
 }
 
 interface AdminDashboardProps {

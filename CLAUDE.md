@@ -3,6 +3,17 @@
 ## Project Overview
 A comprehensive, production-ready full-stack TypeScript template built with the latest tRPC patterns, Next.js 15, and modern role-based authentication. This template serves as a robust foundation for building type-safe, scalable web applications with seamless full-stack integration, featuring complete user management and admin functionality.
 
+## 📚 Complete Documentation
+For detailed implementation guides, see the [docs/ folder](./docs/README.md):
+
+- **[tRPC Usage Guide](./docs/api/trpc-usage.md)** - Complete tRPC patterns and examples
+- **[Backend Architecture](./docs/architecture/backend.md)** - MVC pattern, controllers, security
+- **[Frontend Architecture](./docs/architecture/frontend.md)** - Next.js 15, route groups, authentication
+- **[Page Modularization](./docs/architecture/page-modularization.md)** - Page-centric organization patterns
+- **[Linting & Code Quality](./docs/development/linting.md)** - BiomeJS setup and rules
+
+*This file provides a quick reference overview. For comprehensive implementation details, consult the specific documentation files.*
+
 ## Architecture
 
 ### Project Structure
@@ -11,1055 +22,224 @@ template-folder/
 ├── backend/                    # Express.js + tRPC server
 │   ├── src/
 │   │   ├── config/            # Database configuration
-│   │   │   └── index.ts       # MongoDB connection setup
-│   │   ├── controllers/       # Business logic controllers (MVC pattern)
-│   │   │   ├── auth/          # Authentication controllers
-│   │   │   │   ├── index.ts   # Auth controller exports
-│   │   │   │   ├── signup.ts  # User registration logic
-│   │   │   │   ├── signin.ts  # User login logic
-│   │   │   │   ├── logout.ts  # Logout logic
-│   │   │   │   ├── me.ts      # Get user profile logic
-│   │   │   │   └── refresh.ts # Token refresh logic
-│   │   │   ├── admin/         # Admin management controllers
-│   │   │   │   ├── index.ts   # Admin controller exports
-│   │   │   │   ├── deleteUser.ts     # Admin delete user logic
-│   │   │   │   ├── getAllUsers.ts    # Get all users logic
-│   │   │   │   ├── getSystemStats.ts # System statistics logic
-│   │   │   │   └── updateUserRole.ts # Update user role logic
-│   │   │   ├── user/          # User management controllers
-│   │   │   │   ├── index.ts   # User controller exports
-│   │   │   │   ├── updateProfile.ts  # Profile update logic
-│   │   │   │   ├── changePassword.ts # Password change logic
-│   │   │   │   └── deleteAccount.ts  # Account deletion logic
-│   │   │   ├── type/          # Utility controllers
-│   │   │   │   ├── index.ts   # Type controller exports
-│   │   │   │   ├── appInfo.ts # App information logic
-│   │   │   │   ├── environment.ts # Environment info logic
-│   │   │   │   ├── validateEmail.ts # Email validation logic
-│   │   │   │   └── healthCheck.ts # Health check logic
+│   │   ├── controllers/       # Business logic (MVC pattern)
+│   │   │   ├── auth/          # Authentication (signup, signin, logout, me, refresh) + index
+│   │   │   ├── admin/         # Admin management (users, roles, stats) + index
+│   │   │   ├── user/          # User management (profile, password, delete) + index
+│   │   │   ├── type/          # Utilities (health, app info, validation) + index
 │   │   │   └── index.ts       # Main controller exports
-│   │   ├── model/             # Data models
-│   │   │   └── user.ts        # User model with Typegoose and roles
-│   │   ├── routes/            # Clean tRPC route definitions
-│   │   │   ├── index.ts       # Main router combining all routes
-│   │   │   ├── auth.ts        # Authentication routes (use controllers)
-│   │   │   ├── admin.ts       # Admin management routes (use controllers)
-│   │   │   ├── user.ts        # User management routes (use controllers)
-│   │   │   └── type.ts        # Type utility routes (use controllers)
-│   │   ├── services/          # Shared business services
-│   │   │   ├── auth.ts        # JWT token utilities
-│   │   │   └── password.ts    # Password hashing utilities
-│   │   ├── server.ts          # Express server configuration
-│   │   └── trpc.ts            # tRPC setup with context and procedures
-│   ├── types/                 # Auto-generated TypeScript declarations
-│   └── package.json
-└── frontend/                  # Next.js 15 application with Page-Centric Modularization
+│   │   ├── model/             # Data models (user with roles)
+│   │   ├── routes/            # tRPC route definitions
+│   │   ├── services/          # JWT & password utilities
+│   │   ├── server.ts          # Express server
+│   │   └── trpc.ts            # tRPC context & procedures
+│   └── types/                 # Auto-generated TypeScript declarations
+└── frontend/                  # Next.js 15 with Page-Centric Modularization
     ├── src/
-    │   ├── app/              # Next.js App Router with Modular Page Structure
-    │   │   ├── (admin)/      # Admin-only routes requiring admin role
-    │   │   │   ├── _components/        # Admin-specific shared components
-    │   │   │   │   ├── AdminMobileSidebar.tsx  # Admin mobile navigation
-    │   │   │   │   ├── AdminSidebar.tsx        # Admin sidebar component
-    │   │   │   │   └── index.ts                # Export admin components
-    │   │   │   ├── _constants/        # Admin navigation constants
-    │   │   │   │   ├── navigation.ts           # Admin navigation config
-    │   │   │   │   └── index.ts                # Export constants
-    │   │   │   ├── admin/              # Admin main pages
-    │   │   │   │   ├── dashboard/      # Admin dashboard with modular structure
-    │   │   │   │   │   ├── _components/    # Admin dashboard components
-    │   │   │   │   │   │   ├── AdminDashboard.tsx    # Main admin dashboard
-    │   │   │   │   │   │   ├── AdminStatsCard.tsx    # Admin stats display
-    │   │   │   │   │   │   ├── SystemOverview.tsx    # System overview
-    │   │   │   │   │   │   └── index.ts              # Export components
-    │   │   │   │   │   ├── _hooks/     # Admin dashboard hooks
-    │   │   │   │   │   │   └── index.ts              # Export hooks
-    │   │   │   │   │   ├── _types/     # Admin dashboard types
-    │   │   │   │   │   │   ├── admin.types.ts        # Admin TypeScript interfaces
-    │   │   │   │   │   │   └── index.ts              # Export types
-    │   │   │   │   │   └── page.tsx    # Clean admin dashboard page
-    │   │   │   │   ├── settings/      # Admin settings pages
-    │   │   │   │   └── users/         # User management pages
-    │   │   │   └── layout.tsx          # Admin layout with admin sidebar
-    │   │   ├── (protected)/  # Protected routes requiring authentication
-    │   │   │   ├── _components/        # Protected routes shared components
-    │   │   │   │   ├── ProtectedMobileSidebar.tsx # Protected mobile nav
-    │   │   │   │   ├── UserSidebar.tsx            # User sidebar component
-    │   │   │   │   └── index.ts                   # Export components
-    │   │   │   ├── _constants/        # Protected routes constants
-    │   │   │   │   ├── navigation.ts              # User navigation config
-    │   │   │   │   └── index.ts                   # Export constants
-    │   │   │   ├── dashboard/      # User dashboard with modular structure
-    │   │   │   │   ├── _components/    # Dashboard-specific components
-    │   │   │   │   │   ├── StatsCard.tsx         # Reusable stats card
-    │   │   │   │   │   ├── UserProfileCard.tsx   # User profile display
-    │   │   │   │   │   ├── ServerStatusCard.tsx  # Server status display
-    │   │   │   │   │   ├── AppInfoCard.tsx       # App info display
-    │   │   │   │   │   ├── WelcomeSection.tsx    # Welcome message
-    │   │   │   │   │   └── index.ts              # Export all components
-    │   │   │   │   ├── _hooks/         # Dashboard-specific hooks
-    │   │   │   │   │   ├── useDashboardData.ts   # Dashboard data fetching
-    │   │   │   │   │   ├── useHealthCheck.ts     # Health check hook
-    │   │   │   │   │   └── index.ts              # Export all hooks
-    │   │   │   │   ├── _utils/         # Dashboard utilities
-    │   │   │   │   │   ├── formatters.ts         # Data formatting
-    │   │   │   │   │   ├── calculations.ts       # Dashboard calculations
-    │   │   │   │   │   └── index.ts              # Export utilities
-    │   │   │   │   ├── _types/         # Dashboard-specific types
-    │   │   │   │   │   ├── dashboard.types.ts    # TypeScript interfaces
-    │   │   │   │   │   └── index.ts              # Export types
-    │   │   │   │   └── page.tsx        # Clean dashboard page using components
-    │   │   │   └── layout.tsx          # Protected layout with user sidebar
-    │   │   ├── (public)/              # Public routes with modular structure
-    │   │   │   ├── signin/            # Sign in page with modular structure
-    │   │   │   │   ├── _components/        # Signin-specific components
-    │   │   │   │   │   ├── SigninForm.tsx      # Main signin form wrapper
-    │   │   │   │   │   ├── LoginButton.tsx     # Submit button with loading
-    │   │   │   │   │   └── index.ts            # Export components
-    │   │   │   │   ├── _hooks/             # Signin-specific hooks
-    │   │   │   │   │   ├── useSigninForm.ts    # Form state management
-    │   │   │   │   │   ├── useSigninMutation.ts # API mutation logic
-    │   │   │   │   │   └── index.ts            # Export hooks
-    │   │   │   │   ├── _schema/            # Signin validation
-    │   │   │   │   │   ├── signinSchema.ts     # Zod validation schema
-    │   │   │   │   │   └── index.ts            # Export schema
-    │   │   │   │   ├── _utils/             # Signin utilities
-    │   │   │   │   │   ├── validation.ts       # Form validation helpers
-    │   │   │   │   │   ├── storage.ts          # Token storage utilities
-    │   │   │   │   │   └── index.ts            # Export utilities
-    │   │   │   │   └── page.tsx            # Clean signin page
-    │   │   │   ├── signup/            # Sign up page with modular structure
-    │   │   │   │   ├── _components/        # Signup-specific components
-    │   │   │   │   │   ├── SignupForm.tsx      # Main signup form wrapper
-    │   │   │   │   │   ├── NameFields.tsx      # First/last name inputs
-    │   │   │   │   │   ├── SignupButton.tsx    # Submit button
-    │   │   │   │   │   ├── ConfirmPasswordField.tsx # Password confirmation
-    │   │   │   │   │   └── index.ts            # Export components
-    │   │   │   │   ├── _hooks/             # Signup-specific hooks
-    │   │   │   │   │   ├── useSignupForm.ts    # Form state management
-    │   │   │   │   │   ├── useSignupMutation.ts # API mutation logic
-    │   │   │   │   │   └── index.ts            # Export hooks (+ shared)
-    │   │   │   │   ├── _schema/            # Signup validation
-    │   │   │   │   │   ├── signupSchema.ts     # Zod validation schema
-    │   │   │   │   │   └── index.ts            # Export schema
-    │   │   │   │   ├── _utils/             # Signup utilities
-    │   │   │   │   │   ├── validation.ts       # Form validation helpers
-    │   │   │   │   │   ├── passwordUtils.ts    # Password strength utils
-    │   │   │   │   │   └── index.ts            # Export utilities
-    │   │   │   │   └── page.tsx            # Clean signup page
-    │   │   │   └── layout.tsx         # Public layout
-    │   │   ├── globals.css            # Global styles with Tailwind
-    │   │   ├── layout.tsx             # Root layout with providers
-    │   │   └── page.tsx               # Home page
-    │   ├── components/                # Shared React components
-    │   │   ├── ui/                   # shadcn/ui components
-    │   │   ├── forms/                # Shared form components
-    │   │   │   ├── PasswordField.tsx      # Reusable password input
-    │   │   │   └── index.ts               # Export form components
-    │   │   ├── guards/               # Role-based access guards
-    │   │   │   ├── AdminOnly.tsx          # Admin-only access component
-    │   │   │   ├── RoleGuard.tsx          # Generic role-based guard
-    │   │   │   ├── ServerRoleGuard.tsx    # Server-side role guard
-    │   │   │   └── index.ts               # Export guard components
-    │   │   ├── app-sidebar.tsx       # Application sidebar
-    │   │   ├── ContextSidebar.tsx    # Context-aware sidebar
-    │   │   ├── ContextMobileSidebar.tsx # Context-aware mobile sidebar
-    │   │   └── mobile-top-bar.tsx    # Mobile navigation
-    │   ├── hooks/                    # Shared custom React hooks
-    │   │   ├── useAuth.ts           # Authentication hook
-    │   │   ├── usePasswordToggle.ts # Password visibility hook (shared)
-    │   │   └── use-mobile.ts        # Mobile detection hook
-    │   ├── layout/                   # Layout components
-    │   │   ├── auth-layout/         # Authentication layout
-    │   │   ├── dashboard-layout/    # Dashboard layout components
-    │   │   └── main-layout/         # Main layout components
-    │   ├── lib/                     # Utility functions
-    │   │   ├── utils.ts            # Common utilities and localStorage helpers
-    │   │   ├── auth-utils.ts       # Authentication utility functions
-    │   │   ├── server-auth.ts      # Server-side authentication
-    │   │   └── server-auth-utils.ts # Server-side auth utilities
-    │   ├── trpc/                    # Modern tRPC client setup
-    │   │   ├── client.ts           # tRPC client configuration
-    │   │   ├── provider.tsx        # React Query provider
-    │   │   └── server.ts           # Server-side tRPC client
-    │   └── constant/                # Application constants
-    │       └── env.tsx             # Environment variables
+    │   ├── app/              # Next.js App Router
+    │   │   ├── (admin)/      # Admin-only routes with role protection
+    │   │   ├── (protected)/  # Auth-required routes
+    │   │   └── (public)/     # Public routes (signin/signup)
+    │   ├── components/       # Shared UI components & role guards
+    │   ├── hooks/           # Shared React hooks
+    │   ├── lib/             # Utilities & auth helpers
+    │   └── trpc/            # Modern tRPC client setup
     └── package.json
 ```
 
 ## Technology Stack
-
-### Backend Stack
-- **Express.js** - Fast, unopinionated web framework
-- **tRPC 11.4** - Type-safe API layer with full TypeScript inference
-- **MongoDB** - NoSQL database for flexibility
-- **Typegoose** - Type-safe MongoDB modeling with TypeScript
-- **JWT** - Secure authentication with access/refresh tokens and role-based access control
-- **bcryptjs** - Password hashing for security
-- **Zod** - Schema validation and type inference
-- **CORS** - Cross-origin resource sharing configuration
-- **BiomeJS** - Fast code formatting and linting
-
-### Frontend Stack
-- **Next.js 15** - React framework with App Router
-- **React 19** - Latest React with modern features
-- **TanStack React Query** - Server state management
-- **tRPC Client** - Type-safe API consumption
-- **shadcn/ui** - Modern, accessible UI components
-- **Tailwind CSS v4** - Latest utility-first CSS framework
-- **Lucide React** - Beautiful icon library
-- **Framer Motion** - Animation library
-- **React Hook Form** - Form management
-- **Sonner** - Toast notification system
-- **TypeScript** - Full type safety
-- **BiomeJS** - Fast code formatting and linting
+**Backend**: Express.js, tRPC 11.4, MongoDB, Typegoose, JWT (role-based auth), bcryptjs, Zod, BiomeJS
+**Frontend**: Next.js 15, React 19, TanStack React Query, shadcn/ui, Tailwind CSS v4, TypeScript, BiomeJS
 
 ## Modern tRPC Implementation
+- **tRPC 11.4** with React Query integration
+- **Full-stack type safety** from backend to frontend  
+- **Role-based procedures**: public, protected, admin
+- **Modern client pattern**: `useQuery(trpc.auth.me.queryOptions())`
 
-### Key Features
-1. **Latest tRPC Patterns** - Uses tRPC 11.4 with modern React Query integration
-2. **Type Safety** - Full-stack type inference from backend to frontend
-3. **Role-Based Access Control** - Admin, protected, and public procedures
-4. **Modern Client Setup** - Uses `createTRPCOptionsProxy` for cleaner API calls
-5. **Automatic Type Generation** - Backend generates TypeScript declarations
-6. **Optimized Queries** - React Query for efficient data fetching and caching
+## tRPC Quick Reference
 
-### tRPC Client Architecture
+**See [docs/api/trpc-usage.md](./docs/api/trpc-usage.md) for complete implementation guide.**
+
+### Client Usage
 ```typescript
-// Modern tRPC pattern - no more trpc.auth.me.useQuery()
-import { trpc } from '@/trpc/client';
-import { useQuery, useMutation } from '@tanstack/react-query';
+const trpc = useTRPC();
 
-// Client-side usage
-const userQuery = useQuery(trpc.auth.me.queryOptions());
-const logoutMutation = useMutation(trpc.auth.logout.mutationOptions());
+// Query
+const { data } = useQuery(trpc.auth.me.queryOptions());
+
+// Mutation  
+const mutation = useMutation(trpc.auth.signin.mutationOptions());
 ```
 
-### Server-Side Integration
-```typescript
-// Server component data fetching
-import { serverTrpc } from '@/trpc/server';
-import { QueryClient, HydrationBoundary } from '@tanstack/react-query';
-
-// Prefetch data on server for better performance
-await queryClient.prefetchQuery(serverTrpc.auth.me.queryOptions());
-```
+### Procedures
+- `publicProcedure` - No auth required
+- `privateProcedure` - JWT required  
+- `adminProcedure` - JWT + admin role required
 
 ## Backend Architecture
 
-### MVC Controller Pattern
-The backend now follows a clean Model-View-Controller (MVC) pattern with clear separation of concerns:
+### MVC Pattern
+- **Controllers**: Business logic with inline Zod schemas, organized by feature (auth, user, admin, type)
+- **Routes**: Thin tRPC layer that delegates to controllers
+- **Services**: JWT & password utilities, shared database operations
 
-### Controllers (`src/controllers/`)
-- **Business Logic Layer**: All business logic is encapsulated in controllers
-- **Inline Schemas**: Each controller includes its own Zod validation schema
-- **Feature-Based Organization**: Controllers are organized by feature (auth, user, type)
-- **Reusable Functions**: Controllers can be used across different route types
-- **Easy Testing**: Isolated business logic for unit testing
-
-#### Controller Structure:
-```typescript
-// Example: auth/signup.ts
-const signupSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  // ... other fields
-});
-
-export const signup = async (input: z.infer<typeof signupSchema>) => {
-  // Business logic here
-  return result;
-};
-
-export { signupSchema };
-```
-
-### Services (`src/services/`)
-- **Shared Utilities**: Common business services used across controllers
-- **JWT Token Management**: Token generation, validation, and refresh logic
-- **Password Utilities**: Hashing, comparison, and token management
-- **Database Operations**: Shared database interaction patterns
-
-### Routes (`src/routes/`)
-- **Thin Route Layer**: Routes only handle tRPC setup and delegate to controllers
-- **Clean Separation**: No business logic in routes, only tRPC configuration
-- **Type Safety**: Full TypeScript integration with controller schemas
-
-#### Route Structure:
-```typescript
-// Example: routes/auth.ts
-export const authRouter = router({
-  signup: publicProcedure
-    .input(authController.signupSchema)
-    .mutation(async (opts) => {
-      return await authController.signup(opts.input);
-    }),
-});
-```
-
-### tRPC Setup (`src/trpc.ts`)
-- **Context Creation**: JWT token verification and user authentication with role information
-- **Procedures**: 
-  - `publicProcedure`: No authentication required
-  - `privateProcedure`: Requires valid JWT token
-  - `adminProcedure`: Requires valid JWT token and admin role
-- **Error Handling**: Standardized tRPC error responses
-- **Role-Based Access Control**: Automatic role verification and access control
-- **Type Safety**: Full TypeScript integration
+### tRPC Procedures
+- `publicProcedure`: No authentication
+- `privateProcedure`: JWT required  
+- `adminProcedure`: JWT + admin role required
 
 ### API Endpoints
-- **Authentication Routes**: Complete auth system with JWT tokens
-  - `signup` - User registration with validation
-  - `signin` - User login with credential verification
-  - `logout` - Secure logout with token invalidation
-  - `me` - Get current user profile
-  - `refreshToken` - Automatic token refresh
-- **User Management Routes**: User profile management
-  - `updateProfile` - Update user profile information
-  - `changePassword` - Change user password
-  - `deleteAccount` - Delete user account
-- **Admin Management Routes**: Admin-only user management
-  - `getAllUsers` - Get all users with pagination and filtering
-  - `updateUserRole` - Update user roles (admin only)
-  - `deleteUser` - Delete any user (admin only)
-  - `getSystemStats` - Get system statistics and metrics
-- **Type Utility Routes**: Health checks and utility endpoints
+**Auth**: signup, signin, logout, me, refreshToken
+**User**: updateProfile, changePassword, deleteAccount  
+**Admin**: getAllUsers, updateUserRole, deleteUser, getSystemStats
+**Utils**: healthCheck, getAppInfo
 
-### Database Configuration (`src/config/`)
-- **MongoDB Connection**: Mongoose with connection pooling
-- **Error Handling**: Graceful connection error management
-- **Environment Variables**: Flexible configuration
-
-### Security Features
-- **JWT Authentication**: Access tokens (15min) + refresh tokens (7 days) with role information
-- **Role-Based Access Control (RBAC)**: Admin and user role separation
-- **Password Hashing**: bcryptjs with salt rounds
-- **CORS Configuration**: Secure cross-origin requests
-- **Input Validation**: Zod schema validation on all endpoints
-- **Token Management**: Secure token storage and rotation
-- **Admin Protection**: Admin-only procedures and route protection
+### Security
+- JWT (15min access + 7 day refresh tokens)
+- Role-based access control (USER/ADMIN)
+- Password hashing, CORS, Zod validation
 
 ## Frontend Architecture
 
-### Next.js 15 App Router
-- **Route Groups**: Organized by access level (protected/public)
-- **Server Components**: Optimized performance with SSR
-- **Client Components**: Interactive UI with state management
-- **Layout System**: Nested layouts for different sections
+### Route Groups
+- `(admin)`: Admin-only routes with role protection
+- `(protected)`: Authenticated user routes  
+- `(public)`: Public access (signin/signup)
 
-### Authentication System
-- **useAuth Hook**: Centralized authentication state with role information
-- **Protected Routes**: Automatic redirect for unauthenticated users
-- **Role-Based Guards**: Component-level role access control
-- **Token Management**: Automatic token refresh and storage with role data
-- **User Context**: Global user state management with role-based permissions
-- **Admin Access Control**: Admin-only routes and components
+### Authentication & Security
+- `useAuth` hook with role information
+- Automatic redirect for unauthorized access
+- Component-level role guards (`AdminOnly`, `RoleGuard`)
+- Automatic token refresh & storage
 
-### UI Components
-- **shadcn/ui**: Modern, accessible component library
-- **Responsive Design**: Mobile-first approach
-- **App Sidebar**: Professional navigation with user menu
-- **Mobile Support**: Responsive design with mobile navigation
+### UI & Data
+- **shadcn/ui** components with responsive design
+- **React Query** for caching & optimistic updates
+- **tRPC** for type-safe API calls
 
-### Data Fetching
-- **React Query**: Efficient caching and background updates
-- **tRPC Integration**: Type-safe API calls
-- **Optimistic Updates**: Better UX with immediate feedback
-- **Error Boundaries**: Graceful error handling
+## Page-Centric Modularization
 
-## Page-Centric Modularization Architecture
-
-The frontend implements a **page-centric modularization pattern** that organizes components, hooks, schemas, and utilities directly within each page directory. This approach provides excellent organization while keeping related code co-located and maintains clear boundaries between different features.
-
-### Modularization Pattern
-
-Each page follows a consistent directory structure:
+Each page uses a modular structure with clear separation:
 
 ```
 page-name/
-├── _components/     # Page-specific UI components
-├── _hooks/         # Page-specific custom hooks  
-├── _schema/        # Page-specific validation schemas (Zod)
+├── _components/     # Components used ONLY by this page
+├── _hooks/         # Hooks used ONLY by this page  
+├── _schema/        # Page-specific validation schemas
 ├── _utils/         # Page-specific utility functions
-├── _types/         # Page-specific TypeScript types (when needed)
-└── page.tsx        # Clean page component using modules
+├── _types/         # Page-specific TypeScript types
+└── page.tsx        # Clean composition using modules
 ```
 
-The underscore prefix (`_`) indicates private/internal modules that shouldn't be imported by other pages, following Next.js conventions for route organization.
+**Rule**: If a component/hook is used by multiple pages → use `src/components/` or `src/hooks/`  
+If only used by one page → use page's `_components/` or `_hooks/` directory
 
-### Smart Reusability Strategy
+### Benefits
+- **Localized Organization**: All page code stays within page directory
+- **Independent Development**: Teams can work on different pages without conflicts  
+- **Performance**: Better code splitting and lazy loading
+- **Maintainability**: Easy to locate page-specific logic and components
+- **Testing**: Page modules can be tested in isolation
 
-The architecture distinguishes between **page-specific** and **truly reusable** components using a smart reusability approach:
-
-#### Shared Components (`src/components/`)
-Components that are genuinely reusable across multiple pages:
-```typescript
-// src/components/forms/PasswordField.tsx - Used in signin, signup, change password
-<PasswordField
-  control={form.control}
-  name="password"
-  showPassword={showPassword}
-  onToggle={togglePassword}
-  forgotPasswordLink={<Link href="/forgot-password">Forgot?</Link>}
-/>
-```
-
-#### Shared Hooks (`src/hooks/`)
-Hooks with generic functionality used across multiple pages:
-```typescript
-// src/hooks/usePasswordToggle.ts - Used in signin, signup, profile
-export function usePasswordToggle() {
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePassword = () => setShowPassword(prev => !prev);
-  return { showPassword, togglePassword };
-}
-
-// For pages needing multiple password fields
-export function useMultiplePasswordToggle() {
-  // Handles password + confirm password visibility
-}
-```
-
-### Implementation Examples
-
-#### Modular Signup Page Structure
-```typescript
-// signup/page.tsx - Clean composition using modular components
-import { SignupForm, NameFields, SignupButton, ConfirmPasswordField } from './_components';
-import { useSignupForm, useSignupMutation } from './_hooks';
-import { PasswordField } from '@/components/forms'; // Shared component
-import { useMultiplePasswordToggle } from '@/hooks/usePasswordToggle'; // Shared hook
-
-function SignupPage() {
-  const form = useSignupForm();
-  const { handleSignup, isPending } = useSignupMutation();
-  const { showPassword, showConfirmPassword, togglePassword, toggleConfirmPassword } = useMultiplePasswordToggle();
-
-  return (
-    <AuthLayout>
-      <SignupForm form={form} onSubmit={handleSignup}>
-        <NameFields form={form} />
-        <PasswordField 
-          control={form.control} 
-          name="password" 
-          showPassword={showPassword}
-          onToggle={togglePassword}
-        />
-        <ConfirmPasswordField 
-          form={form} 
-          showPassword={showConfirmPassword} 
-          onToggle={toggleConfirmPassword} 
-        />
-        <SignupButton isPending={isPending} />
-      </SignupForm>
-    </AuthLayout>
-  );
-}
-```
-
-#### Page-Specific Hook Example
-```typescript
-// signup/_hooks/useSignupMutation.ts
-export function useSignupMutation() {
-  const router = useRouter();
-  const trpc = useTRPC();
-
-  const signupMutation = useMutation(
-    trpc.auth.signup.mutationOptions({
-      onSuccess: () => {
-        toast.success("Account created successfully");
-        router.push("/signin");
-      },
-      onError: (err) => {
-        toast.error("Registration failed", { description: err.message });
-      },
-    })
-  );
-
-  const handleSignup = (values: SignupFormData) => {
-    signupMutation.mutate({
-      email: values.email,
-      password: values.password,
-      first_name: values.first_name,
-      last_name: values.last_name,
-    });
-  };
-
-  return { signupMutation, handleSignup, isPending: signupMutation.isPending };
-}
-```
-
-#### Page-Specific Component Example
-```typescript
-// signup/_components/NameFields.tsx
-export function NameFields({ form }: { form: UseFormReturn<SignupFormData> }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <FormField
-        control={form.control}
-        name="first_name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>First Name</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder="John" autoComplete="given-name" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="last_name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Last Name</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder="Doe" autoComplete="family-name" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-  );
-}
-```
-
-### Benefits of Page-Centric Approach
-
-#### 1. **Localized Organization**
-- All page-related code stays within the page directory
-- Easy to find components specific to each page
-- Clear boundaries between different page features
-- Reduced cognitive load when working on specific pages
-
-#### 2. **Independent Development**
-- Teams can work on different pages without conflicts
-- Page-specific changes don't affect other pages
-- Easier to maintain and update individual pages
-- Faster development cycles for feature teams
-
-#### 3. **Performance Optimization**
-- Next.js automatically optimizes bundles per page
-- Components are loaded only when the page is accessed
-- Better code splitting and lazy loading
-- Reduced initial bundle size
-
-#### 4. **Maintainability**
-- Easy to locate page-specific logic and components
-- Components are purpose-built for their specific page
-- Reduced complexity compared to large shared component libraries
-- Clear separation of concerns
-
-#### 5. **Testing Benefits**
-- Page modules can be tested in isolation
-- Mock dependencies are clearer and more focused
-- Unit tests are more targeted and maintainable
-- Easier to achieve high test coverage
-
-### Migration Path from Monolithic Pages
-
-When refactoring existing monolithic pages to the modular pattern:
-
-1. **Analyze the page** - Identify reusable vs page-specific code
-2. **Extract schemas** - Move validation schemas to `_schema/`
-3. **Create hooks** - Extract business logic to `_hooks/`
-4. **Build components** - Break down UI into logical `_components/`
-5. **Add utilities** - Move helper functions to `_utils/`
-6. **Add types** - Create page-specific types in `_types/` if needed
-7. **Refactor page** - Create clean composition using modules
-8. **Test thoroughly** - Ensure all functionality works correctly
-
-### Naming Conventions and File Organization
-
-- **`_components/`** - UI components specific to the page
-- **`_hooks/`** - Custom React hooks for page business logic  
-- **`_schema/`** - Zod validation schemas for forms and data
-- **`_utils/`** - Utility functions and helpers
-- **`_types/`** - TypeScript interfaces and types
-- **`index.ts`** - Export files for clean imports and re-exports
-
-Each directory should include an `index.ts` file that exports all modules, enabling clean imports:
-
-```typescript
-// _components/index.ts
-export { SignupForm } from './SignupForm';
-export { NameFields } from './NameFields';
-export { SignupButton } from './SignupButton';
-export { ConfirmPasswordField } from './ConfirmPasswordField';
-
-// _hooks/index.ts
-export { useSignupForm } from './useSignupForm';
-export { useSignupMutation } from './useSignupMutation';
-// Re-export shared hooks for convenience
-export { useMultiplePasswordToggle } from '@/hooks/usePasswordToggle';
-```
-
-### Extension Points
-
-#### Adding New Pages with Modular Structure
-```bash
-# 1. Create page directory structure
-mkdir -p src/app/(protected)/settings/{_components,_hooks,_schema,_utils,_types}
-
-# 2. Create modular files
-touch src/app/(protected)/settings/_components/{SettingsForm,ProfileSection,SecuritySection,index}.tsx
-touch src/app/(protected)/settings/_hooks/{useSettingsForm,useUpdateProfile,index}.ts
-touch src/app/(protected)/settings/_schema/{settingsSchema,index}.ts
-touch src/app/(protected)/settings/_utils/{validation,index}.ts
-touch src/app/(protected)/settings/_types/{settings.types,index}.ts
-touch src/app/(protected)/settings/page.tsx
-```
-
-#### Adding Shared Components
-When a component is needed across multiple pages:
-```bash
-# 1. Create in shared components
-mkdir -p src/components/forms
-touch src/components/forms/{EmailField,PhoneField,index}.tsx
-
-# 2. Export from shared index
-# src/components/forms/index.ts
-export { EmailField } from "./EmailField";
-export { PhoneField } from "./PhoneField";
-export { PasswordField } from "./PasswordField"; // existing
-
-# 3. Use across pages
-import { EmailField, PasswordField } from "@/components/forms";
-```
-
-This page-centric modularization pattern transforms large, monolithic page files into clean, maintainable, and well-organized component systems while preserving the benefits of co-location and clear feature boundaries.
+### Pattern Usage
+- **Page-specific**: Components used only within one page (in `_components/`)
+- **Shared**: Components used across multiple pages (in `src/components/`)
+- Clean imports via `index.ts` files in each directory
 
 ## Development Workflow
 
 ### Quick Start
-1. **Clone and Setup**:
-   ```bash
-   cd template-folder
-   
-   # Backend setup
-   cd backend && npm install
-   
-   # Frontend setup
-   cd ../frontend && npm install
-   ```
-
-2. **Environment Configuration**:
-   ```bash
-   # Backend .env
-   DATABASE_URL=mongodb://localhost:27017/trpc-template
-   ACCESS_TOKEN_SECRET=your-access-token-secret
-   REFRESH_TOKEN_SECRET=your-refresh-token-secret
-   PORT=4000
-   FRONTEND_URL=http://localhost:3005
-   
-   # Frontend .env.local
-   NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
-   ```
-
-3. **Start Development**:
-   ```bash
-   # Terminal 1 - Backend
-   cd backend && npm run dev
-   
-   # Terminal 2 - Frontend
-   cd frontend && npm run dev
-   ```
-
-### Development Commands
-
-#### Backend
 ```bash
-npm run dev           # Development server with auto-reload
-npm run build         # Production build
-npm run build:types   # Generate TypeScript declarations
-npm run start         # Start production server
-npm run typecheck     # TypeScript type checking
-npm run lint          # ESLint code linting
+# Setup
+cd backend && npm install
+cd ../frontend && npm install
+
+# Environment Variables
+# Backend .env: DATABASE_URL, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, PORT, FRONTEND_URL
+# Frontend .env.local: NEXT_PUBLIC_BACKEND_URL
+
+# Start Development  
+cd backend && npm run dev    # Terminal 1
+cd frontend && npm run dev   # Terminal 2
 ```
 
-#### Frontend
-```bash
-npm run dev           # Development server (port 3005)
-npm run build         # Production build
-npm run start         # Start production server
-npm run lint          # Next.js linting
-npm run type-check    # TypeScript type checking
-```
+### Commands
+**Backend**: `dev`, `build`, `build:types`, `typecheck`, `lint`  
+**Frontend**: `dev`, `build`, `lint`, `type-check`
 
-## API Documentation
+## API Reference
+**Auth**: `auth.signup`, `auth.signin`, `auth.logout`, `auth.me`, `auth.refreshToken`  
+**User**: `user.updateProfile`, `user.changePassword`, `user.deleteAccount`  
+**Admin**: `admin.getAllUsers`, `admin.updateUserRole`, `admin.deleteUser`, `admin.getSystemStats`  
+**System**: `type.healthCheck`, `type.getAppInfo`
 
-### Authentication Endpoints
-- `POST /trpc/auth.signup` - User registration with default USER role
-- `POST /trpc/auth.signin` - User login with role information
-- `POST /trpc/auth.logout` - User logout
-- `GET /trpc/auth.me` - Get current user with role
-- `POST /trpc/auth.refreshToken` - Refresh JWT tokens
+## Deployment & Security
 
-### User Management
-- `PUT /trpc/user.updateProfile` - Update user profile
-- `PUT /trpc/user.changePassword` - Change password
-- `DELETE /trpc/user.deleteAccount` - Delete account
+### Deployment
+**Backend**: Railway, Heroku, DigitalOcean, AWS/GCP  
+**Frontend**: Vercel (recommended), Netlify, AWS Amplify
 
-### Admin Management (Admin Role Required)
-- `GET /trpc/admin.getAllUsers` - Get all users with pagination
-- `PUT /trpc/admin.updateUserRole` - Update user roles
-- `DELETE /trpc/admin.deleteUser` - Delete any user
-- `GET /trpc/admin.getSystemStats` - Get system statistics
+### Security Features
+- JWT with short-lived access tokens + refresh tokens
+- Role-based access control (USER/ADMIN separation)  
+- Password hashing with bcryptjs
+- Input validation with Zod schemas
+- CORS configuration for production
+- Secure token storage and session management
 
-### System Endpoints
-- `GET /health` - Server health check
-- `GET /trpc/type.healthCheck` - tRPC health check
-- `GET /trpc/type.getAppInfo` - Application information
+## Customization
 
-## Deployment Guide
+### Adding API Routes
+1. Create controller in `controllers/[feature]/` with Zod schema
+2. Create router in `routes/` using controller
+3. Add to main router, run `npm run build:types`
 
-### Backend Deployment
-1. **Environment Setup**:
-   - Configure production MongoDB URI
-   - Set secure JWT secrets
-   - Configure CORS for production frontend URL
+### Adding Pages  
+1. Create modular structure: `page/{_components,_hooks,_schema,_utils}`
+2. Use appropriate route group: `(admin)`, `(protected)`, or `(public)`
+3. Follow page-centric modularization pattern
 
-2. **Build and Deploy**:
-   ```bash
-   npm run build
-   npm run start
-   ```
+## Performance & Best Practices
 
-3. **Platform Options**:
-   - **Railway**: Easy deployment with database
-   - **Heroku**: Traditional PaaS deployment
-   - **DigitalOcean**: VPS deployment
-   - **AWS/GCP**: Cloud platform deployment
+### Optimizations
+**Backend**: Database indexing, connection pooling, response caching  
+**Frontend**: Code splitting, React Query caching, lazy loading
 
-### Frontend Deployment
-1. **Build Configuration**:
-   ```bash
-   # Update environment variables
-   NEXT_PUBLIC_BACKEND_URL=https://your-backend-domain.com
-   
-   # Build for production
-   npm run build
-   ```
+### Troubleshooting
+- **Connection Issues**: Check MongoDB URI, CORS settings, environment variables
+- **Type Errors**: Regenerate types with `npm run build:types`
+- **Auth Issues**: Verify token storage and JWT secrets
 
-2. **Platform Options**:
-   - **Vercel**: Optimal for Next.js (recommended)
-   - **Netlify**: Static site deployment
-   - **AWS Amplify**: Full-stack deployment
-   - **Custom VPS**: Self-hosted deployment
-
-## Security Considerations
-
-### Authentication Security
-- **JWT Best Practices**: Short-lived access tokens with refresh mechanism and role information
-- **Role-Based Access Control**: Strict separation between user and admin privileges
-- **Password Security**: bcryptjs with proper salt rounds
-- **Token Storage**: Secure client-side storage with automatic cleanup
-- **Session Management**: Proper logout and token invalidation
-- **Admin Security**: Protected admin routes and procedures with role verification
-
-### API Security
-- **Input Validation**: Zod schema validation on all endpoints
-- **Role Authorization**: Strict role-based access control on sensitive operations
-- **CORS Configuration**: Restricted origins for production
-- **Rate Limiting**: Consider implementing for production
-- **Error Handling**: Secure error messages without information leakage
-- **Admin Protection**: Additional security layers for admin operations
-
-## Customization Guide
-
-### Adding New API Routes
-1. Create new controller in `backend/src/controllers/[feature]/`
-2. Define schema and business logic in the controller
-3. Export controller from `backend/src/controllers/[feature]/index.ts`
-4. Create new router in `backend/src/routes/` that uses the controller
-5. Add route to main router in `backend/src/routes/index.ts`
-6. Generate types with `npm run build:types`
-7. Use in frontend with full type safety
-
-#### Example: Adding a new "posts" feature
-```typescript
-// 1. Create controller: controllers/posts/create.ts
-const createPostSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
-});
-
-export const createPost = async (input: z.infer<typeof createPostSchema>, user: User) => {
-  // Business logic here
-  return createdPost;
-};
-
-export { createPostSchema };
-
-// 2. Create route: routes/posts.ts
-export const postsRouter = router({
-  create: privateProcedure
-    .input(postsController.createPostSchema)
-    .mutation(async (opts) => {
-      return await postsController.createPost(opts.input, opts.ctx.user);
-    }),
-});
-
-// 3. Add to main router: routes/index.ts
-export const appRouter = router({
-  auth: authRouter,
-  user: userRouter,
-  type: typeRouter,
-  posts: postsRouter, // Add new router
-});
-```
-
-### Adding New Pages with Modular Structure
-Follow the page-centric modularization pattern:
-
-1. **Create modular page structure**:
-   ```bash
-   mkdir -p src/app/(protected)/new-feature/{_components,_hooks,_schema,_utils,_types}
-   touch src/app/(protected)/new-feature/page.tsx
-   ```
-
-2. **Implement page modules**:
-   ```typescript
-   // _schema/newFeatureSchema.ts
-   export const newFeatureSchema = z.object({
-     // validation schema
-   });
-
-   // _hooks/useNewFeatureMutation.ts
-   export function useNewFeatureMutation() {
-     // business logic
-   }
-
-   // _components/NewFeatureForm.tsx
-   export function NewFeatureForm() {
-     // UI component
-   }
-
-   // page.tsx - Clean composition
-   export default function NewFeaturePage() {
-     const form = useNewFeatureForm();
-     const { handleSubmit } = useNewFeatureMutation();
-     
-     return <NewFeatureForm form={form} onSubmit={handleSubmit} />;
-   }
-   ```
-
-3. **Add to sidebar navigation** if needed
-4. **Implement proper authentication guards** via route groups
-5. **Add responsive design considerations** in components
-
-### Extending User Model
-1. Update `backend/src/model/user.ts`
-2. Add validation to auth routes
-3. Update frontend types and forms
-4. Handle database migrations
-
-## Performance Optimizations
-
-### Backend Optimizations
-- **Database Indexing**: Optimize MongoDB queries
-- **Connection Pooling**: Mongoose connection management
-- **Response Caching**: Consider Redis for frequently accessed data
-- **Compression**: Enable gzip compression
-- **Health Monitoring**: Implement comprehensive logging
-
-### Frontend Optimizations
-- **Code Splitting**: Next.js automatic code splitting
-- **Image Optimization**: Next.js Image component
-- **Bundle Analysis**: Analyze and optimize bundle size
-- **Caching Strategy**: React Query caching configuration
-- **Lazy Loading**: Component-level lazy loading
-
-## Troubleshooting
-
-### Common Issues
-
-#### Backend Issues
-- **MongoDB Connection**: Check connection string and network access
-- **JWT Errors**: Verify token secrets and expiration times
-- **CORS Issues**: Ensure frontend URL is in allowed origins
-- **Port Conflicts**: Change PORT environment variable
-
-#### Frontend Issues
-- **tRPC Connection**: Verify NEXT_PUBLIC_BACKEND_URL
-- **Authentication**: Check token storage and expiration
-- **Hydration Issues**: Ensure client/server rendering consistency
-- **Build Errors**: Check TypeScript errors and dependencies
-
-#### Full-Stack Issues
-- **Type Mismatches**: Regenerate types with `npm run build:types`
-- **API Errors**: Check network tab and backend logs
-- **Environment Variables**: Verify all required variables are set
-- **Development vs Production**: Different configurations for each environment
-
-## Best Practices
-
-### Code Organization
-- **Feature-Based Structure**: Organize by feature, not by file type
-- **Consistent Naming**: Use clear, descriptive names
-- **Type Safety**: Leverage TypeScript throughout
-- **Error Handling**: Implement consistent error boundaries
-
-### Development Practices
-- **Git Workflow**: Use feature branches and pull requests
-- **Code Review**: Review all changes before merging
-- **Testing**: Add unit and integration tests
-- **Documentation**: Keep documentation updated
-
-### Production Readiness
-- **Environment Variables**: Never commit secrets
-- **Logging**: Implement comprehensive logging
-- **Monitoring**: Set up application monitoring
-- **Backup Strategy**: Regular database backups
+### Best Practices
+- Feature-based organization, consistent naming, full TypeScript usage
+- Git workflow with feature branches and code review
+- Never commit secrets, implement logging and monitoring
 
 ## Template Value Proposition
 
-This template provides:
-- **Zero Configuration**: Works out of the box with no setup required
-- **Modern Standards**: Latest patterns and best practices for 2024/2025
-- **Page-Centric Architecture**: Innovative modular organization that scales with your team
-- **Type Safety**: Full-stack TypeScript integration with tRPC 11.4
-- **Production Ready**: Scalable architecture with proper separation of concerns
-- **Developer Experience**: Excellent tooling, documentation, and development workflow
-- **Team Collaboration**: Clear boundaries that enable independent parallel development
-- **Extensibility**: Easy to customize and extend with consistent patterns
+**Zero configuration** modern full-stack template with **tRPC 11.4**, **Next.js 15**, and **role-based authentication**. Features page-centric modularization, full TypeScript safety, and production-ready architecture. Perfect for teams building type-safe web applications with admin functionality.
 
-Perfect for developers and teams who want to build modern, type-safe web applications with built-in admin functionality without spending time on boilerplate setup, while maintaining excellent code organization and team productivity.
+## Role-Based Access Control
 
-## Role-Based Access Control (RBAC)
+### Roles
+- **USER** (default): Access to protected routes
+- **ADMIN**: Full system access including user management
 
-### User Roles
-The template implements a comprehensive role-based access control system:
+### Implementation
+- **Route Groups**: `(admin)`, `(protected)`, `(public)`
+- **Frontend Guards**: `<AdminOnly>`, `<RoleGuard>`  
+- **Backend Procedures**: `publicProcedure`, `privateProcedure`, `adminProcedure`
 
-#### Available Roles
-- **USER** (default): Standard user with access to protected routes
-- **ADMIN**: Administrative user with full system access
-
-#### Role Implementation
-```typescript
-// Backend - User Model
-export enum UserRole {
-  USER = "user",
-  ADMIN = "admin",
-}
-
-// User assigned default role on registration
-@prop({
-  required: true,
-  enum: UserRole,
-  default: UserRole.USER,
-  type: String,
-  index: true,
-})
-public role: UserRole;
-```
-
-### Admin System Features
-
-#### Backend Admin Features
-- **User Management**: Full CRUD operations for user accounts
-- **Role Management**: Change user roles between USER and ADMIN
-- **System Statistics**: Monitor user counts, registrations, and activity
-- **Admin Procedures**: Special tRPC procedures requiring admin role
-
-#### Frontend Admin Features
-- **Admin Dashboard**: Comprehensive admin interface
-- **User Management UI**: View, edit, and delete users
-- **Role Guards**: Component-level access control
-- **Admin Navigation**: Separate navigation for admin users
-
-#### Admin API Endpoints
-```typescript
-// Get all users with pagination
-const users = await trpc.admin.getAllUsers.query({
-  page: 1,
-  limit: 10,
-  search: "john@example.com"
-});
-
-// Update user role
-const updatedUser = await trpc.admin.updateUserRole.mutate({
-  userId: "user_id",
-  role: UserRole.ADMIN
-});
-
-// Delete user
-const result = await trpc.admin.deleteUser.mutate({
-  userId: "user_id"
-});
-
-// Get system statistics
-const stats = await trpc.admin.getSystemStats.query();
-```
-
-### Role Guards and Protection
-
-#### Frontend Role Guards
-```typescript
-// AdminOnly component - restricts access to admin users
-<AdminOnly fallback={<div>Access denied</div>}>
-  <AdminDashboard />
-</AdminOnly>
-
-// RoleGuard component - flexible role-based access
-<RoleGuard roles={["admin", "user"]} fallback={<LoginPage />}>
-  <ProtectedContent />
-</RoleGuard>
-```
-
-#### Route-Level Protection
-- **`(admin)` route group**: Automatically protected for admin users only
-- **`(protected)` route group**: Protected for authenticated users
-- **`(public)` route group**: Open access routes
-
-#### Backend Procedures
-```typescript
-// Admin-only procedure
-export const adminProcedure = privateProcedure.use(async (opts) => {
-  if (opts.ctx.user.role !== UserRole.ADMIN) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Admin access required",
-    });
-  }
-  return opts.next({ ctx: { user: opts.ctx.user } });
-});
-```
-
-### Admin Dashboard Features
-
-#### System Overview
-- Total user count
-- New registrations (daily/weekly/monthly)
-- System health metrics
-- Recent user activity
-
-#### User Management
-- Search and filter users
-- View user profiles
-- Update user roles
-- Delete user accounts
-- Bulk operations
-
-#### Security Features
-- Audit logging for admin actions
-- Role change notifications
-- Secure admin session management
-- Admin activity tracking
+### Admin Features
+- User management (CRUD operations)
+- Role management and system statistics
+- Admin dashboard with comprehensive interface
+- Audit logging and session management
 
 ## Future Enhancements
-
-### Planned Features
-- **Testing Setup**: Jest and React Testing Library with role-based tests
-- **CI/CD Pipeline**: GitHub Actions workflows
-- **Docker Support**: Containerized deployment
-- **API Documentation**: OpenAPI/Swagger integration with role documentation
-- **Real-time Features**: WebSocket integration with admin notifications
-- **File Upload**: Image and file handling with admin controls
-- **Email Service**: Email verification and admin notifications
-- **Enhanced RBAC**: Multi-level permission system and custom roles
-- **Audit System**: Comprehensive logging and monitoring
-- **Advanced Admin Tools**: System configuration and monitoring
-
-This template serves as a solid foundation for building modern, scalable web applications with comprehensive admin functionality and role-based access control using the latest technologies and best practices.
+- Testing setup (Jest, React Testing Library)
+- CI/CD pipeline with GitHub Actions  
+- Docker support and API documentation
+- Real-time features and file upload
+- Enhanced RBAC and audit system

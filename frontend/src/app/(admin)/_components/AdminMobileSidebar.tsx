@@ -22,16 +22,16 @@ export function AdminMobileSidebar() {
 
       {/* Mobile Backdrop */}
       {sidebarOpen && (
-        <div
+        <button
+          type="button"
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          role="button"
-          tabIndex={0}
           onClick={() => setSidebarOpen(false)}
           onKeyDown={(e) => {
             if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
               setSidebarOpen(false);
             }
           }}
+          aria-label="Close sidebar"
         />
       )}
     </>

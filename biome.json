@@ -28,7 +28,8 @@
       },
       "suspicious": {
         "noDebugger": "warn",
-        "noConsole": "off"
+        "noConsole": "off",
+        "noDocumentCookie": "off"
       },
       "a11y": {
         "recommended": true

@@ -131,7 +131,7 @@ const Navigation = () => {
                 {/* Navigation Links */}
                 <div className="flex flex-col gap-3 mb-6">
                   {links.length > 0 ? (
-                    links.map((link, index) => (
+                    links.map((link, _index) => (
                       <Link
                         key={link.url}
                         href={link.url}

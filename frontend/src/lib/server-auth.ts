@@ -3,7 +3,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { getServerTrpcClient, serverTrpcCall } from "@/trpc/server";
 import type { UserRole } from "../../../backend/types/model/user";
-import { getServerAuthTokens, isServerAdmin, isServerAuthenticated } from "./server-auth-utils";
+import { isServerAdmin, isServerAuthenticated } from "./server-auth-utils";
 
 // Server-side authentication verification
 export async function requireAuth() {

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { clearAuthCookies, setAuthCookies } from "@/lib/auth-utils";
-import { getFromLocalStorage, removeFromLocalStorage, setToLocalStorage } from "@/lib/utils";
+import { getFromLocalStorage, removeFromLocalStorage } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
 export function useAuth() {

@@ -11,8 +11,8 @@ export function SystemOverview({ systemStats }: SystemOverviewProps) {
   if (!systemStats) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
-          <Card key={`loading-${i}`} className="animate-pulse">
+        {["users", "verified", "admins", "unverified"].map((type) => (
+          <Card key={`loading-${type}`} className="animate-pulse">
             <CardHeader>
               <div className="h-4 bg-muted rounded w-3/4"></div>
             </CardHeader>

@@ -16,7 +16,11 @@
 		"imports:check": "biome check src/",
 		"check": "biome check src/",
 		"check:fix": "biome check --write src/",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",
@@ -33,6 +37,7 @@
 		"@trpc/client": "^11.4.1",
 		"@trpc/server": "^11.4.1",
 		"@trpc/tanstack-react-query": "^11.4.1",
+		"@vitest/ui": "^3.2.4",
 		"autoprefixer": "^10.4.21",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -56,12 +61,19 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.1.4",
 		"@tailwindcss/postcss": "^4",
+		"@testing-library/jest-dom": "^6.6.4",
+		"@testing-library/react": "^16.3.0",
+		"@testing-library/user-event": "^14.6.1",
 		"@types/express": "^5.0.3",
 		"@types/node": "^24",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"@vitejs/plugin-react": "^5.0.0",
+		"happy-dom": "^18.0.1",
+		"jsdom": "^26.1.0",
 		"postcss": "^8",
 		"tailwindcss": "^4",
-		"typescript": "^5"
+		"typescript": "^5",
+		"vitest": "^3.2.4"
 	}
 }

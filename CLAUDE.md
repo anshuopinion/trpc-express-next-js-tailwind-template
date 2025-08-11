@@ -10,6 +10,7 @@ For detailed implementation guides, see the [docs/ folder](./docs/README.md):
 - **[Backend Architecture](./docs/architecture/backend.md)** - MVC pattern, controllers, security
 - **[Frontend Architecture](./docs/architecture/frontend.md)** - Next.js 15, route groups, authentication
 - **[Page Modularization](./docs/architecture/page-modularization.md)** - Page-centric organization patterns
+- **[Frontend Testing Guide](./docs/testing/frontend-testing.md)** - Vitest setup, patterns, and examples
 - **[Linting & Code Quality](./docs/development/linting.md)** - BiomeJS setup and rules
 
 *This file provides a quick reference overview. For comprehensive implementation details, consult the specific documentation files.*
@@ -50,6 +51,7 @@ template-folder/
 ## Technology Stack
 **Backend**: Express.js, tRPC 11.4, MongoDB, Typegoose, JWT (role-based auth), bcryptjs, Zod, BiomeJS
 **Frontend**: Next.js 15, React 19, TanStack React Query, shadcn/ui, Tailwind CSS v4, TypeScript, BiomeJS
+**Testing**: Vitest, React Testing Library, Happy DOM, @testing-library/jest-dom
 
 ## Modern tRPC Implementation
 - **tRPC 11.4** with React Query integration
@@ -125,7 +127,9 @@ Each page uses a modular structure with clear separation:
 ```
 page-name/
 ├── _components/     # Components used ONLY by this page
+│   └── __tests__/   # Component tests for this page
 ├── _hooks/         # Hooks used ONLY by this page  
+│   └── __tests__/   # Hook tests for this page
 ├── _schema/        # Page-specific validation schemas
 ├── _utils/         # Page-specific utility functions
 ├── _types/         # Page-specific TypeScript types
@@ -166,7 +170,7 @@ cd frontend && npm run dev   # Terminal 2
 
 ### Commands
 **Backend**: `dev`, `build`, `build:types`, `typecheck`, `lint`  
-**Frontend**: `dev`, `build`, `lint`, `type-check`
+**Frontend**: `dev`, `build`, `lint`, `type-check`, `test`, `test:watch`, `test:ui`, `test:coverage`
 
 ## API Reference
 **Auth**: `auth.signup`, `auth.signin`, `auth.logout`, `auth.me`, `auth.refreshToken`  

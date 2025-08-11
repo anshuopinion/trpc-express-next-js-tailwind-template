@@ -21,6 +21,7 @@ Complete documentation for the Modern tRPC Full-Stack Template with Next.js 15 a
 - **[Commands](./development/commands.md)** - All npm scripts and usage
 - **[Environment Setup](./development/environment.md)** - Environment variables guide
 - **[Linting & Code Quality](./development/linting.md)** - BiomeJS setup and rules
+- **[Frontend Testing](./testing/frontend-testing.md)** - Vitest setup, patterns, and examples ✅
 - **[Troubleshooting](./development/troubleshooting.md)** - Common issues and solutions
 
 ### 🚢 Deployment

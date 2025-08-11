@@ -1,143 +1,79 @@
 "use client";
-import * as z from "zod";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
 import Link from "next/link";
-import {useRouter} from "next/navigation";
-import {Card} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {EyeIcon, EyeOffIcon, Loader2} from "lucide-react";
 import AuthLayout from "@/layout/auth-layout/auth-layout";
-import {useTRPC} from "@/trpc/client";
-import {useMutation} from "@tanstack/react-query";
-import {toast} from "sonner";
-import {useState} from "react";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useAuth} from "@/hooks/useAuth";
+import { Input } from "@/components/ui/input";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { PasswordField } from "@/components/forms";
 
-// Create a schema for form validation
-const formSchema = z.object({
-	email: z.string().email("Please enter a valid email address"),
-	password: z.string().min(6, "Password must be at least 6 characters"),
-});
+// Import modular components and hooks
+import { SigninForm, LoginButton } from "./_components";
+import { useSigninForm, useSigninMutation, usePasswordToggle } from "./_hooks";
 
 function SigninPage() {
-	const router = useRouter();
-	const {login} = useAuth();
-	const [showPassword, setShowPassword] = useState(false);
-	const trpc = useTRPC();
+  // Use modular hooks
+  const form = useSigninForm();
+  const { handleSignin, isPending } = useSigninMutation();
+  const { showPassword, togglePassword } = usePasswordToggle();
 
-	// Define form with react-hook-form
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			email: "",
-			password: "",
-		},
-	});
+  return (
+    <AuthLayout>
+      <SigninForm form={form} onSubmit={handleSignin}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="name@example.com"
+                  autoComplete="email"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-	const signinUserMutation = useMutation(
-		trpc.auth.signin.mutationOptions({
-			onSuccess: data => {
-				login(data);
-				toast.success("Login successful", {
-					description: "Redirecting to scanner dashboard...",
-				});
-				router.replace("/dashboard");
-			},
-			onError: err => {
-				toast.error("Authentication failed", {
-					description: err.message,
-				});
-			},
-		})
-	);
+        <PasswordField
+          control={form.control}
+          name="password"
+          label="Password"
+          showPassword={showPassword}
+          onToggle={togglePassword}
+          forgotPasswordLink={
+            <Link
+              href="/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          }
+        />
 
-	// Form submission handler
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		signinUserMutation.mutate({
-			email: values.email,
-			password: values.password,
-		});
-	}
+        <LoginButton isPending={isPending} />
 
-	return (
-		<AuthLayout>
-			<Card className='min-h-[410px] flex-1 p-8 shadow-lg'>
-				<div className='space-y-6  max-w-md '>
-					<div className='text-center mb-6'>
-						<h1 className='text-2xl font-bold tracking-tight'>Welcome back to Stock Scanner</h1>
-						<p className='text-sm text-muted-foreground mt-1'>Sign in to access your scanner dashboard and monitor live market data</p>
-					</div>
-
-					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
-							<FormField
-								control={form.control}
-								name='email'
-								render={({field}) => (
-									<FormItem>
-										<FormLabel>Email</FormLabel>
-										<FormControl>
-											<Input {...field} placeholder='name@example.com' autoComplete='email' />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name='password'
-								render={({field}) => (
-									<FormItem>
-										<div className='flex items-center justify-between'>
-											<FormLabel>Password</FormLabel>
-											<Link href='/forgot-password' className='text-sm text-primary hover:underline'>
-												Forgot password?
-											</Link>
-										</div>
-										<FormControl>
-											<div className='relative'>
-												<Input {...field} type={showPassword ? "text" : "password"} placeholder='••••••••' autoComplete='current-password' className='pr-10' />
-												<button
-													type='button'
-													className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
-													onClick={() => setShowPassword(!showPassword)}
-												>
-													{showPassword ? <EyeOffIcon className='h-4 w-4' /> : <EyeIcon className='h-4 w-4' />}
-												</button>
-											</div>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<Button className='w-full font-medium' variant='default' type='submit' disabled={signinUserMutation.isPending}>
-								{signinUserMutation.isPending ? (
-									<>
-										<Loader2 className='mr-2 h-4 w-4 animate-spin' />
-										Signing in...
-									</>
-								) : (
-									"Sign in"
-								)}
-							</Button>
-
-							<div className='text-center text-sm'>
-								<span className='text-muted-foreground'>Don&apos;t have an account? </span>
-								<Link href='/signup' className='text-primary font-medium hover:underline'>
-									Create one now
-								</Link>
-							</div>
-						</form>
-					</Form>
-				</div>
-			</Card>
-		</AuthLayout>
-	);
+        <div className="text-center text-sm">
+          <span className="text-muted-foreground">
+            Don&apos;t have an account?{" "}
+          </span>
+          <Link
+            href="/signup"
+            className="text-primary font-medium hover:underline"
+          >
+            Create one now
+          </Link>
+        </div>
+      </SigninForm>
+    </AuthLayout>
+  );
 }
 
 export default SigninPage;

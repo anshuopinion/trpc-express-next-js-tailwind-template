@@ -11,13 +11,36 @@ backend/
 ├── src/
 │   ├── config/
 │   │   └── index.ts           # Database configuration
+│   ├── controllers/           # Business logic controllers (MVC pattern)
+│   │   ├── auth/              # Authentication controllers
+│   │   │   ├── index.ts       # Auth controller exports
+│   │   │   ├── signup.ts      # User registration logic
+│   │   │   ├── signin.ts      # User login logic
+│   │   │   ├── logout.ts      # Logout logic
+│   │   │   ├── me.ts          # Get user profile logic
+│   │   │   └── refresh.ts     # Token refresh logic
+│   │   ├── user/              # User management controllers
+│   │   │   ├── index.ts       # User controller exports
+│   │   │   ├── updateProfile.ts  # Profile update logic
+│   │   │   ├── changePassword.ts # Password change logic
+│   │   │   └── deleteAccount.ts  # Account deletion logic
+│   │   ├── type/              # Utility controllers
+│   │   │   ├── index.ts       # Type controller exports
+│   │   │   ├── appInfo.ts     # App information logic
+│   │   │   ├── environment.ts # Environment info logic
+│   │   │   ├── validateEmail.ts # Email validation logic
+│   │   │   └── healthCheck.ts # Health check logic
+│   │   └── index.ts           # Main controller exports
 │   ├── model/
 │   │   └── user.ts            # User model with Typegoose
-│   ├── routes/
+│   ├── routes/                # Clean tRPC route definitions
 │   │   ├── index.ts           # Router aggregation
-│   │   ├── auth.ts            # Authentication routes
-│   │   ├── user.ts            # User management routes
-│   │   └── type.ts            # Type utilities and health checks
+│   │   ├── auth.ts            # Authentication routes (use controllers)
+│   │   ├── user.ts            # User management routes (use controllers)
+│   │   └── type.ts            # Type utilities routes (use controllers)
+│   ├── services/              # Shared business services
+│   │   ├── auth.ts            # JWT token utilities
+│   │   └── password.ts        # Password hashing utilities
 │   ├── server.ts              # Express server setup
 │   └── trpc.ts                # tRPC configuration and context
 ├── types/                     # Generated TypeScript declarations
@@ -88,6 +111,88 @@ app.use(cors({
   ],
   credentials: true
 }));
+```
+
+## Architecture Patterns
+
+### MVC Controller Pattern
+The backend follows a clean Model-View-Controller (MVC) pattern with clear separation of concerns:
+
+#### Controllers (`src/controllers/`)
+- **Business Logic Layer**: All business logic is encapsulated in controllers
+- **Inline Schemas**: Each controller includes its own Zod validation schema
+- **Feature-Based Organization**: Controllers are organized by feature (auth, user, type)
+- **Reusable Functions**: Controllers can be used across different route types
+- **Easy Testing**: Isolated business logic for unit testing
+
+**Controller Structure Example:**
+```typescript
+// controllers/auth/signup.ts
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+
+const signupSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+});
+
+export const signup = async (input: z.infer<typeof signupSchema>) => {
+  // Business logic implementation
+  return result;
+};
+
+export { signupSchema };
+```
+
+#### Services (`src/services/`)
+- **Shared Utilities**: Common business services used across controllers
+- **JWT Token Management**: Token generation, validation, and refresh logic
+- **Password Utilities**: Hashing, comparison, and token management
+- **Database Operations**: Shared database interaction patterns
+
+**Service Example:**
+```typescript
+// services/auth.ts
+export const generateAccessToken = (userId: string, email: string) => {
+  return jwt.sign({ userId, email }, process.env.ACCESS_TOKEN_SECRET!, {
+    expiresIn: "15m",
+  });
+};
+
+export const getTokens = async (userId: string, email: string) => {
+  const [access_token, refresh_token] = await Promise.all([
+    generateAccessToken(userId, email),
+    generateRefreshToken(userId, email),
+  ]);
+  return { access_token, refresh_token, expires_at };
+};
+```
+
+#### Routes (`src/routes/`)
+- **Thin Route Layer**: Routes only handle tRPC setup and delegate to controllers
+- **Clean Separation**: No business logic in routes, only tRPC configuration
+- **Type Safety**: Full TypeScript integration with controller schemas
+
+**Route Structure Example:**
+```typescript
+// routes/auth.ts
+import { privateProcedure, publicProcedure, router } from "../trpc";
+import { authController } from "../controllers";
+
+export const authRouter = router({
+  signup: publicProcedure
+    .input(authController.signupSchema)
+    .mutation(async (opts) => {
+      return await authController.signup(opts.input);
+    }),
+    
+  me: privateProcedure.query(async (opts) => {
+    const user = opts.ctx.user;
+    return await authController.me(user);
+  }),
+});
 ```
 
 ## tRPC Configuration
@@ -518,26 +623,57 @@ describe('Auth Router', () => {
 
 ## Extending the Template
 
-### Adding New Routes
+### Adding New Routes with Controller Pattern
 ```typescript
-// 1. Create new router file
+// 1. Create controller
+// src/controllers/posts/create.ts
+import { z } from "zod";
+
+const createPostSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z.string().min(1, "Content is required"),
+});
+
+export const createPost = async (input: z.infer<typeof createPostSchema>, user: User) => {
+  // Business logic implementation
+  const post = await PostModel.create({
+    title: input.title,
+    content: input.content,
+    author: user.id,
+  });
+  
+  return post;
+};
+
+export { createPostSchema };
+
+// 2. Export from controller index
+// src/controllers/posts/index.ts
+export { createPost, createPostSchema } from "./create";
+export { getAllPosts } from "./getAll";
+
+// 3. Add to main controller exports
+// src/controllers/index.ts
+export * as postsController from "./posts";
+
+// 4. Create router using controller
 // src/routes/posts.ts
+import { privateProcedure, publicProcedure, router } from "../trpc";
+import { postsController } from "../controllers";
+
 export const postsRouter = router({
   getAll: publicProcedure.query(async () => {
-    // Implementation
+    return await postsController.getAllPosts();
   }),
   
   create: privateProcedure
-    .input(z.object({
-      title: z.string(),
-      content: z.string()
-    }))
+    .input(postsController.createPostSchema)
     .mutation(async (opts) => {
-      // Implementation
+      return await postsController.createPost(opts.input, opts.ctx.user);
     })
 });
 
-// 2. Add to main router
+// 5. Add to main router
 // src/routes/index.ts
 export const appRouter = router({
   auth: authRouter,

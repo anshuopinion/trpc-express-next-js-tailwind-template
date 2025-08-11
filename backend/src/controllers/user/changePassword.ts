@@ -1,0 +1,46 @@
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { UserModel } from "../../model/user";
+import { comparePassword, hashPassword } from "../../services/password";
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+});
+
+interface User {
+  id: string;
+}
+
+export const changePassword = async (
+  input: z.infer<typeof changePasswordSchema>,
+  user: User,
+) => {
+  const { currentPassword, newPassword } = input;
+
+  const dbUser = await UserModel.findById(user.id);
+  if (!dbUser) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  const passwordMatches = await comparePassword(
+    currentPassword,
+    dbUser.password,
+  );
+  if (!passwordMatches) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Current password is incorrect",
+    });
+  }
+
+  const hashedNewPassword = await hashPassword(newPassword);
+  await UserModel.findByIdAndUpdate(user.id, { password: hashedNewPassword });
+
+  return { message: "Password changed successfully" };
+};
+
+export { changePasswordSchema };

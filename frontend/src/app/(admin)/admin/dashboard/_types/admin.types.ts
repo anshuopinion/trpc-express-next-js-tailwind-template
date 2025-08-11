@@ -1,4 +1,7 @@
-import type { UserRole } from "../../../../../../backend/types/model/user";
+export enum UserRole {
+  ADMIN = "admin",
+  USER = "user",
+}
 
 export interface AdminUser {
   id: string;

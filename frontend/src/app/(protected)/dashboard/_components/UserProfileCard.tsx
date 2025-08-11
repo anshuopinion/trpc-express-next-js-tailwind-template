@@ -4,7 +4,7 @@ import type { User as UserType } from "../_types";
 import { formatFullName, formatUserInitials, getVerificationStatus } from "../_utils";
 
 interface UserProfileCardProps {
-  user: UserType | null;
+  user: UserType | null | undefined;
 }
 
 export function UserProfileCard({ user }: UserProfileCardProps) {

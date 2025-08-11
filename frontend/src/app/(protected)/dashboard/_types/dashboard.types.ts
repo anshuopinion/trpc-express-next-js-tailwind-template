@@ -28,7 +28,7 @@ export interface StatsCardProps {
 }
 
 export interface DashboardData {
-  user: User | null;
+  user: User | null | undefined;
   healthCheck: HealthCheck | null;
   appInfo: AppInfo | null;
 }

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { UserModel } from "../../../model/user";
+import { UserModel, UserRole } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
 import { getSystemStats } from "../getSystemStats";
 
@@ -33,25 +33,25 @@ describe("Admin Controller - GetSystemStats", () => {
     // Arrange - Create users with different roles and verification status
     await createTestUser({
       email: "user1@example.com",
-      role: "user",
+      role: UserRole.USER,
       is_email_verified: true,
     });
 
     await createTestUser({
       email: "user2@example.com",
-      role: "user",
+      role: UserRole.USER,
       is_email_verified: false,
     });
 
     await createTestUser({
       email: "admin1@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
       is_email_verified: true,
     });
 
     await createTestUser({
       email: "admin2@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
       is_email_verified: false,
     });
 
@@ -171,7 +171,7 @@ describe("Admin Controller - GetSystemStats", () => {
     // Verify timestamp is a valid ISO string
     expect(() => new Date(result.systemHealth.timestamp)).not.toThrow();
     expect(new Date(result.systemHealth.timestamp).toISOString()).toBe(
-      result.systemHealth.timestamp
+      result.systemHealth.timestamp,
     );
   });
 
@@ -209,24 +209,26 @@ describe("Admin Controller - GetSystemStats", () => {
     expect(result.totalUsers).toBe(5);
     expect(result.verifiedUsers).toBe(2);
     expect(result.unverifiedUsers).toBe(3);
-    expect(result.verifiedUsers + result.unverifiedUsers).toBe(result.totalUsers);
+    expect(result.verifiedUsers + result.unverifiedUsers).toBe(
+      result.totalUsers,
+    );
   });
 
   it("should handle all users being admins", async () => {
     // Arrange
     await createTestUser({
       email: "admin1@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
     });
 
     await createTestUser({
       email: "admin2@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
     });
 
     await createTestUser({
       email: "admin3@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
     });
 
     // Act
@@ -243,12 +245,12 @@ describe("Admin Controller - GetSystemStats", () => {
     // Arrange
     await createTestUser({
       email: "user1@example.com",
-      role: "user",
+      role: UserRole.USER,
     });
 
     await createTestUser({
       email: "user2@example.com",
-      role: "user",
+      role: UserRole.USER,
     });
 
     // Act
@@ -266,7 +268,7 @@ describe("Admin Controller - GetSystemStats", () => {
       email: "complete@example.com",
       first_name: "Complete",
       last_name: "User",
-      role: "admin",
+      role: UserRole.ADMIN,
       is_email_verified: true,
     });
 
@@ -355,7 +357,7 @@ describe("Admin Controller - GetSystemStats", () => {
     for (let i = 1; i <= 50; i++) {
       await createTestUser({
         email: `bulk${i}@example.com`,
-        role: i % 3 === 0 ? "admin" : "user", // Every 3rd user is admin
+        role: i % 3 === 0 ? UserRole.ADMIN : UserRole.USER, // Every 3rd user is admin
         is_email_verified: i % 2 === 0, // Every 2nd user is verified
       });
       // Small delay to ensure different timestamps

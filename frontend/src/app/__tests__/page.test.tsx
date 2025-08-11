@@ -16,12 +16,8 @@ describe("HomePage", () => {
   it("renders the main heading and description", () => {
     render(<HomePage />);
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Welcome to tRPC Template",
-    );
-    expect(
-      screen.getByText(/A modern, type-safe full-stack template/),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Welcome to tRPC Template");
+    expect(screen.getByText(/A modern, type-safe full-stack template/)).toBeInTheDocument();
   });
 
   it("renders navigation links with correct attributes", () => {
@@ -42,17 +38,13 @@ describe("HomePage", () => {
     const signInLink = screen.getByRole("link", { name: "Sign In" });
     const signUpLink = screen.getByRole("link", { name: "Sign Up" });
 
-    expect(signInLink).toHaveClass(
-      "bg-blue-600",
-      "hover:bg-blue-700",
-      "text-white",
-    );
+    expect(signInLink).toHaveClass("bg-blue-600", "hover:bg-blue-700", "text-white");
     expect(signUpLink).toHaveClass(
       "bg-white",
       "hover:bg-gray-50",
       "text-blue-600",
       "border-2",
-      "border-blue-600",
+      "border-blue-600"
     );
   });
 
@@ -60,67 +52,41 @@ describe("HomePage", () => {
     render(<HomePage />);
 
     // Modern Stack card
-    expect(
-      screen.getByRole("heading", { level: 3, name: "🚀 Modern Stack" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Built with Next.js 15, tRPC, React Query/),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "🚀 Modern Stack" })).toBeInTheDocument();
+    expect(screen.getByText(/Built with Next.js 15, tRPC, React Query/)).toBeInTheDocument();
 
     // Authentication card
     expect(
-      screen.getByRole("heading", { level: 3, name: "🔐 Authentication" }),
+      screen.getByRole("heading", { level: 3, name: "🔐 Authentication" })
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/JWT-based authentication with refresh tokens/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/JWT-based authentication with refresh tokens/)).toBeInTheDocument();
 
     // Responsive card
-    expect(
-      screen.getByRole("heading", { level: 3, name: "📱 Responsive" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Mobile-first design with Tailwind CSS/),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "📱 Responsive" })).toBeInTheDocument();
+    expect(screen.getByText(/Mobile-first design with Tailwind CSS/)).toBeInTheDocument();
   });
 
   it("has proper semantic structure", () => {
     render(<HomePage />);
 
     // Check main container
-    const mainContainer = screen
-      .getByText("Welcome to tRPC Template")
-      .closest("div");
+    const mainContainer = screen.getByText("Welcome to tRPC Template").closest("div");
     expect(mainContainer).toHaveClass("text-center");
 
     // Check feature grid exists
     const modernStackCard = screen.getByText("🚀 Modern Stack").closest("div");
-    expect(modernStackCard).toHaveClass(
-      "bg-white",
-      "rounded-lg",
-      "shadow-md",
-      "p-6",
-    );
+    expect(modernStackCard).toHaveClass("bg-white", "rounded-lg", "shadow-md", "p-6");
   });
 
   it("renders with responsive layout classes", () => {
     render(<HomePage />);
 
-    const container = screen
-      .getByText("Welcome to tRPC Template")
-      .closest(".container");
+    const container = screen.getByText("Welcome to tRPC Template").closest(".container");
     expect(container).toHaveClass("mx-auto", "px-4", "py-16");
 
     // Check grid responsive classes
-    const gridContainer = screen
-      .getByText("🚀 Modern Stack")
-      .closest("div")?.parentElement;
-    expect(gridContainer).toHaveClass(
-      "grid",
-      "grid-cols-1",
-      "md:grid-cols-3",
-      "gap-8",
-    );
+    const gridContainer = screen.getByText("🚀 Modern Stack").closest("div")?.parentElement;
+    expect(gridContainer).toHaveClass("grid", "grid-cols-1", "md:grid-cols-3", "gap-8");
   });
 
   it("has accessible heading hierarchy", () => {
@@ -147,7 +113,7 @@ describe("HomePage", () => {
       "min-h-screen",
       "bg-gradient-to-br",
       "from-blue-50",
-      "to-indigo-100",
+      "to-indigo-100"
     );
   });
 
@@ -155,9 +121,7 @@ describe("HomePage", () => {
     render(<HomePage />);
 
     // Check description spacing
-    const description = screen.getByText(
-      /A modern, type-safe full-stack template/,
-    );
+    const description = screen.getByText(/A modern, type-safe full-stack template/);
     expect(description).toHaveClass("text-xl", "text-gray-600", "mb-8");
 
     // Check button container spacing

@@ -1,10 +1,5 @@
 import { vi } from "vitest";
-import {
-  cn,
-  getFromLocalStorage,
-  removeFromLocalStorage,
-  setToLocalStorage,
-} from "../utils";
+import { cn, getFromLocalStorage, removeFromLocalStorage, setToLocalStorage } from "../utils";
 
 // Mock localStorage
 const mockLocalStorage = {
@@ -83,10 +78,7 @@ describe("Utils Functions", () => {
 
         setToLocalStorage("test-key", testString);
 
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-          "test-key",
-          testString,
-        );
+        expect(mockLocalStorage.setItem).toHaveBeenCalledWith("test-key", testString);
       });
     });
 

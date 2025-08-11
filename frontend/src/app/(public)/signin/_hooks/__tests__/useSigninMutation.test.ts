@@ -1,4 +1,4 @@
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
 import { useSigninMutation } from "../useSigninMutation";
 
@@ -88,12 +88,10 @@ describe("useSigninMutation", () => {
   it("handles successful signin correctly", async () => {
     let onSuccessCallback: (data: any) => void;
 
-    mockTrpcClient.auth.signin.mutationOptions.mockImplementation(
-      ({ onSuccess }) => {
-        onSuccessCallback = onSuccess;
-        return { mutationFn: vi.fn() };
-      },
-    );
+    mockTrpcClient.auth.signin.mutationOptions.mockImplementation(({ onSuccess }) => {
+      onSuccessCallback = onSuccess;
+      return { mutationFn: vi.fn() };
+    });
 
     renderHook(() => useSigninMutation());
 
@@ -118,12 +116,10 @@ describe("useSigninMutation", () => {
   it("handles signin error correctly", async () => {
     let onErrorCallback: (error: any) => void;
 
-    mockTrpcClient.auth.signin.mutationOptions.mockImplementation(
-      ({ onError }) => {
-        onErrorCallback = onError;
-        return { mutationFn: vi.fn() };
-      },
-    );
+    mockTrpcClient.auth.signin.mutationOptions.mockImplementation(({ onError }) => {
+      onErrorCallback = onError;
+      return { mutationFn: vi.fn() };
+    });
 
     renderHook(() => useSigninMutation());
 

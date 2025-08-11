@@ -5,13 +5,7 @@ import { LoginButton } from "../LoginButton";
 // Mock the UI components
 vi.mock("@/components/ui/button", () => ({
   Button: ({ children, disabled, type, className, variant, ...props }: any) => (
-    <button
-      type={type}
-      disabled={disabled}
-      className={className}
-      data-variant={variant}
-      {...props}
-    >
+    <button type={type} disabled={disabled} className={className} data-variant={variant} {...props}>
       {children}
     </button>
   ),

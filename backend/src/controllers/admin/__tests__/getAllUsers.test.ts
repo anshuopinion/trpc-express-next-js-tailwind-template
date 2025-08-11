@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { UserModel } from "../../../model/user";
+import { UserModel, UserRole } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
 import { getAllUsers } from "../getAllUsers";
 
@@ -74,21 +74,21 @@ describe("Admin Controller - GetAllUsers", () => {
     // Arrange - Create users with different roles
     await createTestUser({
       email: "user1@example.com",
-      role: "user",
+      role: UserRole.USER,
     });
 
     await createTestUser({
       email: "user2@example.com",
-      role: "user",
+      role: UserRole.USER,
     });
 
     await createTestUser({
       email: "admin1@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
     });
 
     const input = {
-      role: "user" as const,
+      role: UserRole.USER,
     };
 
     // Act
@@ -101,7 +101,7 @@ describe("Admin Controller - GetAllUsers", () => {
 
     // Test filtering by admin role
     const adminInput = {
-      role: "admin" as const,
+      role: UserRole.ADMIN,
     };
 
     const adminResult = await getAllUsers(adminInput);
@@ -119,7 +119,7 @@ describe("Admin Controller - GetAllUsers", () => {
       password: "hashedpassword123",
       refresh_token: "sensitive-refresh-token",
       verify_token: "sensitive-verify-token",
-      role: "user",
+      role: UserRole.USER,
       is_email_verified: false,
     });
 
@@ -280,7 +280,7 @@ describe("Admin Controller - GetAllUsers", () => {
   it("should throw validation error for invalid role", async () => {
     // Arrange
     const input = {
-      role: "invalid_role" as "user" | "admin", // Invalid role
+      role: "invalid_role" as UserRole, // Invalid role
     };
 
     // Act & Assert
@@ -360,20 +360,20 @@ describe("Admin Controller - GetAllUsers", () => {
     for (let i = 1; i <= 10; i++) {
       await createTestUser({
         email: `user${i}@example.com`,
-        role: "user",
+        role: UserRole.USER,
       });
     }
 
     for (let i = 1; i <= 3; i++) {
       await createTestUser({
         email: `admin${i}@example.com`,
-        role: "admin",
+        role: UserRole.ADMIN,
       });
     }
 
     // Test user filtering with pagination
     const userInput = {
-      role: "user" as const,
+      role: UserRole.USER,
       page: 2,
       limit: 3,
     };

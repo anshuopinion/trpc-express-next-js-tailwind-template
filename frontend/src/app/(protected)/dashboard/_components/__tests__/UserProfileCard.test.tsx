@@ -57,7 +57,7 @@ vi.mock("../_utils", () => ({
           status: "unverified",
           label: "Unverified Account",
           color: "text-yellow-600",
-        },
+        }
   ),
 }));
 
@@ -109,7 +109,7 @@ describe("UserProfileCard", () => {
       "items-center",
       "justify-between",
       "space-y-0",
-      "pb-2",
+      "pb-2"
     );
   });
 
@@ -142,7 +142,7 @@ describe("UserProfileCard", () => {
       "flex",
       "items-center",
       "justify-center",
-      "mr-2",
+      "mr-2"
     );
   });
 
@@ -262,12 +262,8 @@ describe("UserProfileCard", () => {
 
     render(<UserProfileCard user={userWithLongNames} />);
 
-    expect(
-      screen.getByText(/VeryLongFirstNameThatMightCauseLayoutIssues/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("verylongemailaddress@verylongdomainname.com"),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/VeryLongFirstNameThatMightCauseLayoutIssues/)).toBeInTheDocument();
+    expect(screen.getByText("verylongemailaddress@verylongdomainname.com")).toBeInTheDocument();
   });
 
   it("maintains consistent component structure", () => {
@@ -316,11 +312,6 @@ describe("UserProfileCard", () => {
     render(<UserProfileCard user={mockUser} />);
 
     const initialsSpan = screen.getByText("JD");
-    expect(initialsSpan.parentElement).toHaveClass(
-      "w-8",
-      "h-8",
-      "bg-primary/10",
-      "rounded-full",
-    );
+    expect(initialsSpan.parentElement).toHaveClass("w-8", "h-8", "bg-primary/10", "rounded-full");
   });
 });

@@ -1,40 +1,26 @@
 import { render, screen } from "@testing-library/react";
-import { vi } from "vitest";
 import { useForm } from "react-hook-form";
-import { NameFields } from "../NameFields";
+import { vi } from "vitest";
 import type { SignupFormData } from "../../_schema";
+import { NameFields } from "../NameFields";
 
 // Mock the form components
 vi.mock("@/components/ui/form", () => ({
-  FormControl: ({ children }: any) => (
-    <div data-testid="form-control">{children}</div>
-  ),
-  FormField: ({ render }: any) =>
-    render({ field: { value: "", onChange: vi.fn() } }),
-  FormItem: ({ children }: any) => (
-    <div data-testid="form-item">{children}</div>
-  ),
-  FormLabel: ({ children }: any) => (
-    <label data-testid="form-label">{children}</label>
-  ),
+  FormControl: ({ children }: any) => <div data-testid="form-control">{children}</div>,
+  FormField: ({ render }: any) => render({ field: { value: "", onChange: vi.fn() } }),
+  FormItem: ({ children }: any) => <div data-testid="form-item">{children}</div>,
+  FormLabel: ({ children }: any) => <label data-testid="form-label">{children}</label>,
   FormMessage: () => <div data-testid="form-message" />,
 }));
 
 vi.mock("@/components/ui/input", () => ({
   Input: (props: any) => (
-    <input
-      data-testid={`${props.placeholder?.toLowerCase()}-input`}
-      {...props}
-    />
+    <input data-testid={`${props.placeholder?.toLowerCase()}-input`} {...props} />
   ),
 }));
 
 describe("NameFields", () => {
-  const TestWrapper = ({
-    defaultValues,
-  }: {
-    defaultValues?: Partial<SignupFormData>;
-  }) => {
+  const TestWrapper = ({ defaultValues }: { defaultValues?: Partial<SignupFormData> }) => {
     const form = useForm<SignupFormData>({
       defaultValues: {
         first_name: "",
@@ -76,15 +62,8 @@ describe("NameFields", () => {
   it("has proper grid layout structure", () => {
     render(<TestWrapper />);
 
-    const container = screen
-      .getByText("First Name")
-      .closest("div")?.parentElement;
-    expect(container).toHaveClass(
-      "grid",
-      "grid-cols-1",
-      "md:grid-cols-2",
-      "gap-4",
-    );
+    const container = screen.getByText("First Name").closest("div")?.parentElement;
+    expect(container).toHaveClass("grid", "grid-cols-1", "md:grid-cols-2", "gap-4");
   });
 
   it("renders form items and controls correctly", () => {
@@ -100,11 +79,7 @@ describe("NameFields", () => {
   });
 
   it("integrates with form context correctly", () => {
-    render(
-      <TestWrapper
-        defaultValues={{ first_name: "Alice", last_name: "Smith" }}
-      />,
-    );
+    render(<TestWrapper defaultValues={{ first_name: "Alice", last_name: "Smith" }} />);
 
     // Since we're mocking FormField, we can verify the structure is correct
     expect(screen.getByText("First Name")).toBeInTheDocument();
@@ -115,9 +90,7 @@ describe("NameFields", () => {
     render(<TestWrapper />);
 
     // Check the grid container
-    const gridContainer = screen
-      .getByText("First Name")
-      .closest("div")?.parentElement;
+    const gridContainer = screen.getByText("First Name").closest("div")?.parentElement;
     expect(gridContainer).toHaveClass("grid-cols-1");
     expect(gridContainer).toHaveClass("md:grid-cols-2");
     expect(gridContainer).toHaveClass("gap-4");

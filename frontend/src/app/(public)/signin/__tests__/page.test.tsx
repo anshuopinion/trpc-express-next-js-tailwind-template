@@ -22,17 +22,10 @@ vi.mock("@/components/forms", () => ({
 }));
 
 vi.mock("@/components/ui/form", () => ({
-  FormControl: ({ children }: any) => (
-    <div data-testid="form-control">{children}</div>
-  ),
-  FormField: ({ render }: any) =>
-    render({ field: { value: "", onChange: vi.fn() } }),
-  FormItem: ({ children }: any) => (
-    <div data-testid="form-item">{children}</div>
-  ),
-  FormLabel: ({ children }: any) => (
-    <label data-testid="form-label">{children}</label>
-  ),
+  FormControl: ({ children }: any) => <div data-testid="form-control">{children}</div>,
+  FormField: ({ render }: any) => render({ field: { value: "", onChange: vi.fn() } }),
+  FormItem: ({ children }: any) => <div data-testid="form-item">{children}</div>,
+  FormLabel: ({ children }: any) => <label data-testid="form-label">{children}</label>,
   FormMessage: () => <div data-testid="form-message" />,
 }));
 
@@ -42,9 +35,7 @@ vi.mock("@/components/ui/input", () => ({
 
 vi.mock("@/layout/auth-layout/auth-layout", () => ({
   __esModule: true,
-  default: ({ children }: any) => (
-    <div data-testid="auth-layout">{children}</div>
-  ),
+  default: ({ children }: any) => <div data-testid="auth-layout">{children}</div>,
 }));
 
 vi.mock("../_components", () => ({
@@ -54,11 +45,7 @@ vi.mock("../_components", () => ({
     </button>
   ),
   SigninForm: ({ children, form, onSubmit }: any) => (
-    <div
-      data-testid="signin-form"
-      data-form={JSON.stringify(form)}
-      data-onsubmit={!!onSubmit}
-    >
+    <div data-testid="signin-form" data-form={JSON.stringify(form)} data-onsubmit={!!onSubmit}>
       {children}
     </div>
   ),
@@ -114,14 +101,8 @@ describe("SigninPage", () => {
 
     expect(screen.getByTestId("form-label")).toHaveTextContent("Email");
     expect(screen.getByTestId("email-input")).toBeInTheDocument();
-    expect(screen.getByTestId("email-input")).toHaveAttribute(
-      "placeholder",
-      "name@example.com",
-    );
-    expect(screen.getByTestId("email-input")).toHaveAttribute(
-      "autoComplete",
-      "email",
-    );
+    expect(screen.getByTestId("email-input")).toHaveAttribute("placeholder", "name@example.com");
+    expect(screen.getByTestId("email-input")).toHaveAttribute("autoComplete", "email");
   });
 
   it("renders password field with toggle functionality", () => {
@@ -161,11 +142,7 @@ describe("SigninPage", () => {
     render(<SigninPage />);
 
     const signupLink = screen.getByRole("link", { name: "Create one now" });
-    expect(signupLink).toHaveClass(
-      "text-primary",
-      "font-medium",
-      "hover:underline",
-    );
+    expect(signupLink).toHaveClass("text-primary", "font-medium", "hover:underline");
   });
 
   it("uses hooks correctly", () => {
@@ -199,9 +176,7 @@ describe("SigninPage", () => {
   it("renders text content with proper styling", () => {
     render(<SigninPage />);
 
-    const textContainer = screen.getByText(
-      /Don't have an account?/,
-    ).parentElement;
+    const textContainer = screen.getByText(/Don't have an account?/).parentElement;
     expect(textContainer).toHaveClass("text-center", "text-sm");
 
     const mutedText = screen.getByText(/Don't have an account?/);

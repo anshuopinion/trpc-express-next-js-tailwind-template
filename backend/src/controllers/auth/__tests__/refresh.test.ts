@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { UserModel } from "../../../model/user";
+import { UserModel, UserRole } from "../../../model/user";
 import { hashPassword } from "../../../services/password";
 import { createTestUser } from "../../../test-utils";
 import { refreshToken } from "../refresh";
@@ -59,7 +59,7 @@ describe("Auth Controller - RefreshToken", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid refresh token",
-      })
+      }),
     );
   });
 
@@ -83,7 +83,7 @@ describe("Auth Controller - RefreshToken", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid refresh token",
-      })
+      }),
     );
   });
 
@@ -104,7 +104,7 @@ describe("Auth Controller - RefreshToken", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid refresh token",
-      })
+      }),
     );
   });
 
@@ -164,7 +164,7 @@ describe("Auth Controller - RefreshToken", () => {
 
     const { user: adminUser } = await createTestUser({
       email: "admin@example.com",
-      role: "admin",
+      role: UserRole.ADMIN,
       refresh_token: hashedAdminToken,
     });
 

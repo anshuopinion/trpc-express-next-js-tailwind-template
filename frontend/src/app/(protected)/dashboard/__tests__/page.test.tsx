@@ -49,9 +49,7 @@ vi.mock("../_components", () => ({
     </div>
   ),
   ServerStatusCard: ({ healthCheck }: any) => (
-    <div data-testid="server-status-card">
-      Server Status - {healthCheck?.status}
-    </div>
+    <div data-testid="server-status-card">Server Status - {healthCheck?.status}</div>
   ),
   AppInfoCard: ({ appInfo }: any) => (
     <div data-testid="app-info-card">App Info - {appInfo?.name}</div>
@@ -71,13 +69,9 @@ describe("DashboardPage", () => {
   it("renders dashboard title and description", () => {
     render(<DashboardPage />);
 
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
-      "Dashboard",
-    );
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Dashboard");
     expect(screen.getByText(/Welcome back, John!/)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Here's your tRPC template dashboard/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Here's your tRPC template dashboard/)).toBeInTheDocument();
   });
 
   it("applies correct CSS classes to main container", () => {
@@ -121,7 +115,7 @@ describe("DashboardPage", () => {
       "md:grid-cols-2",
       "lg:grid-cols-3",
       "gap-6",
-      "mb-8",
+      "mb-8"
     );
   });
 
@@ -165,11 +159,9 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     expect(
-      screen.getByText(/Welcome back,.*! Here's your tRPC template dashboard/),
+      screen.getByText(/Welcome back,.*! Here's your tRPC template dashboard/)
     ).toBeInTheDocument();
-    expect(screen.getByTestId("welcome-section")).toHaveTextContent(
-      "Welcome Section -",
-    );
+    expect(screen.getByTestId("welcome-section")).toHaveTextContent("Welcome Section -");
   });
 
   it("handles null user gracefully", () => {
@@ -178,7 +170,7 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     expect(
-      screen.getByText(/Welcome back,.*! Here's your tRPC template dashboard/),
+      screen.getByText(/Welcome back,.*! Here's your tRPC template dashboard/)
     ).toBeInTheDocument();
     const welcomeSection = screen.getByTestId("welcome-section");
     expect(welcomeSection).toHaveTextContent("Welcome Section -");
@@ -193,12 +185,8 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     expect(screen.getByText("Error loading dashboard")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Failed to load dashboard data/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Please try refreshing the page/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Failed to load dashboard data/)).toBeInTheDocument();
+    expect(screen.getByText(/Please try refreshing the page/)).toBeInTheDocument();
   });
 
   it("applies correct CSS classes to error state", () => {
@@ -209,34 +197,17 @@ describe("DashboardPage", () => {
 
     render(<DashboardPage />);
 
-    const errorContainer = screen
-      .getByText("Error loading dashboard")
-      .closest("div");
-    expect(errorContainer?.parentElement).toHaveClass(
-      "flex",
-      "flex-1",
-      "flex-col",
-      "gap-4",
-    );
+    const errorContainer = screen.getByText("Error loading dashboard").closest("div");
+    expect(errorContainer?.parentElement).toHaveClass("flex", "flex-1", "flex-col", "gap-4");
 
-    const errorContent = screen.getByText(
-      "Error loading dashboard",
-    ).parentElement;
+    const errorContent = screen.getByText("Error loading dashboard").parentElement;
     expect(errorContent).toHaveClass("text-center", "py-8");
 
     const errorTitle = screen.getByText("Error loading dashboard");
-    expect(errorTitle).toHaveClass(
-      "text-lg",
-      "font-semibold",
-      "text-destructive",
-    );
+    expect(errorTitle).toHaveClass("text-lg", "font-semibold", "text-destructive");
 
     const errorDescription = screen.getByText(/Failed to load dashboard data/);
-    expect(errorDescription).toHaveClass(
-      "text-sm",
-      "text-muted-foreground",
-      "mt-1",
-    );
+    expect(errorDescription).toHaveClass("text-sm", "text-muted-foreground", "mt-1");
   });
 
   it("does not render dashboard components when in error state", () => {
@@ -305,11 +276,7 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     const gridContainer = screen.getByTestId("user-profile-card").parentElement;
-    expect(gridContainer).toHaveClass(
-      "grid-cols-1",
-      "md:grid-cols-2",
-      "lg:grid-cols-3",
-    );
+    expect(gridContainer).toHaveClass("grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3");
   });
 
   it("renders all dashboard sections in correct order", () => {
@@ -321,12 +288,8 @@ describe("DashboardPage", () => {
 
     // Should have title section, grid section, and welcome section
     expect(children).toHaveLength(3);
-    expect(children[0]).toContainElement(
-      screen.getByRole("heading", { level: 2 }),
-    );
-    expect(children[1]).toContainElement(
-      screen.getByTestId("user-profile-card"),
-    );
+    expect(children[0]).toContainElement(screen.getByRole("heading", { level: 2 }));
+    expect(children[1]).toContainElement(screen.getByTestId("user-profile-card"));
     expect(children[2]).toContainElement(screen.getByTestId("welcome-section"));
   });
 

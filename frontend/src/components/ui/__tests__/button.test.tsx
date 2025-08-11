@@ -1,6 +1,6 @@
-import { vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
 import { Button } from "../button";
 
 describe("Button Component", () => {
@@ -15,12 +15,7 @@ describe("Button Component", () => {
     render(<Button>Default Button</Button>);
 
     const button = screen.getByRole("button");
-    expect(button).toHaveClass(
-      "bg-primary",
-      "text-primary-foreground",
-      "h-9",
-      "px-4",
-    );
+    expect(button).toHaveClass("bg-primary", "text-primary-foreground", "h-9", "px-4");
   });
 
   it("applies custom variant classes", () => {
@@ -54,17 +49,14 @@ describe("Button Component", () => {
 
     const button = screen.getByRole("button");
     expect(button).toBeDisabled();
-    expect(button).toHaveClass(
-      "disabled:opacity-50",
-      "disabled:pointer-events-none",
-    );
+    expect(button).toHaveClass("disabled:opacity-50", "disabled:pointer-events-none");
   });
 
   it("renders as child component when asChild is true", () => {
     render(
       <Button asChild>
         <a href="/test">Link Button</a>
-      </Button>,
+      </Button>
     );
 
     const link = screen.getByRole("link", { name: "Link Button" });

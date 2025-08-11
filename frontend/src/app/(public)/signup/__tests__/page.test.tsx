@@ -21,17 +21,10 @@ vi.mock("@/components/forms", () => ({
 }));
 
 vi.mock("@/components/ui/form", () => ({
-  FormControl: ({ children }: any) => (
-    <div data-testid="form-control">{children}</div>
-  ),
-  FormField: ({ render }: any) =>
-    render({ field: { value: "", onChange: vi.fn() } }),
-  FormItem: ({ children }: any) => (
-    <div data-testid="form-item">{children}</div>
-  ),
-  FormLabel: ({ children }: any) => (
-    <label data-testid="form-label">{children}</label>
-  ),
+  FormControl: ({ children }: any) => <div data-testid="form-control">{children}</div>,
+  FormField: ({ render }: any) => render({ field: { value: "", onChange: vi.fn() } }),
+  FormItem: ({ children }: any) => <div data-testid="form-item">{children}</div>,
+  FormLabel: ({ children }: any) => <label data-testid="form-label">{children}</label>,
   FormMessage: () => <div data-testid="form-message" />,
 }));
 
@@ -41,29 +34,21 @@ vi.mock("@/components/ui/input", () => ({
 
 vi.mock("@/layout/auth-layout/auth-layout", () => ({
   __esModule: true,
-  default: ({ children }: any) => (
-    <div data-testid="auth-layout">{children}</div>
-  ),
+  default: ({ children }: any) => <div data-testid="auth-layout">{children}</div>,
 }));
 
 vi.mock("../_components", () => ({
   ConfirmPasswordField: ({ form }: any) => (
     <div data-testid="confirm-password-field">Confirm Password Field</div>
   ),
-  NameFields: ({ form }: any) => (
-    <div data-testid="name-fields">Name Fields</div>
-  ),
+  NameFields: ({ form }: any) => <div data-testid="name-fields">Name Fields</div>,
   SignupButton: ({ isPending }: any) => (
     <button data-testid="signup-button" disabled={isPending}>
       {isPending ? "Creating account..." : "Create account"}
     </button>
   ),
   SignupForm: ({ children, form, onSubmit }: any) => (
-    <div
-      data-testid="signup-form"
-      data-form={JSON.stringify(form)}
-      data-onsubmit={!!onSubmit}
-    >
+    <div data-testid="signup-form" data-form={JSON.stringify(form)} data-onsubmit={!!onSubmit}>
       {children}
     </div>
   ),
@@ -125,14 +110,8 @@ describe("SignupPage", () => {
     expect(screen.getByTestId("form-label")).toHaveTextContent("Email");
     expect(screen.getByTestId("email-input")).toBeInTheDocument();
     expect(screen.getByTestId("email-input")).toHaveAttribute("type", "email");
-    expect(screen.getByTestId("email-input")).toHaveAttribute(
-      "placeholder",
-      "name@example.com",
-    );
-    expect(screen.getByTestId("email-input")).toHaveAttribute(
-      "autoComplete",
-      "email",
-    );
+    expect(screen.getByTestId("email-input")).toHaveAttribute("placeholder", "name@example.com");
+    expect(screen.getByTestId("email-input")).toHaveAttribute("autoComplete", "email");
   });
 
   it("renders password field with toggle functionality", () => {
@@ -153,9 +132,7 @@ describe("SignupPage", () => {
     render(<SignupPage />);
 
     expect(screen.getByTestId("signup-button")).toBeInTheDocument();
-    expect(screen.getByTestId("signup-button")).toHaveTextContent(
-      "Create account",
-    );
+    expect(screen.getByTestId("signup-button")).toHaveTextContent("Create account");
   });
 
   it("renders signin link", () => {
@@ -172,11 +149,7 @@ describe("SignupPage", () => {
     render(<SignupPage />);
 
     const signinLink = screen.getByRole("link", { name: "Sign in" });
-    expect(signinLink).toHaveClass(
-      "text-primary",
-      "font-medium",
-      "hover:underline",
-    );
+    expect(signinLink).toHaveClass("text-primary", "font-medium", "hover:underline");
   });
 
   it("uses hooks correctly", () => {
@@ -201,9 +174,7 @@ describe("SignupPage", () => {
   it("renders text content with proper styling", () => {
     render(<SignupPage />);
 
-    const textContainer = screen.getByText(
-      /Already have an account?/,
-    ).parentElement;
+    const textContainer = screen.getByText(/Already have an account?/).parentElement;
     expect(textContainer).toHaveClass("text-center", "text-sm");
 
     const mutedText = screen.getByText(/Already have an account?/);

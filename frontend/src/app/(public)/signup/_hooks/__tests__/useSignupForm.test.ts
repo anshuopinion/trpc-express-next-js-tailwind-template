@@ -138,7 +138,7 @@ describe("useSignupForm", () => {
         control: expect.any(Object),
         handleSubmit: expect.any(Function),
         formState: expect.any(Object),
-      }),
+      })
     );
   });
 });

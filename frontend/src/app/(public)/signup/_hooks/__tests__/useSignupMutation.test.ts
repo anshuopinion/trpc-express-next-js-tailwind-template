@@ -1,4 +1,4 @@
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
 import { useSignupMutation } from "../useSignupMutation";
 
@@ -83,12 +83,10 @@ describe("useSignupMutation", () => {
   it("handles successful signup correctly", async () => {
     let onSuccessCallback: () => void;
 
-    mockTrpcClient.auth.signup.mutationOptions.mockImplementation(
-      ({ onSuccess }) => {
-        onSuccessCallback = onSuccess;
-        return { mutationFn: vi.fn() };
-      },
-    );
+    mockTrpcClient.auth.signup.mutationOptions.mockImplementation(({ onSuccess }) => {
+      onSuccessCallback = onSuccess;
+      return { mutationFn: vi.fn() };
+    });
 
     renderHook(() => useSignupMutation());
 
@@ -116,12 +114,10 @@ describe("useSignupMutation", () => {
   it("handles signup error correctly", async () => {
     let onErrorCallback: (error: any) => void;
 
-    mockTrpcClient.auth.signup.mutationOptions.mockImplementation(
-      ({ onError }) => {
-        onErrorCallback = onError;
-        return { mutationFn: vi.fn() };
-      },
-    );
+    mockTrpcClient.auth.signup.mutationOptions.mockImplementation(({ onError }) => {
+      onErrorCallback = onError;
+      return { mutationFn: vi.fn() };
+    });
 
     renderHook(() => useSignupMutation());
 
@@ -253,19 +249,17 @@ describe("useSignupMutation", () => {
     expect(mockMutate).not.toHaveBeenCalledWith(
       expect.objectContaining({
         confirmPassword: expect.anything(),
-      }),
+      })
     );
   });
 
   it("handles successful redirect after signup", async () => {
     let onSuccessCallback: () => void;
 
-    mockTrpcClient.auth.signup.mutationOptions.mockImplementation(
-      ({ onSuccess }) => {
-        onSuccessCallback = onSuccess;
-        return { mutationFn: vi.fn() };
-      },
-    );
+    mockTrpcClient.auth.signup.mutationOptions.mockImplementation(({ onSuccess }) => {
+      onSuccessCallback = onSuccess;
+      return { mutationFn: vi.fn() };
+    });
 
     renderHook(() => useSignupMutation());
 

@@ -1,9 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
 import { useForm } from "react-hook-form";
-import { SigninForm } from "../SigninForm";
+import { vi } from "vitest";
 import type { SigninFormData } from "../../_schema";
+import { SigninForm } from "../SigninForm";
 
 // Mock the form components
 vi.mock("@/components/ui/card", () => ({
@@ -15,15 +14,13 @@ vi.mock("@/components/ui/card", () => ({
 }));
 
 vi.mock("@/components/ui/form", () => ({
-  Form: ({ children }: any) => (
-    <form data-testid="signin-form">{children}</form>
-  ),
+  Form: ({ children }: any) => <div data-testid="signin-form">{children}</div>,
 }));
 
 describe("SigninForm", () => {
   const mockOnSubmit = vi.fn();
 
-  // Create a test wrapper that provides form context
+  // Test wrapper component
   const TestWrapper = ({ children }: { children: React.ReactNode }) => {
     const form = useForm<SigninFormData>({
       defaultValues: {
@@ -56,6 +53,8 @@ describe("SigninForm", () => {
   });
 
   it("displays the correct heading and description", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -71,6 +70,8 @@ describe("SigninForm", () => {
   });
 
   it("applies correct CSS classes to the card", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -110,6 +111,8 @@ describe("SigninForm", () => {
   });
 
   it("includes text styling classes for heading and description", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -126,6 +129,8 @@ describe("SigninForm", () => {
   });
 
   it("has text-center class for the header section", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>

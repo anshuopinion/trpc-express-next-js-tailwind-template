@@ -65,7 +65,7 @@ describe("User Controller - UpdateProfile", () => {
     // Arrange
     const { user } = await createTestUser({
       email: "avatar@example.com",
-      avatar: null,
+      avatar: undefined,
     });
 
     const updateData = {
@@ -111,7 +111,7 @@ describe("User Controller - UpdateProfile", () => {
       email: "multiple@example.com",
       first_name: "Old",
       last_name: "Name",
-      avatar: null,
+      avatar: undefined,
     });
 
     const updateData = {

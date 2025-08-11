@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { UserModel } from "../../../model/user";
+import { UserModel, UserRole } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
 import { deleteAccount } from "../deleteAccount";
 
@@ -56,7 +56,7 @@ describe("User Controller - DeleteAccount", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Password is incorrect",
-      })
+      }),
     );
 
     // Verify user still exists
@@ -72,11 +72,13 @@ describe("User Controller - DeleteAccount", () => {
     };
 
     // Act & Assert
-    await expect(deleteAccount(deleteData, { id: nonExistentUserId })).rejects.toThrow(
+    await expect(
+      deleteAccount(deleteData, { id: nonExistentUserId }),
+    ).rejects.toThrow(
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      })
+      }),
     );
   });
 
@@ -181,7 +183,7 @@ describe("User Controller - DeleteAccount", () => {
     const { user: adminUser } = await createTestUser({
       email: "admin@example.com",
       password: adminPassword,
-      role: "admin",
+      role: UserRole.ADMIN,
     });
 
     const deleteData = {
@@ -296,7 +298,7 @@ describe("User Controller - DeleteAccount", () => {
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      })
+      }),
     );
   });
 
@@ -325,7 +327,7 @@ describe("User Controller - DeleteAccount", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Password is incorrect",
-      })
+      }),
     );
 
     // Verify both users still exist

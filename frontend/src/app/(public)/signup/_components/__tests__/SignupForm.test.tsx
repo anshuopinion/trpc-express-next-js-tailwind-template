@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { vi } from "vitest";
 import { useForm } from "react-hook-form";
-import { SignupForm } from "../SignupForm";
+import { vi } from "vitest";
 import type { SignupFormData } from "../../_schema";
+import { SignupForm } from "../SignupForm";
 
 // Mock the form components
 vi.mock("@/components/ui/card", () => ({
@@ -14,15 +14,13 @@ vi.mock("@/components/ui/card", () => ({
 }));
 
 vi.mock("@/components/ui/form", () => ({
-  Form: ({ children }: any) => (
-    <form data-testid="signup-form">{children}</form>
-  ),
+  Form: ({ children }: any) => <div data-testid="signup-form">{children}</div>,
 }));
 
 describe("SignupForm", () => {
   const mockOnSubmit = vi.fn();
 
-  // Create a test wrapper that provides form context
+  // Test wrapper component
   const TestWrapper = ({ children }: { children: React.ReactNode }) => {
     const form = useForm<SignupFormData>({
       defaultValues: {
@@ -46,6 +44,8 @@ describe("SignupForm", () => {
   });
 
   it("renders the form card with correct structure", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div data-testid="form-fields">Test fields</div>
@@ -58,6 +58,8 @@ describe("SignupForm", () => {
   });
 
   it("displays the correct heading and description", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -73,6 +75,8 @@ describe("SignupForm", () => {
   });
 
   it("applies correct CSS classes to the card", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -85,6 +89,7 @@ describe("SignupForm", () => {
 
   it("renders children inside the form", () => {
     const testContent = "Test form fields";
+    // Using TestWrapper instead
 
     render(
       <TestWrapper>
@@ -97,6 +102,8 @@ describe("SignupForm", () => {
   });
 
   it("has proper structure with space-y classes", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <input data-testid="test-input" />
@@ -112,6 +119,8 @@ describe("SignupForm", () => {
   });
 
   it("includes text styling classes for heading and description", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -128,6 +137,8 @@ describe("SignupForm", () => {
   });
 
   it("has text-center class for the header section", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -142,6 +153,8 @@ describe("SignupForm", () => {
   });
 
   it("form has proper classes and full width", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>
@@ -186,6 +199,8 @@ describe("SignupForm", () => {
   });
 
   it("has proper responsive width classes", () => {
+    // Using TestWrapper instead
+
     render(
       <TestWrapper>
         <div>Test content</div>

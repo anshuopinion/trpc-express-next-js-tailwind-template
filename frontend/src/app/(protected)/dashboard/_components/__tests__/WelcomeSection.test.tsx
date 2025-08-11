@@ -74,35 +74,25 @@ describe("WelcomeSection", () => {
 
     const description = screen.getByTestId("card-description");
     expect(description).toHaveTextContent(
-      "You've successfully authenticated using tRPC and JWT tokens. This dashboard demonstrates:",
+      "You've successfully authenticated using tRPC and JWT tokens. This dashboard demonstrates:"
     );
   });
 
   it("renders all feature list items", () => {
     render(<WelcomeSection />);
 
+    expect(screen.getByText("Type-safe API calls with tRPC and React Query")).toBeInTheDocument();
     expect(
-      screen.getByText("Type-safe API calls with tRPC and React Query"),
+      screen.getByText("JWT-based authentication with automatic token management")
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "JWT-based authentication with automatic token management",
-      ),
+      screen.getByText("Protected routes that redirect unauthenticated users")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Protected routes that redirect unauthenticated users"),
+      screen.getByText("Modern Next.js 15 app structure with server and client components")
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Modern Next.js 15 app structure with server and client components",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Real-time data fetching and caching"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("shadcn/ui components with Tailwind CSS styling"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Real-time data fetching and caching")).toBeInTheDocument();
+    expect(screen.getByText("shadcn/ui components with Tailwind CSS styling")).toBeInTheDocument();
   });
 
   it("applies correct CSS classes to card content", () => {
@@ -121,7 +111,7 @@ describe("WelcomeSection", () => {
       "list-inside",
       "space-y-2",
       "text-sm",
-      "text-muted-foreground",
+      "text-muted-foreground"
     );
   });
 
@@ -129,27 +119,22 @@ describe("WelcomeSection", () => {
     render(<WelcomeSection />);
 
     expect(screen.getByText("This is a clean template!")).toBeInTheDocument();
-    expect(
-      screen.getByText(/You can use this as a starting point/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/includes authentication, user management/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/You can use this as a starting point/)).toBeInTheDocument();
+    expect(screen.getByText(/includes authentication, user management/)).toBeInTheDocument();
   });
 
   it("applies correct CSS classes to template highlight section", () => {
     render(<WelcomeSection />);
 
-    const highlightContainer = screen
-      .getByText("This is a clean template!")
-      .closest("div")?.parentElement?.parentElement;
+    const highlightContainer = screen.getByText("This is a clean template!").closest("div")
+      ?.parentElement?.parentElement;
     expect(highlightContainer).toHaveClass(
       "mt-6",
       "p-4",
       "bg-primary/5",
       "rounded-lg",
       "border",
-      "border-primary/20",
+      "border-primary/20"
     );
 
     const sparkleIcon = screen.getByText("✨");
@@ -158,26 +143,14 @@ describe("WelcomeSection", () => {
     const highlightTitle = screen.getByText("This is a clean template!");
     expect(highlightTitle).toHaveClass("font-semibold", "text-primary", "mb-1");
 
-    const highlightDescription = screen.getByText(
-      /You can use this as a starting point/,
-    );
-    expect(highlightDescription).toHaveClass(
-      "text-sm",
-      "text-muted-foreground",
-    );
+    const highlightDescription = screen.getByText(/You can use this as a starting point/);
+    expect(highlightDescription).toHaveClass("text-sm", "text-muted-foreground");
   });
 
   it("renders all technology badges", () => {
     render(<WelcomeSection />);
 
-    const badges = [
-      "Next.js 15",
-      "tRPC",
-      "React Query",
-      "TypeScript",
-      "shadcn/ui",
-      "Tailwind CSS",
-    ];
+    const badges = ["Next.js 15", "tRPC", "React Query", "TypeScript", "shadcn/ui", "Tailwind CSS"];
 
     badges.forEach((badge) => {
       expect(screen.getByText(badge)).toBeInTheDocument();
@@ -197,7 +170,7 @@ describe("WelcomeSection", () => {
       "bg-secondary",
       "text-secondary-foreground",
       "rounded-md",
-      "text-xs",
+      "text-xs"
     );
   });
 
@@ -224,13 +197,11 @@ describe("WelcomeSection", () => {
   });
 
   it("handles long firstName gracefully", () => {
-    render(
-      <WelcomeSection firstName="VeryLongFirstNameThatMightCauseLayoutIssues" />,
-    );
+    render(<WelcomeSection firstName="VeryLongFirstNameThatMightCauseLayoutIssues" />);
 
     const title = screen.getByTestId("card-title");
     expect(title).toHaveTextContent(
-      "🎉 Welcome to your Dashboard, VeryLongFirstNameThatMightCauseLayoutIssues!",
+      "🎉 Welcome to your Dashboard, VeryLongFirstNameThatMightCauseLayoutIssues!"
     );
   });
 
@@ -238,9 +209,7 @@ describe("WelcomeSection", () => {
     render(<WelcomeSection firstName="José-María" />);
 
     const title = screen.getByTestId("card-title");
-    expect(title).toHaveTextContent(
-      "🎉 Welcome to your Dashboard, José-María!",
-    );
+    expect(title).toHaveTextContent("🎉 Welcome to your Dashboard, José-María!");
   });
 
   it("renders all content sections in correct order", () => {
@@ -256,9 +225,7 @@ describe("WelcomeSection", () => {
     expect(children[0]).toContainElement(screen.getByRole("list"));
 
     // Second child should contain the highlight section
-    expect(children[1]).toContainElement(
-      screen.getByText("This is a clean template!"),
-    );
+    expect(children[1]).toContainElement(screen.getByText("This is a clean template!"));
 
     // Third child should contain the badges
     expect(children[2]).toContainElement(screen.getByText("Next.js 15"));

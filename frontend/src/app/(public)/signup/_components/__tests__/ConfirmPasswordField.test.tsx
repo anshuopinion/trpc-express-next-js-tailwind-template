@@ -1,30 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
 import { useForm } from "react-hook-form";
-import { ConfirmPasswordField } from "../ConfirmPasswordField";
+import { vi } from "vitest";
 import type { SignupFormData } from "../../_schema";
+import { ConfirmPasswordField } from "../ConfirmPasswordField";
 
 // Mock the form components
 vi.mock("@/components/ui/form", () => ({
-  FormControl: ({ children }: any) => (
-    <div data-testid="form-control">{children}</div>
-  ),
-  FormField: ({ render }: any) =>
-    render({ field: { value: "", onChange: vi.fn() } }),
-  FormItem: ({ children }: any) => (
-    <div data-testid="form-item">{children}</div>
-  ),
-  FormLabel: ({ children }: any) => (
-    <label data-testid="form-label">{children}</label>
-  ),
+  FormControl: ({ children }: any) => <div data-testid="form-control">{children}</div>,
+  FormField: ({ render }: any) => render({ field: { value: "", onChange: vi.fn() } }),
+  FormItem: ({ children }: any) => <div data-testid="form-item">{children}</div>,
+  FormLabel: ({ children }: any) => <label data-testid="form-label">{children}</label>,
   FormMessage: () => <div data-testid="form-message" />,
 }));
 
 vi.mock("@/components/ui/input", () => ({
-  Input: (props: any) => (
-    <input data-testid="confirm-password-input" {...props} />
-  ),
+  Input: (props: any) => <input data-testid="confirm-password-input" {...props} />,
 }));
 
 // Mock lucide-react icons
@@ -62,13 +53,7 @@ describe("ConfirmPasswordField", () => {
       },
     });
 
-    return (
-      <ConfirmPasswordField
-        form={form}
-        showPassword={showPassword}
-        onToggle={mockOnToggle}
-      />
-    );
+    return <ConfirmPasswordField form={form} showPassword={showPassword} onToggle={mockOnToggle} />;
   };
 
   beforeEach(() => {
@@ -78,9 +63,7 @@ describe("ConfirmPasswordField", () => {
   it("renders confirm password field with correct label", () => {
     render(<TestWrapper />);
 
-    expect(screen.getByTestId("form-label")).toHaveTextContent(
-      "Confirm Password",
-    );
+    expect(screen.getByTestId("form-label")).toHaveTextContent("Confirm Password");
   });
 
   it("renders input with correct attributes when password is hidden", () => {
@@ -115,7 +98,7 @@ describe("ConfirmPasswordField", () => {
       "-translate-y-1/2",
       "text-muted-foreground",
       "hover:text-foreground",
-      "transition-colors",
+      "transition-colors"
     );
   });
 
@@ -154,9 +137,7 @@ describe("ConfirmPasswordField", () => {
   it("has relative container for absolute positioned toggle button", () => {
     render(<TestWrapper />);
 
-    const relativeContainer = screen.getByTestId(
-      "confirm-password-input",
-    ).parentElement;
+    const relativeContainer = screen.getByTestId("confirm-password-input").parentElement;
     expect(relativeContainer).toHaveClass("relative");
   });
 
@@ -186,13 +167,7 @@ describe("ConfirmPasswordField", () => {
         },
       });
 
-      return (
-        <ConfirmPasswordField
-          form={form}
-          showPassword={false}
-          onToggle={mockOnToggle}
-        />
-      );
+      return <ConfirmPasswordField form={form} showPassword={false} onToggle={mockOnToggle} />;
     };
 
     render(<TestWithValidation />);

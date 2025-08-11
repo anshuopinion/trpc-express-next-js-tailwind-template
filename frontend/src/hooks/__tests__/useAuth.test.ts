@@ -1,8 +1,8 @@
-import { vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useAuth } from "../useAuth";
-import { getFromLocalStorage, removeFromLocalStorage } from "@/lib/utils";
+import { vi } from "vitest";
 import { clearAuthCookies, setAuthCookies } from "@/lib/auth-utils";
+import { getFromLocalStorage, removeFromLocalStorage } from "@/lib/utils";
+import { useAuth } from "../useAuth";
 
 // Mock dependencies
 vi.mock("@/lib/utils", () => ({
@@ -104,7 +104,6 @@ describe("useAuth Hook", () => {
       isLoading: false,
       error: new Error("Unauthorized"),
     });
-    
 
     renderHook(() => useAuth());
 

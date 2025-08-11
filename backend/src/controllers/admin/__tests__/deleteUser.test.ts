@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { deleteUser } from "../deleteUser";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { deleteUser } from "../deleteUser";
 
 describe("Admin Controller - DeleteUser", () => {
   beforeEach(async () => {
@@ -96,7 +95,7 @@ describe("Admin Controller - DeleteUser", () => {
       expect.objectContaining({
         code: "BAD_REQUEST",
         message: "You cannot delete your own account",
-      }),
+      })
     );
 
     // Verify admin account still exists
@@ -122,7 +121,7 @@ describe("Admin Controller - DeleteUser", () => {
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      }),
+      })
     );
   });
 
@@ -268,7 +267,7 @@ describe("Admin Controller - DeleteUser", () => {
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      }),
+      })
     );
   });
 
@@ -283,13 +282,11 @@ describe("Admin Controller - DeleteUser", () => {
     };
 
     // Act & Assert
-    await expect(
-      deleteUser(input, { id: adminUser.id.toString() }),
-    ).rejects.toThrow(
+    await expect(deleteUser(input, { id: adminUser.id.toString() })).rejects.toThrow(
       expect.objectContaining({
         code: "BAD_REQUEST",
         message: "You cannot delete your own account",
-      }),
+      })
     );
   });
 

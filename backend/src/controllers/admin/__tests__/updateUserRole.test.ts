@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { updateUserRole } from "../updateUserRole";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { updateUserRole } from "../updateUserRole";
 
 describe("Admin Controller - UpdateUserRole", () => {
   beforeEach(async () => {
@@ -89,7 +88,7 @@ describe("Admin Controller - UpdateUserRole", () => {
       expect.objectContaining({
         code: "BAD_REQUEST",
         message: "You cannot change your own role",
-      }),
+      })
     );
 
     // Verify role was not changed
@@ -116,7 +115,7 @@ describe("Admin Controller - UpdateUserRole", () => {
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      }),
+      })
     );
   });
 
@@ -147,7 +146,7 @@ describe("Admin Controller - UpdateUserRole", () => {
 
     const input = {
       userId: targetUser.id,
-      role: "invalid_role" as any, // Invalid role
+      role: "invalid_role" as "user" | "admin", // Invalid role
     };
 
     // Act & Assert
@@ -228,9 +227,7 @@ describe("Admin Controller - UpdateUserRole", () => {
     expect(updatedUser?.first_name).toBe(originalValues.first_name);
     expect(updatedUser?.last_name).toBe(originalValues.last_name);
     expect(updatedUser?.avatar).toBe(originalValues.avatar);
-    expect(updatedUser?.is_email_verified).toBe(
-      originalValues.is_email_verified,
-    );
+    expect(updatedUser?.is_email_verified).toBe(originalValues.is_email_verified);
 
     // Only role should change
     expect(updatedUser?.role).toBe("admin");
@@ -319,22 +316,16 @@ describe("Admin Controller - UpdateUserRole", () => {
     // user -> admin
     let result = await updateUserRole(
       { userId: targetUser.id, role: "admin" },
-      { id: adminUser.id },
+      { id: adminUser.id }
     );
     expect(result.role).toBe("admin");
 
     // admin -> user
-    result = await updateUserRole(
-      { userId: targetUser.id, role: "user" },
-      { id: adminUser.id },
-    );
+    result = await updateUserRole({ userId: targetUser.id, role: "user" }, { id: adminUser.id });
     expect(result.role).toBe("user");
 
     // user -> admin again
-    result = await updateUserRole(
-      { userId: targetUser.id, role: "admin" },
-      { id: adminUser.id },
-    );
+    result = await updateUserRole({ userId: targetUser.id, role: "admin" }, { id: adminUser.id });
     expect(result.role).toBe("admin");
 
     // Verify final state in database
@@ -417,13 +408,11 @@ describe("Admin Controller - UpdateUserRole", () => {
     };
 
     // Act & Assert
-    await expect(
-      updateUserRole(input, { id: adminUser.id.toString() }),
-    ).rejects.toThrow(
+    await expect(updateUserRole(input, { id: adminUser.id.toString() })).rejects.toThrow(
       expect.objectContaining({
         code: "BAD_REQUEST",
         message: "You cannot change your own role",
-      }),
+      })
     );
   });
 });

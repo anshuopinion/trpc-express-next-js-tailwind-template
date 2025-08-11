@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getEnvironment } from "../environment";
 
 describe("Type Controller - GetEnvironment", () => {
@@ -167,9 +167,7 @@ describe("Type Controller - GetEnvironment", () => {
 
     // Assert
     // ISO 8601 format check (basic)
-    expect(result.timestamp).toMatch(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
-    );
+    expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
   });
 
   it("should handle whitespace in NODE_ENV", () => {

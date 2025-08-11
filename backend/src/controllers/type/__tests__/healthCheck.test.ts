@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { healthCheck } from "../healthCheck";
 
 describe("Type Controller - HealthCheck", () => {
@@ -109,9 +109,7 @@ describe("Type Controller - HealthCheck", () => {
 
     // Assert
     // ISO 8601 format check (basic)
-    expect(result.timestamp).toMatch(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
-    );
+    expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
   });
 
   it("should be synchronous function", () => {

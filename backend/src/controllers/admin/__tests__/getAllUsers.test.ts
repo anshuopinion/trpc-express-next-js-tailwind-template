@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { getAllUsers } from "../getAllUsers";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { getAllUsers } from "../getAllUsers";
 
 describe("Admin Controller - GetAllUsers", () => {
   beforeEach(async () => {
@@ -72,17 +72,17 @@ describe("Admin Controller - GetAllUsers", () => {
 
   it("should filter users by role", async () => {
     // Arrange - Create users with different roles
-    const { user: user1 } = await createTestUser({
+    await createTestUser({
       email: "user1@example.com",
       role: "user",
     });
 
-    const { user: user2 } = await createTestUser({
+    await createTestUser({
       email: "user2@example.com",
       role: "user",
     });
 
-    const { user: admin1 } = await createTestUser({
+    await createTestUser({
       email: "admin1@example.com",
       role: "admin",
     });
@@ -111,11 +111,16 @@ describe("Admin Controller - GetAllUsers", () => {
   });
 
   it("should not expose sensitive fields", async () => {
-    // Arrange
-    const { user } = await createTestUser({
+    // Arrange - Directly create user in database to test MongoDB .select()
+    await UserModel.create({
       email: "sensitive@example.com",
-      password: "SensitivePassword123!",
+      first_name: "Sensitive",
+      last_name: "User",
+      password: "hashedpassword123",
       refresh_token: "sensitive-refresh-token",
+      verify_token: "sensitive-verify-token",
+      role: "user",
+      is_email_verified: false,
     });
 
     const input = {};
@@ -127,12 +132,13 @@ describe("Admin Controller - GetAllUsers", () => {
     expect(result.users).toHaveLength(1);
     const returnedUser = result.users[0];
 
+    // Verify sensitive fields are NOT present in the controller response
     expect(returnedUser).not.toHaveProperty("password");
     expect(returnedUser).not.toHaveProperty("refresh_token");
     expect(returnedUser).not.toHaveProperty("verify_token");
 
     // Should have safe fields
-    expect(returnedUser).toHaveProperty("id");
+    expect(returnedUser).toHaveProperty("_id");
     expect(returnedUser).toHaveProperty("email");
     expect(returnedUser).toHaveProperty("first_name");
     expect(returnedUser).toHaveProperty("last_name");
@@ -274,7 +280,7 @@ describe("Admin Controller - GetAllUsers", () => {
   it("should throw validation error for invalid role", async () => {
     // Arrange
     const input = {
-      role: "invalid_role" as any, // Invalid role
+      role: "invalid_role" as "user" | "admin", // Invalid role
     };
 
     // Act & Assert
@@ -283,7 +289,7 @@ describe("Admin Controller - GetAllUsers", () => {
 
   it("should sort users by creation date (newest first)", async () => {
     // Arrange - Create users with slight delays to ensure different timestamps
-    const { user: user1 } = await createTestUser({
+    await createTestUser({
       email: "first@example.com",
       first_name: "First",
     });
@@ -291,14 +297,14 @@ describe("Admin Controller - GetAllUsers", () => {
     // Small delay to ensure different timestamps
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    const { user: user2 } = await createTestUser({
+    await createTestUser({
       email: "second@example.com",
       first_name: "Second",
     });
 
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    const { user: user3 } = await createTestUser({
+    await createTestUser({
       email: "third@example.com",
       first_name: "Third",
     });

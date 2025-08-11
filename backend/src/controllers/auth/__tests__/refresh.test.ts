@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { refreshToken } from "../refresh";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
-import { createTestUser } from "../../../test-utils";
 import { hashPassword } from "../../../services/password";
+import { createTestUser } from "../../../test-utils";
+import { refreshToken } from "../refresh";
 
 describe("Auth Controller - RefreshToken", () => {
   beforeEach(async () => {
@@ -60,7 +59,7 @@ describe("Auth Controller - RefreshToken", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid refresh token",
-      }),
+      })
     );
   });
 
@@ -84,7 +83,7 @@ describe("Auth Controller - RefreshToken", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid refresh token",
-      }),
+      })
     );
   });
 
@@ -105,7 +104,7 @@ describe("Auth Controller - RefreshToken", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid refresh token",
-      }),
+      })
     );
   });
 

@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { updateProfile } from "../updateProfile";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { updateProfile } from "../updateProfile";
 
 describe("User Controller - UpdateProfile", () => {
   beforeEach(async () => {
@@ -144,13 +143,11 @@ describe("User Controller - UpdateProfile", () => {
     };
 
     // Act & Assert
-    await expect(
-      updateProfile(updateData, { id: nonExistentUserId }),
-    ).rejects.toThrow(
+    await expect(updateProfile(updateData, { id: nonExistentUserId })).rejects.toThrow(
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      }),
+      })
     );
   });
 

@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { signup } from "../signup";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { signup } from "../signup";
 
 describe("Auth Controller - Signup", () => {
   beforeEach(async () => {
@@ -64,7 +63,7 @@ describe("Auth Controller - Signup", () => {
       expect.objectContaining({
         code: "CONFLICT",
         message: "User already exists",
-      }),
+      })
     );
   });
 
@@ -136,9 +135,7 @@ describe("Auth Controller - Signup", () => {
     const savedUser = await UserModel.findOne({ email: signupData.email });
     expect(savedUser?.password).toBeDefined();
     expect(savedUser?.password).not.toBe(signupData.password); // Should be hashed
-    expect(savedUser?.password.length).toBeGreaterThan(
-      signupData.password.length,
-    );
+    expect(savedUser?.password.length).toBeGreaterThan(signupData.password.length);
   });
 
   it("should set user role to 'user' by default", async () => {

@@ -6,11 +6,7 @@ import { hashPassword } from "../services/password";
 /**
  * Generate a test JWT access token
  */
-export const generateTestAccessToken = (
-  userId: string,
-  email: string,
-  role: UserRole = "user",
-) => {
+export const generateTestAccessToken = (userId: string, email: string, role: UserRole = "user") => {
   const secret = process.env.ACCESS_TOKEN_SECRET;
   if (!secret) throw new Error("ACCESS_TOKEN_SECRET is not defined");
 
@@ -25,7 +21,7 @@ export const generateTestAccessToken = (
 export const generateTestRefreshToken = (
   userId: string,
   email: string,
-  role: UserRole = "user",
+  role: UserRole = "user"
 ) => {
   const secret = process.env.REFRESH_TOKEN_SECRET;
   if (!secret) throw new Error("REFRESH_TOKEN_SECRET is not defined");
@@ -38,11 +34,7 @@ export const generateTestRefreshToken = (
 /**
  * Generate both access and refresh tokens for testing
  */
-export const generateTestTokens = (
-  userId: string,
-  email: string,
-  role: UserRole = "user",
-) => {
+export const generateTestTokens = (userId: string, email: string, role: UserRole = "user") => {
   return {
     access_token: generateTestAccessToken(userId, email, role),
     refresh_token: generateTestRefreshToken(userId, email, role),

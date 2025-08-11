@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { UserModel, UserRole, UserClass } from "../user";
-import mongoose from "mongoose";
+import { beforeEach, describe, expect, it } from "vitest";
+import { UserClass, UserModel, UserRole } from "../user";
 
 describe("User Model", () => {
   beforeEach(async () => {
@@ -100,18 +99,10 @@ describe("User Model", () => {
       const afterCreation = new Date();
       expect(user.createdAt).toBeDefined();
       expect(user.updatedAt).toBeDefined();
-      expect(user.createdAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeCreation.getTime(),
-      );
-      expect(user.createdAt!.getTime()).toBeLessThanOrEqual(
-        afterCreation.getTime(),
-      );
-      expect(user.updatedAt!.getTime()).toBeGreaterThanOrEqual(
-        beforeCreation.getTime(),
-      );
-      expect(user.updatedAt!.getTime()).toBeLessThanOrEqual(
-        afterCreation.getTime(),
-      );
+      expect(user.createdAt?.getTime()).toBeGreaterThanOrEqual(beforeCreation.getTime());
+      expect(user.createdAt?.getTime()).toBeLessThanOrEqual(afterCreation.getTime());
+      expect(user.updatedAt?.getTime()).toBeGreaterThanOrEqual(beforeCreation.getTime());
+      expect(user.updatedAt?.getTime()).toBeLessThanOrEqual(afterCreation.getTime());
     });
   });
 
@@ -357,7 +348,7 @@ describe("User Model", () => {
       const updatedUser = await UserModel.findByIdAndUpdate(
         user.id,
         { first_name: "Updated", is_email_verified: true },
-        { new: true },
+        { new: true }
       );
 
       // Assert
@@ -432,7 +423,7 @@ describe("User Model", () => {
 
       // Assert
       const roleIndexExists = Object.keys(indexes).some((key) =>
-        indexes[key].some((field: any) => field[0] === "role"),
+        indexes[key].some((field: any) => field[0] === "role")
       );
       expect(roleIndexExists).toBe(true);
     });
@@ -527,7 +518,7 @@ describe("User Model", () => {
           refresh_token: "new_refresh_token",
           verify_token: "new_verify_token",
         },
-        { new: true },
+        { new: true }
       );
 
       // Assert
@@ -557,14 +548,12 @@ describe("User Model", () => {
       const updatedUser = await UserModel.findByIdAndUpdate(
         user.id,
         { first_name: "Updated" },
-        { new: true },
+        { new: true }
       );
 
       // Assert
       expect(updatedUser?.updatedAt).toBeDefined();
-      expect(updatedUser?.updatedAt!.getTime()).toBeGreaterThan(
-        originalUpdatedAt!.getTime(),
-      );
+      expect(updatedUser?.updatedAt?.getTime()).toBeGreaterThan(originalUpdatedAt?.getTime());
       expect(updatedUser?.createdAt).toEqual(user.createdAt); // createdAt should not change
     });
   });

@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { signin } from "../signin";
+import { beforeEach, describe, expect, it } from "vitest";
+import { UserRole } from "../../../model/user";
 import { createTestUser, generateUserData } from "../../../test-utils";
+import { signin } from "../signin";
+
 // import { comparePassword } from "../../../services/password";
 
 describe("Auth Controller - Signin", () => {
@@ -43,7 +44,7 @@ describe("Auth Controller - Signin", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid credentials",
-      }),
+      })
     );
   });
 
@@ -60,7 +61,7 @@ describe("Auth Controller - Signin", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid credentials",
-      }),
+      })
     );
   });
 
@@ -86,7 +87,7 @@ describe("Auth Controller - Signin", () => {
 
   it("should work with admin users", async () => {
     // Arrange
-    const adminData = generateUserData({ role: "admin" });
+    const adminData = generateUserData({ role: UserRole.ADMIN });
     const { user, rawPassword } = await createTestUser(adminData);
     const signinData = {
       email: user.email,
@@ -106,7 +107,7 @@ describe("Auth Controller - Signin", () => {
 
   it("should handle case-sensitive email correctly", async () => {
     // Arrange
-    const { user, rawPassword } = await createTestUser({
+    const { rawPassword } = await createTestUser({
       email: "Test@Example.com",
     });
     const signinData = {
@@ -120,7 +121,7 @@ describe("Auth Controller - Signin", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Invalid credentials",
-      }),
+      })
     );
   });
 

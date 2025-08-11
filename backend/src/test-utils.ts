@@ -1,4 +1,4 @@
-import { UserModel, UserRole, type IUser } from "./model/user";
+import { type IUser, UserModel, UserRole } from "./model/user";
 import { hashPassword } from "./services/password";
 
 interface CreateTestUserOptions {
@@ -19,7 +19,7 @@ interface CreateTestUserResult {
 }
 
 export const createTestUser = async (
-  options: CreateTestUserOptions = {},
+  options: CreateTestUserOptions = {}
 ): Promise<CreateTestUserResult> => {
   const {
     email = `test${Date.now()}@example.com`, // Make email unique
@@ -74,9 +74,7 @@ export const createTestUser = async (
   };
 };
 
-export const generateUserData = (
-  overrides: Partial<CreateTestUserOptions> = {},
-) => {
+export const generateUserData = (overrides: Partial<CreateTestUserOptions> = {}) => {
   return {
     email: `test${Date.now()}@example.com`,
     first_name: "Test",

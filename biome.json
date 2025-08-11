@@ -21,6 +21,7 @@
       "correctness": {
         "noUndeclaredVariables": "error",
         "noUnusedVariables": "error",
+        "noUnusedImports": "error",
         "useHookAtTopLevel": "error"
       },
       "style": {
@@ -29,7 +30,8 @@
       "suspicious": {
         "noDebugger": "warn",
         "noConsole": "off",
-        "noDocumentCookie": "off"
+        "noDocumentCookie": "off",
+        "noExplicitAny": "off"
       },
       "a11y": {
         "recommended": true

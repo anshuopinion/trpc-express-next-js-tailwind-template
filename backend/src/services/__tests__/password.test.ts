@@ -1,12 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  hashPassword,
-  comparePassword,
-  hashData,
-  updateRefreshToken,
-} from "../password";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../model/user";
 import { createTestUser } from "../../test-utils";
+import { comparePassword, hashData, hashPassword, updateRefreshToken } from "../password";
 
 describe("Password Service", () => {
   beforeEach(async () => {
@@ -84,7 +79,7 @@ describe("Password Service", () => {
 
     it("should handle very long passwords", async () => {
       // Arrange
-      const longPassword = "a".repeat(1000) + "123!";
+      const longPassword = `${"a".repeat(1000)}123!`;
 
       // Act
       const hashedPassword = await hashPassword(longPassword);
@@ -187,18 +182,9 @@ describe("Password Service", () => {
       const hashedPassword = await hashPassword(password);
 
       // Act
-      const isMatchLower = await comparePassword(
-        "casesensitive123!",
-        hashedPassword,
-      );
-      const isMatchUpper = await comparePassword(
-        "CASESENSITIVE123!",
-        hashedPassword,
-      );
-      const isMatchCorrect = await comparePassword(
-        "CaseSensitive123!",
-        hashedPassword,
-      );
+      const isMatchLower = await comparePassword("casesensitive123!", hashedPassword);
+      const isMatchUpper = await comparePassword("CASESENSITIVE123!", hashedPassword);
+      const isMatchCorrect = await comparePassword("CaseSensitive123!", hashedPassword);
 
       // Assert
       expect(isMatchLower).toBe(false);
@@ -295,10 +281,7 @@ describe("Password Service", () => {
       expect(updatedUser?.refresh_token).toMatch(/^\$2b\$10\$/);
 
       // Verify the hashed token can be compared correctly
-      const isMatch = await comparePassword(
-        newRefreshToken,
-        updatedUser?.refresh_token || "",
-      );
+      const isMatch = await comparePassword(newRefreshToken, updatedUser?.refresh_token || "");
       expect(isMatch).toBe(true);
     });
 
@@ -319,17 +302,11 @@ describe("Password Service", () => {
       expect(updatedUser?.refresh_token).toBeDefined();
 
       // Old token should not match
-      const oldMatches = await comparePassword(
-        oldToken,
-        updatedUser?.refresh_token || "",
-      );
+      const oldMatches = await comparePassword(oldToken, updatedUser?.refresh_token || "");
       expect(oldMatches).toBe(false);
 
       // New token should match
-      const newMatches = await comparePassword(
-        newRefreshToken,
-        updatedUser?.refresh_token || "",
-      );
+      const newMatches = await comparePassword(newRefreshToken, updatedUser?.refresh_token || "");
       expect(newMatches).toBe(true);
     });
 
@@ -339,9 +316,7 @@ describe("Password Service", () => {
       const refreshToken = "some-token";
 
       // Act & Assert - Should not throw an error
-      await expect(
-        updateRefreshToken(nonExistentUserId, refreshToken),
-      ).resolves.not.toThrow();
+      await expect(updateRefreshToken(nonExistentUserId, refreshToken)).resolves.not.toThrow();
     });
 
     it("should handle empty refresh token", async () => {
@@ -360,10 +335,7 @@ describe("Password Service", () => {
       expect(updatedUser?.refresh_token).toMatch(/^\$2b\$10\$/);
 
       // Empty token should match
-      const isMatch = await comparePassword(
-        emptyToken,
-        updatedUser?.refresh_token || "",
-      );
+      const isMatch = await comparePassword(emptyToken, updatedUser?.refresh_token || "");
       expect(isMatch).toBe(true);
     });
 
@@ -385,10 +357,7 @@ describe("Password Service", () => {
       expect(updatedUser?.refresh_token).toMatch(/^\$2b\$10\$/);
 
       // JWT token should match when compared
-      const isMatch = await comparePassword(
-        jwtRefreshToken,
-        updatedUser?.refresh_token || "",
-      );
+      const isMatch = await comparePassword(jwtRefreshToken, updatedUser?.refresh_token || "");
       expect(isMatch).toBe(true);
     });
 
@@ -406,23 +375,14 @@ describe("Password Service", () => {
 
         // Assert after each update
         const updatedUser = await UserModel.findById(user.id);
-        const isMatch = await comparePassword(
-          token,
-          updatedUser?.refresh_token || "",
-        );
+        const isMatch = await comparePassword(token, updatedUser?.refresh_token || "");
         expect(isMatch).toBe(true);
       }
 
       // Final verification - only last token should match
       const finalUser = await UserModel.findById(user.id);
-      const lastTokenMatches = await comparePassword(
-        "token3",
-        finalUser?.refresh_token || "",
-      );
-      const firstTokenMatches = await comparePassword(
-        "token1",
-        finalUser?.refresh_token || "",
-      );
+      const lastTokenMatches = await comparePassword("token3", finalUser?.refresh_token || "");
+      const firstTokenMatches = await comparePassword("token1", finalUser?.refresh_token || "");
 
       expect(lastTokenMatches).toBe(true);
       expect(firstTokenMatches).toBe(false);
@@ -438,16 +398,10 @@ describe("Password Service", () => {
       const hashedPassword = await hashPassword(plainPassword);
 
       // Act - Verify correct password
-      const correctComparison = await comparePassword(
-        plainPassword,
-        hashedPassword,
-      );
+      const correctComparison = await comparePassword(plainPassword, hashedPassword);
 
       // Act - Verify incorrect password
-      const incorrectComparison = await comparePassword(
-        "WrongPassword!",
-        hashedPassword,
-      );
+      const incorrectComparison = await comparePassword("WrongPassword!", hashedPassword);
 
       // Assert
       expect(correctComparison).toBe(true);
@@ -466,10 +420,7 @@ describe("Password Service", () => {
 
       // Act - Retrieve and verify
       const updatedUser = await UserModel.findById(user.id);
-      const tokenMatches = await comparePassword(
-        refreshToken,
-        updatedUser?.refresh_token || "",
-      );
+      const tokenMatches = await comparePassword(refreshToken, updatedUser?.refresh_token || "");
 
       // Assert
       expect(tokenMatches).toBe(true);

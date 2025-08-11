@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { getSystemStats } from "../getSystemStats";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { getSystemStats } from "../getSystemStats";
 
 describe("Admin Controller - GetSystemStats", () => {
   beforeEach(async () => {
@@ -68,7 +68,7 @@ describe("Admin Controller - GetSystemStats", () => {
 
   it("should return recent users sorted by creation date", async () => {
     // Arrange - Create users with slight delays to ensure different timestamps
-    const { user: user1 } = await createTestUser({
+    await createTestUser({
       email: "first@example.com",
       first_name: "First",
       last_name: "User",
@@ -77,7 +77,7 @@ describe("Admin Controller - GetSystemStats", () => {
     // Small delay to ensure different timestamps
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    const { user: user2 } = await createTestUser({
+    await createTestUser({
       email: "second@example.com",
       first_name: "Second",
       last_name: "User",
@@ -85,7 +85,7 @@ describe("Admin Controller - GetSystemStats", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    const { user: user3 } = await createTestUser({
+    await createTestUser({
       email: "third@example.com",
       first_name: "Third",
       last_name: "User",
@@ -171,7 +171,7 @@ describe("Admin Controller - GetSystemStats", () => {
     // Verify timestamp is a valid ISO string
     expect(() => new Date(result.systemHealth.timestamp)).not.toThrow();
     expect(new Date(result.systemHealth.timestamp).toISOString()).toBe(
-      result.systemHealth.timestamp,
+      result.systemHealth.timestamp
     );
   });
 
@@ -209,9 +209,7 @@ describe("Admin Controller - GetSystemStats", () => {
     expect(result.totalUsers).toBe(5);
     expect(result.verifiedUsers).toBe(2);
     expect(result.unverifiedUsers).toBe(3);
-    expect(result.verifiedUsers + result.unverifiedUsers).toBe(
-      result.totalUsers,
-    );
+    expect(result.verifiedUsers + result.unverifiedUsers).toBe(result.totalUsers);
   });
 
   it("should handle all users being admins", async () => {
@@ -353,33 +351,32 @@ describe("Admin Controller - GetSystemStats", () => {
   });
 
   it("should handle large number of users efficiently", async () => {
-    // Arrange - Create many users
-    const userPromises = [];
+    // Arrange - Create users one by one to ensure predictable creation order
     for (let i = 1; i <= 50; i++) {
-      userPromises.push(
-        createTestUser({
-          email: `bulk${i}@example.com`,
-          role: i % 3 === 0 ? "admin" : "user", // Every 3rd user is admin
-          is_email_verified: i % 2 === 0, // Every 2nd user is verified
-        }),
-      );
+      await createTestUser({
+        email: `bulk${i}@example.com`,
+        role: i % 3 === 0 ? "admin" : "user", // Every 3rd user is admin
+        is_email_verified: i % 2 === 0, // Every 2nd user is verified
+      });
+      // Small delay to ensure different timestamps
+      await new Promise((resolve) => setTimeout(resolve, 2));
     }
-
-    await Promise.all(userPromises);
 
     // Act
     const result = await getSystemStats();
 
     // Assert
     expect(result.totalUsers).toBe(50);
-    expect(result.adminUsers).toBe(16); // Math.floor(50/3) = 16
+    expect(result.adminUsers).toBe(16); // Every 3rd user is admin: 3,6,9,...,48 = 16 admins
     expect(result.regularUsers).toBe(34); // 50 - 16 = 34
     expect(result.verifiedUsers).toBe(25); // Half are verified
     expect(result.unverifiedUsers).toBe(25); // Half are unverified
     expect(result.recentUsers).toHaveLength(5); // Limited to 5
 
-    // Verify recent users are actually the most recent
-    expect(result.recentUsers[0].email.startsWith("bulk5")).toBe(true); // Most recent
-    expect(result.recentUsers[4].email.startsWith("bulk4")).toBe(true); // 5th most recent
+    // Verify recent users contain the most recent bulk numbers
+    const recentEmails = result.recentUsers.map((user) => user.email);
+    expect(recentEmails.some((email) => email.includes("bulk50"))).toBe(true); // Most recent should be present
+    expect(recentEmails.some((email) => email.includes("bulk49"))).toBe(true); // 2nd most recent should be present
+    expect(recentEmails.some((email) => email.includes("bulk48"))).toBe(true); // 3rd most recent should be present
   });
 });

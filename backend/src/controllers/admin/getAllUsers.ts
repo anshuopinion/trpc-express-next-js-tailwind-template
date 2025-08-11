@@ -20,7 +20,8 @@ export const getAllUsers = async (input: z.infer<typeof getAllUsersSchema>) => {
       .select("-password -refresh_token -verify_token")
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(), // Add .lean() to return plain JS objects instead of Mongoose documents
     UserModel.countDocuments(filter),
   ]);
 

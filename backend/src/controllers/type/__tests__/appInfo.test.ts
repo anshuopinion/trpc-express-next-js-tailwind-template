@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getAppInfo } from "../appInfo";
 
 describe("Type Controller - GetAppInfo", () => {
@@ -14,9 +14,7 @@ describe("Type Controller - GetAppInfo", () => {
 
     expect(result.name).toBe("tRPC Template");
     expect(result.version).toBe("1.0.0");
-    expect(result.description).toBe(
-      "A clean tRPC template with authentication",
-    );
+    expect(result.description).toBe("A clean tRPC template with authentication");
   });
 
   it("should return consistent data types", () => {

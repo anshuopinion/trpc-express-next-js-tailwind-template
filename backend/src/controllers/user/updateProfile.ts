@@ -10,7 +10,7 @@ const updateProfileSchema = z.object({
     .optional()
     .refine(
       (val) => !val || val === "" || z.string().url().safeParse(val).success,
-      "Invalid avatar URL",
+      "Invalid avatar URL"
     ),
 });
 
@@ -18,10 +18,7 @@ interface User {
   id: string;
 }
 
-export const updateProfile = async (
-  input: z.infer<typeof updateProfileSchema>,
-  user: User,
-) => {
+export const updateProfile = async (input: z.infer<typeof updateProfileSchema>, user: User) => {
   // Validate input with schema
   const validatedInput = updateProfileSchema.parse(input);
   const { first_name, last_name, avatar } = validatedInput;

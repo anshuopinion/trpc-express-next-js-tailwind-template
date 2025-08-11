@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import jwt from "jsonwebtoken";
+import { beforeEach, describe, expect, it } from "vitest";
+import { UserRole } from "../../model/user";
 import { generateAccessToken, generateRefreshToken, getTokens } from "../auth";
-import type { UserRole } from "../../model/user";
 
 describe("Auth Service", () => {
   const mockUserId = "test-user-id";
   const mockEmail = "test@example.com";
-  const mockRole: UserRole = "user";
+  const mockRole: UserRole = UserRole.USER;
 
   beforeEach(() => {
     // Ensure environment variables are set (done by vitest.setup.ts)
@@ -63,11 +63,11 @@ describe("Auth Service", () => {
 
     it("should work with admin role", () => {
       // Act
-      const token = generateAccessToken(mockUserId, mockEmail, "admin");
+      const token = generateAccessToken(mockUserId, mockEmail, UserRole.ADMIN);
 
       // Assert
       const decoded = jwt.decode(token) as any;
-      expect(decoded.role).toBe("admin");
+      expect(decoded.role).toBe(UserRole.ADMIN);
     });
   });
 
@@ -169,15 +169,15 @@ describe("Auth Service", () => {
 
     it("should work with different user roles", async () => {
       // Act
-      const userTokens = await getTokens(mockUserId, mockEmail, "user");
-      const adminTokens = await getTokens(mockUserId, mockEmail, "admin");
+      const userTokens = await getTokens(mockUserId, mockEmail, UserRole.USER);
+      const adminTokens = await getTokens(mockUserId, mockEmail, UserRole.ADMIN);
 
       // Assert
       const userDecoded = jwt.decode(userTokens.access_token) as any;
       const adminDecoded = jwt.decode(adminTokens.access_token) as any;
 
-      expect(userDecoded.role).toBe("user");
-      expect(adminDecoded.role).toBe("admin");
+      expect(userDecoded.role).toBe(UserRole.USER);
+      expect(adminDecoded.role).toBe(UserRole.ADMIN);
     });
   });
 
@@ -185,19 +185,15 @@ describe("Auth Service", () => {
     it("should generate verifiable tokens", () => {
       // Act
       const accessToken = generateAccessToken(mockUserId, mockEmail, mockRole);
-      const refreshToken = generateRefreshToken(
-        mockUserId,
-        mockEmail,
-        mockRole,
-      );
+      const refreshToken = generateRefreshToken(mockUserId, mockEmail, mockRole);
 
       // Assert - tokens should be verifiable with the same secret
       expect(() => {
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET as string);
       }).not.toThrow();
 
       expect(() => {
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string);
       }).not.toThrow();
     });
 

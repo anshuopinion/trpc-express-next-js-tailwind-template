@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { logout } from "../logout";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
 import { createTestUser } from "../../../test-utils";
+import { logout } from "../logout";
 
 describe("Auth Controller - Logout", () => {
   beforeEach(async () => {

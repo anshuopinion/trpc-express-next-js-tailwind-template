@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { TRPCError } from "@trpc/server";
-import { changePassword } from "../changePassword";
+import { beforeEach, describe, expect, it } from "vitest";
 import { UserModel } from "../../../model/user";
-import { createTestUser } from "../../../test-utils";
 import { comparePassword } from "../../../services/password";
+import { createTestUser } from "../../../test-utils";
+import { changePassword } from "../changePassword";
 
 describe("User Controller - ChangePassword", () => {
   beforeEach(async () => {
@@ -39,17 +38,11 @@ describe("User Controller - ChangePassword", () => {
     expect(updatedUser?.password).not.toBe(user.password); // Should be different hash
 
     // Verify new password works
-    const newPasswordMatches = await comparePassword(
-      newPassword,
-      updatedUser?.password || "",
-    );
+    const newPasswordMatches = await comparePassword(newPassword, updatedUser?.password || "");
     expect(newPasswordMatches).toBe(true);
 
     // Verify old password no longer works
-    const oldPasswordMatches = await comparePassword(
-      currentPassword,
-      updatedUser?.password || "",
-    );
+    const oldPasswordMatches = await comparePassword(currentPassword, updatedUser?.password || "");
     expect(oldPasswordMatches).toBe(false);
   });
 
@@ -71,7 +64,7 @@ describe("User Controller - ChangePassword", () => {
       expect.objectContaining({
         code: "UNAUTHORIZED",
         message: "Current password is incorrect",
-      }),
+      })
     );
 
     // Verify password wasn't changed
@@ -88,13 +81,11 @@ describe("User Controller - ChangePassword", () => {
     };
 
     // Act & Assert
-    await expect(
-      changePassword(changeData, { id: nonExistentUserId }),
-    ).rejects.toThrow(
+    await expect(changePassword(changeData, { id: nonExistentUserId })).rejects.toThrow(
       expect.objectContaining({
         code: "NOT_FOUND",
         message: "User not found",
-      }),
+      })
     );
   });
 
@@ -178,10 +169,7 @@ describe("User Controller - ChangePassword", () => {
     expect(updatedUser?.password).not.toBe(originalPasswordHash); // Different hash due to salt
 
     // Verify password still works
-    const passwordMatches = await comparePassword(
-      password,
-      updatedUser?.password || "",
-    );
+    const passwordMatches = await comparePassword(password, updatedUser?.password || "");
     expect(passwordMatches).toBe(true);
   });
 
@@ -208,17 +196,14 @@ describe("User Controller - ChangePassword", () => {
 
     // Verify new password works
     const updatedUser = await UserModel.findById(user.id);
-    const passwordMatches = await comparePassword(
-      newPassword,
-      updatedUser?.password || "",
-    );
+    const passwordMatches = await comparePassword(newPassword, updatedUser?.password || "");
     expect(passwordMatches).toBe(true);
   });
 
   it("should handle long passwords", async () => {
     // Arrange
     const currentPassword = "CurrentPassword123!";
-    const newPassword = "a".repeat(200) + "123!"; // Very long password
+    const newPassword = `${"a".repeat(200)}123!`; // Very long password
 
     const { user } = await createTestUser({
       email: "long@example.com",
@@ -238,10 +223,7 @@ describe("User Controller - ChangePassword", () => {
 
     // Verify new password works
     const updatedUser = await UserModel.findById(user.id);
-    const passwordMatches = await comparePassword(
-      newPassword,
-      updatedUser?.password || "",
-    );
+    const passwordMatches = await comparePassword(newPassword, updatedUser?.password || "");
     expect(passwordMatches).toBe(true);
   });
 
@@ -268,10 +250,7 @@ describe("User Controller - ChangePassword", () => {
 
     // Verify new password works
     const updatedUser = await UserModel.findById(user.id);
-    const passwordMatches = await comparePassword(
-      newPassword,
-      updatedUser?.password || "",
-    );
+    const passwordMatches = await comparePassword(newPassword, updatedUser?.password || "");
     expect(passwordMatches).toBe(true);
   });
 
@@ -335,10 +314,7 @@ describe("User Controller - ChangePassword", () => {
 
     // Verify new password works
     const updatedUser = await UserModel.findById(user.id);
-    const passwordMatches = await comparePassword(
-      newPassword,
-      updatedUser?.password || "",
-    );
+    const passwordMatches = await comparePassword(newPassword, updatedUser?.password || "");
     expect(passwordMatches).toBe(true);
   });
 

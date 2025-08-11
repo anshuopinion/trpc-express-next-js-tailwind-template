@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { me } from "../me";
+import { describe, expect, it } from "vitest";
 import type { UserRole } from "../../../model/user";
+import { me } from "../me";
 
 describe("Auth Controller - Me", () => {
   it("should return complete user profile for user role", async () => {

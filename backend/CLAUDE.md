@@ -1,7 +1,7 @@
 # tRPC Express Backend Template - Claude Memory
 
 ## Project Overview
-A modern Express.js backend template with tRPC API, JWT authentication, and MongoDB integration. This template provides a solid foundation for building type-safe APIs with comprehensive user management and authentication features.
+A modern Express.js backend template with tRPC API, role-based JWT authentication, and MongoDB integration. This template provides a solid foundation for building type-safe APIs with comprehensive user management, admin functionality, and role-based access control features.
 
 ## Architecture
 
@@ -19,6 +19,12 @@ backend/
 │   │   │   ├── logout.ts      # Logout logic
 │   │   │   ├── me.ts          # Get user profile logic
 │   │   │   └── refresh.ts     # Token refresh logic
+│   │   ├── admin/             # Admin management controllers
+│   │   │   ├── index.ts       # Admin controller exports
+│   │   │   ├── deleteUser.ts  # Admin delete user logic
+│   │   │   ├── getAllUsers.ts # Get all users with pagination
+│   │   │   ├── getSystemStats.ts # System statistics logic
+│   │   │   └── updateUserRole.ts # Update user role logic
 │   │   ├── user/              # User management controllers
 │   │   │   ├── index.ts       # User controller exports
 │   │   │   ├── updateProfile.ts  # Profile update logic
@@ -32,10 +38,11 @@ backend/
 │   │   │   └── healthCheck.ts # Health check logic
 │   │   └── index.ts           # Main controller exports
 │   ├── model/
-│   │   └── user.ts            # User model with Typegoose
+│   │   └── user.ts            # User model with Typegoose and UserRole enum
 │   ├── routes/                # Clean tRPC route definitions
 │   │   ├── index.ts           # Router aggregation
 │   │   ├── auth.ts            # Authentication routes (use controllers)
+│   │   ├── admin.ts           # Admin management routes (use controllers)
 │   │   ├── user.ts            # User management routes (use controllers)
 │   │   └── type.ts            # Type utilities routes (use controllers)
 │   ├── services/              # Shared business services
@@ -55,12 +62,13 @@ backend/
 ### Stack
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js 5.x
-- **API Layer**: tRPC 11.x for type-safe APIs
+- **API Layer**: tRPC 11.x for type-safe APIs with role-based procedures
 - **Database**: MongoDB with Mongoose 8.x
-- **ODM**: Typegoose for type-safe MongoDB models
-- **Authentication**: JWT with bcryptjs for password hashing
+- **ODM**: Typegoose for type-safe MongoDB models with role support
+- **Authentication**: JWT with bcryptjs for password hashing and role-based access control
 - **Validation**: Zod for runtime type checking
 - **CORS**: Cross-origin resource sharing support
+- **Code Quality**: BiomeJS for fast formatting and linting
 
 ### Key Dependencies
 ```json
@@ -69,6 +77,7 @@ backend/
   "@typegoose/typegoose": "^12.16.0",
   "bcryptjs": "^3.0.2",
   "cors": "^2.8.5",
+  "dotenv": "^16.5.0",
   "express": "^5.1.0",
   "jsonwebtoken": "^9.0.2",
   "mongoose": "^8.16.0",
@@ -218,6 +227,7 @@ const createContext = async ({ req, res }) => {
 ### Procedure Types
 - **`publicProcedure`**: No authentication required
 - **`privateProcedure`**: Requires valid JWT token and authenticated user
+- **`adminProcedure`**: Requires valid JWT token and admin role
 
 ```typescript
 export const privateProcedure = publicProcedure.use(async (opts) => {
@@ -230,6 +240,20 @@ export const privateProcedure = publicProcedure.use(async (opts) => {
     });
   }
   
+  return opts.next({
+    ctx: { user: ctx.user }
+  });
+});
+
+export const adminProcedure = privateProcedure.use(async (opts) => {
+  const { ctx } = opts;
+
+  if (ctx.user.role !== UserRole.ADMIN) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
   return opts.next({
     ctx: { user: ctx.user }
   });
@@ -251,9 +275,15 @@ export const connectDB = async () => {
 Uses Typegoose for type-safe MongoDB models:
 
 ```typescript
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
 @modelOptions({
   schemaOptions: {
     collection: "users",
+    timestamps: true,
   },
 })
 export class UserClass {
@@ -280,6 +310,19 @@ export class UserClass {
 
   @prop({ type: String })
   public verify_token?: string | null;
+
+  @prop({
+    required: true,
+    enum: UserRole,
+    default: UserRole.USER,
+    type: String,
+    index: true,
+  })
+  public role: UserRole;
+
+  // Timestamps (automatically managed by Mongoose when timestamps: true)
+  public createdAt?: Date;
+  public updatedAt?: Date;
 }
 ```
 
@@ -290,6 +333,7 @@ export class UserClass {
 export const appRouter = router({
   auth: authRouter,
   user: userRouter,
+  admin: adminRouter,
   type: typeRouter,
 });
 
@@ -314,15 +358,15 @@ const generateRefreshToken = (userId: string, email: string) => {
 ```
 
 #### Available Endpoints
-- **`auth.signup`**: User registration with email, password, first_name, last_name
-- **`auth.signin`**: User login with email and password
+- **`auth.signup`**: User registration with email, password, first_name, last_name (default USER role)
+- **`auth.signin`**: User login with email and password (returns role information)
 - **`auth.logout`**: Clear refresh token (requires authentication)
-- **`auth.me`**: Get current user profile (requires authentication)
+- **`auth.me`**: Get current user profile with role (requires authentication)
 - **`auth.refreshToken`**: Refresh access token using refresh token
 
 #### Example Usage
 ```typescript
-// Sign up new user
+// Sign up new user (automatically assigned USER role)
 const result = await trpc.auth.signup.mutate({
   email: "user@example.com",
   password: "securepassword",
@@ -330,12 +374,13 @@ const result = await trpc.auth.signup.mutate({
   last_name: "Doe"
 });
 
-// Response includes tokens and user data
+// Response includes tokens, user data, and role
 // {
 //   id: "user_id",
 //   email: "user@example.com",
 //   first_name: "John",
 //   last_name: "Doe",
+//   role: "user",
 //   access_token: "jwt_token",
 //   refresh_token: "refresh_token",
 //   expires_at: 1234567890
@@ -362,6 +407,50 @@ await trpc.user.changePassword.mutate({
   currentPassword: "oldpassword",
   newPassword: "newpassword123"
 });
+
+// Delete user account
+const deleteResult = await trpc.user.deleteAccount.mutate({
+  password: "currentpassword" // Password confirmation required
+});
+```
+
+### Admin Management Router (`src/routes/admin.ts`)
+
+#### Available Endpoints (Admin Role Required)
+- **`admin.getAllUsers`**: Get all users with pagination and filtering
+- **`admin.updateUserRole`**: Update user role (USER <-> ADMIN)
+- **`admin.deleteUser`**: Delete any user account (admin action)
+- **`admin.getSystemStats`**: Get system statistics and metrics
+
+#### Example Usage
+```typescript
+// Get all users with pagination
+const users = await trpc.admin.getAllUsers.query({
+  page: 1,
+  limit: 10,
+  search: "john@example.com" // Optional search filter
+});
+
+// Update user role
+const updatedUser = await trpc.admin.updateUserRole.mutate({
+  userId: "user_id_here",
+  role: "admin" // or "user"
+});
+
+// Delete user (admin action)
+const deleteResult = await trpc.admin.deleteUser.mutate({
+  userId: "user_id_to_delete"
+});
+
+// Get system statistics
+const stats = await trpc.admin.getSystemStats.query();
+// Returns: {
+//   totalUsers: 150,
+//   adminUsers: 5,
+//   regularUsers: 145,
+//   newUsersThisMonth: 23,
+//   recentRegistrations: [...]
+// }
 ```
 
 ### Type Utilities Router (`src/routes/type.ts`)
@@ -621,6 +710,166 @@ describe('Auth Router', () => {
 });
 ```
 
+## Admin System Implementation
+
+### Admin Controllers
+
+The admin system is built with dedicated controllers that handle administrative operations:
+
+#### Get All Users Controller (`src/controllers/admin/getAllUsers.ts`)
+```typescript
+import { z } from "zod";
+import { UserModel } from "../../model/user";
+
+const getAllUsersSchema = z.object({
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(10),
+  search: z.string().optional(),
+});
+
+export const getAllUsers = async (input: z.infer<typeof getAllUsersSchema>) => {
+  const { page, limit, search } = input;
+  const skip = (page - 1) * limit;
+  
+  const filter = search ? {
+    $or: [
+      { email: { $regex: search, $options: "i" } },
+      { first_name: { $regex: search, $options: "i" } },
+      { last_name: { $regex: search, $options: "i" } }
+    ]
+  } : {};
+  
+  const [users, total] = await Promise.all([
+    UserModel.find(filter)
+      .select("-password -refresh_token -verify_token")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }),
+    UserModel.countDocuments(filter)
+  ]);
+  
+  return {
+    users,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit)
+    }
+  };
+};
+
+export { getAllUsersSchema };
+```
+
+#### Update User Role Controller (`src/controllers/admin/updateUserRole.ts`)
+```typescript
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { UserModel, UserRole } from "../../model/user";
+
+const updateUserRoleSchema = z.object({
+  userId: z.string().min(1, "User ID is required"),
+  role: z.nativeEnum(UserRole),
+});
+
+export const updateUserRole = async (
+  input: z.infer<typeof updateUserRoleSchema>,
+  adminUser: { id: string; role: UserRole }
+) => {
+  const { userId, role } = input;
+  
+  // Prevent admin from changing their own role
+  if (userId === adminUser.id) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Cannot change your own role"
+    });
+  }
+  
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    userId,
+    { role },
+    { new: true }
+  ).select("-password -refresh_token -verify_token");
+  
+  if (!updatedUser) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found"
+    });
+  }
+  
+  return updatedUser;
+};
+
+export { updateUserRoleSchema };
+```
+
+#### System Statistics Controller (`src/controllers/admin/getSystemStats.ts`)
+```typescript
+import { UserModel, UserRole } from "../../model/user";
+
+export const getSystemStats = async () => {
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  
+  const [totalUsers, adminUsers, newUsersThisMonth, newUsersThisWeek, recentUsers] = await Promise.all([
+    UserModel.countDocuments(),
+    UserModel.countDocuments({ role: UserRole.ADMIN }),
+    UserModel.countDocuments({ createdAt: { $gte: thirtyDaysAgo } }),
+    UserModel.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
+    UserModel.find()
+      .select("-password -refresh_token -verify_token")
+      .sort({ createdAt: -1 })
+      .limit(5)
+  ]);
+  
+  return {
+    totalUsers,
+    adminUsers,
+    regularUsers: totalUsers - adminUsers,
+    newUsersThisMonth,
+    newUsersThisWeek,
+    recentUsers
+  };
+};
+```
+
+### Role-Based Security
+
+#### Admin Procedure Implementation
+```typescript
+// src/trpc.ts
+export const adminProcedure = privateProcedure.use(async (opts) => {
+  const { ctx } = opts;
+
+  if (ctx.user.role !== UserRole.ADMIN) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+  
+  return opts.next({
+    ctx: { user: ctx.user }
+  });
+});
+```
+
+#### JWT Token with Role
+```typescript
+// Enhanced token generation with role
+const generateAccessToken = (userId: string, email: string, role: string) => {
+  return jwt.sign(
+    { userId, email, role }, 
+    process.env.ACCESS_TOKEN_SECRET!, 
+    { expiresIn: "15m" }
+  );
+};
+```
+
 ## Extending the Template
 
 ### Adding New Routes with Controller Pattern
@@ -656,9 +905,9 @@ export { getAllPosts } from "./getAll";
 // src/controllers/index.ts
 export * as postsController from "./posts";
 
-// 4. Create router using controller
+// 4. Create router using controller (with role-based access)
 // src/routes/posts.ts
-import { privateProcedure, publicProcedure, router } from "../trpc";
+import { privateProcedure, publicProcedure, adminProcedure, router } from "../trpc";
 import { postsController } from "../controllers";
 
 export const postsRouter = router({
@@ -670,6 +919,13 @@ export const postsRouter = router({
     .input(postsController.createPostSchema)
     .mutation(async (opts) => {
       return await postsController.createPost(opts.input, opts.ctx.user);
+    }),
+    
+  // Admin-only endpoint example
+  deletePost: adminProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async (opts) => {
+      return await postsController.deletePost(opts.input.postId);
     })
 });
 
@@ -678,6 +934,7 @@ export const postsRouter = router({
 export const appRouter = router({
   auth: authRouter,
   user: userRouter,
+  admin: adminRouter,
   type: typeRouter,
   posts: postsRouter, // Add new router
 });
@@ -771,6 +1028,27 @@ npm run typecheck
 - Implement caching for frequently accessed data
 - Monitor API response times
 
+## Security Best Practices
+
+### Role-Based Access Control
+- All admin endpoints require `adminProcedure`
+- User roles are verified at the tRPC procedure level
+- Admin users cannot modify their own roles
+- Sensitive user data is excluded from responses
+
+### Admin Security Features
+- Audit logging for admin actions
+- Role change validation and restrictions
+- Secure admin session management
+- Input validation on all admin operations
+
+### Production Considerations
+- Implement rate limiting on admin endpoints
+- Add audit logging for administrative actions
+- Consider implementing session timeout for admin users
+- Monitor and alert on role changes
+- Regular security audits of admin functionality
+
 ## Version Information
 - **Template Version**: 1.0.0
 - **Node.js**: 18+
@@ -778,3 +1056,4 @@ npm run typecheck
 - **tRPC**: 11.4.1
 - **MongoDB**: 8.16.0
 - **TypeScript**: 5.8.3
+- **BiomeJS**: 2.1.4

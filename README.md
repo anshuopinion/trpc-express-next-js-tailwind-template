@@ -1,17 +1,19 @@
 # 🚀 Modern tRPC Full-Stack Template
 
-A clean, modern full-stack TypeScript template featuring **Next.js 15**, **tRPC**, **React Query**, and **JWT authentication**. This template uses the latest tRPC patterns with TanStack React Query integration.
+A clean, modern full-stack TypeScript template featuring **Next.js 15**, **tRPC**, **React Query**, and **role-based JWT authentication**. This template uses the latest tRPC patterns with TanStack React Query integration and includes a complete admin system.
 
 ## ✨ Features
 
 - 🔥 **Modern tRPC Setup** - Latest tRPC patterns with React Query integration
-- 🔐 **JWT Authentication** - Complete auth system with refresh tokens
+- 🔐 **Role-Based Authentication** - Complete auth system with refresh tokens and RBAC
+- 👑 **Admin Dashboard** - Full admin system with user management
 - 🛡️ **Type Safety** - End-to-end type safety with TypeScript
 - ⚡ **Next.js 15** - App Router with Server and Client Components
-- 🎨 **Tailwind CSS** - Modern, responsive styling
-- 📱 **Responsive Design** - Mobile-first approach
+- 🎨 **Tailwind CSS v4** - Latest responsive styling with shadcn/ui
+- 📱 **Responsive Design** - Mobile-first approach with context-aware navigation
 - 🔄 **Real-time State** - React Query for efficient data management
-- 🧪 **Production Ready** - Clean, maintainable code structure
+- 🛡️ **Security Guards** - Component-level role-based access control
+- 🧪 **Production Ready** - Clean, maintainable code structure with BiomeJS
 
 ## 🏗️ Project Structure
 

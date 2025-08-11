@@ -1,7 +1,7 @@
 # Modern tRPC Full-Stack Template - Claude Memory
 
 ## Project Overview
-A comprehensive, production-ready full-stack TypeScript template built with the latest tRPC patterns, Next.js 15, and modern authentication. This template serves as a robust foundation for building type-safe, scalable web applications with seamless full-stack integration.
+A comprehensive, production-ready full-stack TypeScript template built with the latest tRPC patterns, Next.js 15, and modern role-based authentication. This template serves as a robust foundation for building type-safe, scalable web applications with seamless full-stack integration, featuring complete user management and admin functionality.
 
 ## Architecture
 
@@ -20,6 +20,12 @@ template-folder/
 │   │   │   │   ├── logout.ts  # Logout logic
 │   │   │   │   ├── me.ts      # Get user profile logic
 │   │   │   │   └── refresh.ts # Token refresh logic
+│   │   │   ├── admin/         # Admin management controllers
+│   │   │   │   ├── index.ts   # Admin controller exports
+│   │   │   │   ├── deleteUser.ts     # Admin delete user logic
+│   │   │   │   ├── getAllUsers.ts    # Get all users logic
+│   │   │   │   ├── getSystemStats.ts # System statistics logic
+│   │   │   │   └── updateUserRole.ts # Update user role logic
 │   │   │   ├── user/          # User management controllers
 │   │   │   │   ├── index.ts   # User controller exports
 │   │   │   │   ├── updateProfile.ts  # Profile update logic
@@ -33,10 +39,11 @@ template-folder/
 │   │   │   │   └── healthCheck.ts # Health check logic
 │   │   │   └── index.ts       # Main controller exports
 │   │   ├── model/             # Data models
-│   │   │   └── user.ts        # User model with Typegoose
+│   │   │   └── user.ts        # User model with Typegoose and roles
 │   │   ├── routes/            # Clean tRPC route definitions
 │   │   │   ├── index.ts       # Main router combining all routes
 │   │   │   ├── auth.ts        # Authentication routes (use controllers)
+│   │   │   ├── admin.ts       # Admin management routes (use controllers)
 │   │   │   ├── user.ts        # User management routes (use controllers)
 │   │   │   └── type.ts        # Type utility routes (use controllers)
 │   │   ├── services/          # Shared business services
@@ -49,8 +56,39 @@ template-folder/
 └── frontend/                  # Next.js 15 application with Page-Centric Modularization
     ├── src/
     │   ├── app/              # Next.js App Router with Modular Page Structure
+    │   │   ├── (admin)/      # Admin-only routes requiring admin role
+    │   │   │   ├── _components/        # Admin-specific shared components
+    │   │   │   │   ├── AdminMobileSidebar.tsx  # Admin mobile navigation
+    │   │   │   │   ├── AdminSidebar.tsx        # Admin sidebar component
+    │   │   │   │   └── index.ts                # Export admin components
+    │   │   │   ├── _constants/        # Admin navigation constants
+    │   │   │   │   ├── navigation.ts           # Admin navigation config
+    │   │   │   │   └── index.ts                # Export constants
+    │   │   │   ├── admin/              # Admin main pages
+    │   │   │   │   ├── dashboard/      # Admin dashboard with modular structure
+    │   │   │   │   │   ├── _components/    # Admin dashboard components
+    │   │   │   │   │   │   ├── AdminDashboard.tsx    # Main admin dashboard
+    │   │   │   │   │   │   ├── AdminStatsCard.tsx    # Admin stats display
+    │   │   │   │   │   │   ├── SystemOverview.tsx    # System overview
+    │   │   │   │   │   │   └── index.ts              # Export components
+    │   │   │   │   │   ├── _hooks/     # Admin dashboard hooks
+    │   │   │   │   │   │   └── index.ts              # Export hooks
+    │   │   │   │   │   ├── _types/     # Admin dashboard types
+    │   │   │   │   │   │   ├── admin.types.ts        # Admin TypeScript interfaces
+    │   │   │   │   │   │   └── index.ts              # Export types
+    │   │   │   │   │   └── page.tsx    # Clean admin dashboard page
+    │   │   │   │   ├── settings/      # Admin settings pages
+    │   │   │   │   └── users/         # User management pages
+    │   │   │   └── layout.tsx          # Admin layout with admin sidebar
     │   │   ├── (protected)/  # Protected routes requiring authentication
-    │   │   │   ├── dashboard/      # Dashboard page with modular structure
+    │   │   │   ├── _components/        # Protected routes shared components
+    │   │   │   │   ├── ProtectedMobileSidebar.tsx # Protected mobile nav
+    │   │   │   │   ├── UserSidebar.tsx            # User sidebar component
+    │   │   │   │   └── index.ts                   # Export components
+    │   │   │   ├── _constants/        # Protected routes constants
+    │   │   │   │   ├── navigation.ts              # User navigation config
+    │   │   │   │   └── index.ts                   # Export constants
+    │   │   │   ├── dashboard/      # User dashboard with modular structure
     │   │   │   │   ├── _components/    # Dashboard-specific components
     │   │   │   │   │   ├── StatsCard.tsx         # Reusable stats card
     │   │   │   │   │   ├── UserProfileCard.tsx   # User profile display
@@ -70,7 +108,7 @@ template-folder/
     │   │   │   │   │   ├── dashboard.types.ts    # TypeScript interfaces
     │   │   │   │   │   └── index.ts              # Export types
     │   │   │   │   └── page.tsx        # Clean dashboard page using components
-    │   │   │   └── layout.tsx          # Protected layout with sidebar
+    │   │   │   └── layout.tsx          # Protected layout with user sidebar
     │   │   ├── (public)/              # Public routes with modular structure
     │   │   │   ├── signin/            # Sign in page with modular structure
     │   │   │   │   ├── _components/        # Signin-specific components
@@ -117,7 +155,14 @@ template-folder/
     │   │   ├── forms/                # Shared form components
     │   │   │   ├── PasswordField.tsx      # Reusable password input
     │   │   │   └── index.ts               # Export form components
+    │   │   ├── guards/               # Role-based access guards
+    │   │   │   ├── AdminOnly.tsx          # Admin-only access component
+    │   │   │   ├── RoleGuard.tsx          # Generic role-based guard
+    │   │   │   ├── ServerRoleGuard.tsx    # Server-side role guard
+    │   │   │   └── index.ts               # Export guard components
     │   │   ├── app-sidebar.tsx       # Application sidebar
+    │   │   ├── ContextSidebar.tsx    # Context-aware sidebar
+    │   │   ├── ContextMobileSidebar.tsx # Context-aware mobile sidebar
     │   │   └── mobile-top-bar.tsx    # Mobile navigation
     │   ├── hooks/                    # Shared custom React hooks
     │   │   ├── useAuth.ts           # Authentication hook
@@ -128,7 +173,10 @@ template-folder/
     │   │   ├── dashboard-layout/    # Dashboard layout components
     │   │   └── main-layout/         # Main layout components
     │   ├── lib/                     # Utility functions
-    │   │   └── utils.ts            # Common utilities and localStorage helpers
+    │   │   ├── utils.ts            # Common utilities and localStorage helpers
+    │   │   ├── auth-utils.ts       # Authentication utility functions
+    │   │   ├── server-auth.ts      # Server-side authentication
+    │   │   └── server-auth-utils.ts # Server-side auth utilities
     │   ├── trpc/                    # Modern tRPC client setup
     │   │   ├── client.ts           # tRPC client configuration
     │   │   ├── provider.tsx        # React Query provider
@@ -145,10 +193,11 @@ template-folder/
 - **tRPC 11.4** - Type-safe API layer with full TypeScript inference
 - **MongoDB** - NoSQL database for flexibility
 - **Typegoose** - Type-safe MongoDB modeling with TypeScript
-- **JWT** - Secure authentication with access/refresh tokens
+- **JWT** - Secure authentication with access/refresh tokens and role-based access control
 - **bcryptjs** - Password hashing for security
 - **Zod** - Schema validation and type inference
 - **CORS** - Cross-origin resource sharing configuration
+- **BiomeJS** - Fast code formatting and linting
 
 ### Frontend Stack
 - **Next.js 15** - React framework with App Router
@@ -156,20 +205,23 @@ template-folder/
 - **TanStack React Query** - Server state management
 - **tRPC Client** - Type-safe API consumption
 - **shadcn/ui** - Modern, accessible UI components
-- **Tailwind CSS** - Utility-first CSS framework
+- **Tailwind CSS v4** - Latest utility-first CSS framework
 - **Lucide React** - Beautiful icon library
 - **Framer Motion** - Animation library
 - **React Hook Form** - Form management
+- **Sonner** - Toast notification system
 - **TypeScript** - Full type safety
+- **BiomeJS** - Fast code formatting and linting
 
 ## Modern tRPC Implementation
 
 ### Key Features
 1. **Latest tRPC Patterns** - Uses tRPC 11.4 with modern React Query integration
 2. **Type Safety** - Full-stack type inference from backend to frontend
-3. **Modern Client Setup** - Uses `createTRPCOptionsProxy` for cleaner API calls
-4. **Automatic Type Generation** - Backend generates TypeScript declarations
-5. **Optimized Queries** - React Query for efficient data fetching and caching
+3. **Role-Based Access Control** - Admin, protected, and public procedures
+4. **Modern Client Setup** - Uses `createTRPCOptionsProxy` for cleaner API calls
+5. **Automatic Type Generation** - Backend generates TypeScript declarations
+6. **Optimized Queries** - React Query for efficient data fetching and caching
 
 ### tRPC Client Architecture
 ```typescript
@@ -245,11 +297,13 @@ export const authRouter = router({
 ```
 
 ### tRPC Setup (`src/trpc.ts`)
-- **Context Creation**: JWT token verification and user authentication
+- **Context Creation**: JWT token verification and user authentication with role information
 - **Procedures**: 
   - `publicProcedure`: No authentication required
   - `privateProcedure`: Requires valid JWT token
+  - `adminProcedure`: Requires valid JWT token and admin role
 - **Error Handling**: Standardized tRPC error responses
+- **Role-Based Access Control**: Automatic role verification and access control
 - **Type Safety**: Full TypeScript integration
 
 ### API Endpoints
@@ -260,6 +314,14 @@ export const authRouter = router({
   - `me` - Get current user profile
   - `refreshToken` - Automatic token refresh
 - **User Management Routes**: User profile management
+  - `updateProfile` - Update user profile information
+  - `changePassword` - Change user password
+  - `deleteAccount` - Delete user account
+- **Admin Management Routes**: Admin-only user management
+  - `getAllUsers` - Get all users with pagination and filtering
+  - `updateUserRole` - Update user roles (admin only)
+  - `deleteUser` - Delete any user (admin only)
+  - `getSystemStats` - Get system statistics and metrics
 - **Type Utility Routes**: Health checks and utility endpoints
 
 ### Database Configuration (`src/config/`)
@@ -268,11 +330,13 @@ export const authRouter = router({
 - **Environment Variables**: Flexible configuration
 
 ### Security Features
-- **JWT Authentication**: Access tokens (15min) + refresh tokens (7 days)
+- **JWT Authentication**: Access tokens (15min) + refresh tokens (7 days) with role information
+- **Role-Based Access Control (RBAC)**: Admin and user role separation
 - **Password Hashing**: bcryptjs with salt rounds
 - **CORS Configuration**: Secure cross-origin requests
-- **Input Validation**: Zod schema validation
+- **Input Validation**: Zod schema validation on all endpoints
 - **Token Management**: Secure token storage and rotation
+- **Admin Protection**: Admin-only procedures and route protection
 
 ## Frontend Architecture
 
@@ -283,10 +347,12 @@ export const authRouter = router({
 - **Layout System**: Nested layouts for different sections
 
 ### Authentication System
-- **useAuth Hook**: Centralized authentication state
+- **useAuth Hook**: Centralized authentication state with role information
 - **Protected Routes**: Automatic redirect for unauthenticated users
-- **Token Management**: Automatic token refresh and storage
-- **User Context**: Global user state management
+- **Role-Based Guards**: Component-level role access control
+- **Token Management**: Automatic token refresh and storage with role data
+- **User Context**: Global user state management with role-based permissions
+- **Admin Access Control**: Admin-only routes and components
 
 ### UI Components
 - **shadcn/ui**: Modern, accessible component library
@@ -624,16 +690,22 @@ npm run type-check    # TypeScript type checking
 ## API Documentation
 
 ### Authentication Endpoints
-- `POST /trpc/auth.signup` - User registration
-- `POST /trpc/auth.signin` - User login
+- `POST /trpc/auth.signup` - User registration with default USER role
+- `POST /trpc/auth.signin` - User login with role information
 - `POST /trpc/auth.logout` - User logout
-- `GET /trpc/auth.me` - Get current user
+- `GET /trpc/auth.me` - Get current user with role
 - `POST /trpc/auth.refreshToken` - Refresh JWT tokens
 
 ### User Management
 - `PUT /trpc/user.updateProfile` - Update user profile
 - `PUT /trpc/user.changePassword` - Change password
 - `DELETE /trpc/user.deleteAccount` - Delete account
+
+### Admin Management (Admin Role Required)
+- `GET /trpc/admin.getAllUsers` - Get all users with pagination
+- `PUT /trpc/admin.updateUserRole` - Update user roles
+- `DELETE /trpc/admin.deleteUser` - Delete any user
+- `GET /trpc/admin.getSystemStats` - Get system statistics
 
 ### System Endpoints
 - `GET /health` - Server health check
@@ -679,16 +751,20 @@ npm run type-check    # TypeScript type checking
 ## Security Considerations
 
 ### Authentication Security
-- **JWT Best Practices**: Short-lived access tokens with refresh mechanism
+- **JWT Best Practices**: Short-lived access tokens with refresh mechanism and role information
+- **Role-Based Access Control**: Strict separation between user and admin privileges
 - **Password Security**: bcryptjs with proper salt rounds
 - **Token Storage**: Secure client-side storage with automatic cleanup
 - **Session Management**: Proper logout and token invalidation
+- **Admin Security**: Protected admin routes and procedures with role verification
 
 ### API Security
 - **Input Validation**: Zod schema validation on all endpoints
+- **Role Authorization**: Strict role-based access control on sensitive operations
 - **CORS Configuration**: Restricted origins for production
 - **Rate Limiting**: Consider implementing for production
 - **Error Handling**: Secure error messages without information leakage
+- **Admin Protection**: Additional security layers for admin operations
 
 ## Customization Guide
 
@@ -849,18 +925,141 @@ This template provides:
 - **Team Collaboration**: Clear boundaries that enable independent parallel development
 - **Extensibility**: Easy to customize and extend with consistent patterns
 
-Perfect for developers and teams who want to build modern, type-safe web applications without spending time on boilerplate setup, while maintaining excellent code organization and team productivity.
+Perfect for developers and teams who want to build modern, type-safe web applications with built-in admin functionality without spending time on boilerplate setup, while maintaining excellent code organization and team productivity.
+
+## Role-Based Access Control (RBAC)
+
+### User Roles
+The template implements a comprehensive role-based access control system:
+
+#### Available Roles
+- **USER** (default): Standard user with access to protected routes
+- **ADMIN**: Administrative user with full system access
+
+#### Role Implementation
+```typescript
+// Backend - User Model
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
+// User assigned default role on registration
+@prop({
+  required: true,
+  enum: UserRole,
+  default: UserRole.USER,
+  type: String,
+  index: true,
+})
+public role: UserRole;
+```
+
+### Admin System Features
+
+#### Backend Admin Features
+- **User Management**: Full CRUD operations for user accounts
+- **Role Management**: Change user roles between USER and ADMIN
+- **System Statistics**: Monitor user counts, registrations, and activity
+- **Admin Procedures**: Special tRPC procedures requiring admin role
+
+#### Frontend Admin Features
+- **Admin Dashboard**: Comprehensive admin interface
+- **User Management UI**: View, edit, and delete users
+- **Role Guards**: Component-level access control
+- **Admin Navigation**: Separate navigation for admin users
+
+#### Admin API Endpoints
+```typescript
+// Get all users with pagination
+const users = await trpc.admin.getAllUsers.query({
+  page: 1,
+  limit: 10,
+  search: "john@example.com"
+});
+
+// Update user role
+const updatedUser = await trpc.admin.updateUserRole.mutate({
+  userId: "user_id",
+  role: UserRole.ADMIN
+});
+
+// Delete user
+const result = await trpc.admin.deleteUser.mutate({
+  userId: "user_id"
+});
+
+// Get system statistics
+const stats = await trpc.admin.getSystemStats.query();
+```
+
+### Role Guards and Protection
+
+#### Frontend Role Guards
+```typescript
+// AdminOnly component - restricts access to admin users
+<AdminOnly fallback={<div>Access denied</div>}>
+  <AdminDashboard />
+</AdminOnly>
+
+// RoleGuard component - flexible role-based access
+<RoleGuard roles={["admin", "user"]} fallback={<LoginPage />}>
+  <ProtectedContent />
+</RoleGuard>
+```
+
+#### Route-Level Protection
+- **`(admin)` route group**: Automatically protected for admin users only
+- **`(protected)` route group**: Protected for authenticated users
+- **`(public)` route group**: Open access routes
+
+#### Backend Procedures
+```typescript
+// Admin-only procedure
+export const adminProcedure = privateProcedure.use(async (opts) => {
+  if (opts.ctx.user.role !== UserRole.ADMIN) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+  return opts.next({ ctx: { user: opts.ctx.user } });
+});
+```
+
+### Admin Dashboard Features
+
+#### System Overview
+- Total user count
+- New registrations (daily/weekly/monthly)
+- System health metrics
+- Recent user activity
+
+#### User Management
+- Search and filter users
+- View user profiles
+- Update user roles
+- Delete user accounts
+- Bulk operations
+
+#### Security Features
+- Audit logging for admin actions
+- Role change notifications
+- Secure admin session management
+- Admin activity tracking
 
 ## Future Enhancements
 
 ### Planned Features
-- **Testing Setup**: Jest and React Testing Library
+- **Testing Setup**: Jest and React Testing Library with role-based tests
 - **CI/CD Pipeline**: GitHub Actions workflows
 - **Docker Support**: Containerized deployment
-- **API Documentation**: OpenAPI/Swagger integration
-- **Real-time Features**: WebSocket integration
-- **File Upload**: Image and file handling
-- **Email Service**: Email verification and notifications
-- **Role-Based Access**: Advanced permission system
+- **API Documentation**: OpenAPI/Swagger integration with role documentation
+- **Real-time Features**: WebSocket integration with admin notifications
+- **File Upload**: Image and file handling with admin controls
+- **Email Service**: Email verification and admin notifications
+- **Enhanced RBAC**: Multi-level permission system and custom roles
+- **Audit System**: Comprehensive logging and monitoring
+- **Advanced Admin Tools**: System configuration and monitoring
 
-This template serves as a solid foundation for building modern, scalable web applications with the latest technologies and best practices.
+This template serves as a solid foundation for building modern, scalable web applications with comprehensive admin functionality and role-based access control using the latest technologies and best practices.

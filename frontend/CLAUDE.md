@@ -1,7 +1,7 @@
 # tRPC Template Frontend - Claude Memory
 
 ## Project Overview
-A modern Next.js 15 frontend application that serves as a template for tRPC-based full-stack applications. This frontend demonstrates best practices for building type-safe, authenticated applications with modern React patterns and a polished UI.
+A modern Next.js 15 frontend application that serves as a template for tRPC-based full-stack applications. This frontend demonstrates best practices for building type-safe, role-based authenticated applications with admin functionality, modern React patterns, and a polished UI.
 
 ## Tech Stack
 - **Framework**: Next.js 15 with App Router
@@ -21,6 +21,30 @@ A modern Next.js 15 frontend application that serves as a template for tRPC-base
 frontend/
 ├── src/
 │   ├── app/                    # Next.js App Router with Page-Centric Modularization
+│   │   ├── (admin)/            # Admin-only routes requiring admin role
+│   │   │   ├── _components/        # Admin-specific shared components
+│   │   │   │   ├── AdminMobileSidebar.tsx  # Admin mobile navigation
+│   │   │   │   ├── AdminSidebar.tsx        # Admin sidebar component
+│   │   │   │   └── index.ts                # Export admin components
+│   │   │   ├── _constants/        # Admin navigation constants
+│   │   │   │   ├── navigation.ts           # Admin navigation config
+│   │   │   │   └── index.ts                # Export constants
+│   │   │   ├── admin/              # Admin main pages
+│   │   │   │   ├── dashboard/      # Admin dashboard with modular structure
+│   │   │   │   │   ├── _components/    # Admin dashboard components
+│   │   │   │   │   │   ├── AdminDashboard.tsx    # Main admin dashboard
+│   │   │   │   │   │   ├── AdminStatsCard.tsx    # Admin stats display
+│   │   │   │   │   │   ├── SystemOverview.tsx    # System overview
+│   │   │   │   │   │   └── index.ts              # Export components
+│   │   │   │   │   ├── _hooks/     # Admin dashboard hooks
+│   │   │   │   │   │   └── index.ts              # Export hooks
+│   │   │   │   │   ├── _types/     # Admin dashboard types
+│   │   │   │   │   │   ├── admin.types.ts        # Admin TypeScript interfaces
+│   │   │   │   │   │   └── index.ts              # Export types
+│   │   │   │   │   └── page.tsx    # Clean admin dashboard page
+│   │   │   │   ├── settings/      # Admin settings pages
+│   │   │   │   └── users/         # User management pages
+│   │   │   └── layout.tsx          # Admin layout with admin sidebar
 │   │   ├── (protected)/       # Protected routes requiring authentication
 │   │   │   ├── dashboard/      # Dashboard page with modular structure
 │   │   │   │   ├── _components/    # Dashboard-specific components
@@ -89,7 +113,14 @@ frontend/
 │   │   ├── forms/                # Shared form components
 │   │   │   ├── PasswordField.tsx      # Reusable password input
 │   │   │   └── index.ts               # Export form components
+│   │   ├── guards/               # Role-based access guards
+│   │   │   ├── AdminOnly.tsx          # Admin-only access component
+│   │   │   ├── RoleGuard.tsx          # Generic role-based guard
+│   │   │   ├── ServerRoleGuard.tsx    # Server-side role guard
+│   │   │   └── index.ts               # Export guard components
 │   │   ├── app-sidebar.tsx       # Application sidebar
+│   │   ├── ContextSidebar.tsx    # Context-aware sidebar
+│   │   ├── ContextMobileSidebar.tsx # Context-aware mobile sidebar
 │   │   └── mobile-top-bar.tsx    # Mobile navigation
 │   ├── hooks/                    # Shared custom React hooks
 │   │   ├── useAuth.ts           # Authentication hook
@@ -100,7 +131,10 @@ frontend/
 │   │   ├── dashboard-layout/    # Dashboard layout components
 │   │   └── main-layout/         # Main layout components
 │   ├── lib/                     # Utility functions
-│   │   └── utils.ts            # Common utilities and localStorage helpers
+│   │   ├── utils.ts            # Common utilities and localStorage helpers
+│   │   ├── auth-utils.ts       # Authentication utility functions
+│   │   ├── server-auth.ts      # Server-side authentication
+│   │   └── server-auth-utils.ts # Server-side auth utilities
 │   ├── trpc/                    # tRPC client configuration
 │   │   ├── client.ts           # Client-side tRPC setup
 │   │   ├── provider.tsx        # tRPC Provider component
@@ -116,7 +150,7 @@ frontend/
 
 ## Page-Centric Modularization Architecture
 
-The frontend implements a **page-centric modularization pattern** that organizes components, hooks, schemas, and utilities directly within each page directory. This approach provides excellent organization while keeping related code co-located.
+The frontend implements a **page-centric modularization pattern** that organizes components, hooks, schemas, and utilities directly within each page directory. This approach provides excellent organization while keeping related code co-located and supports both user and admin functionality.
 
 ### Modularization Pattern
 
@@ -900,4 +934,239 @@ export function useCreatePost() {
 - Add new form schemas in component files
 - Extend authentication system in `src/hooks/useAuth.ts`
 
-This template provides a solid foundation for building modern, type-safe React applications with tRPC and Next.js 15.
+## Role-Based Access Control (RBAC)
+
+### Role Guards and Components
+
+#### AdminOnly Component
+```typescript
+// components/guards/AdminOnly.tsx
+import { RoleGuard } from "./RoleGuard";
+
+interface AdminOnlyProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+export function AdminOnly({ children, fallback }: AdminOnlyProps) {
+  return (
+    <RoleGuard roles={["admin"]} fallback={fallback}>
+      {children}
+    </RoleGuard>
+  );
+}
+```
+
+#### Generic Role Guard
+```typescript
+// components/guards/RoleGuard.tsx
+import { useAuth } from "@/hooks/useAuth";
+
+interface RoleGuardProps {
+  roles: string[];
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+export function RoleGuard({ roles, children, fallback }: RoleGuardProps) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user || !roles.includes(user.role)) {
+    return fallback || <div>Access denied</div>;
+  }
+
+  return <>{children}</>;
+}
+```
+
+### Enhanced Authentication System
+
+#### useAuth Hook with Roles
+```typescript
+// hooks/useAuth.ts
+export function useAuth() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Auto-fetch user data with role if token exists
+  const { data: user, isLoading: userLoading, error } = useQuery(
+    trpc.auth.me.queryOptions(void 0, {
+      enabled: !!getFromLocalStorage('accessToken'),
+      retry: false,
+    })
+  );
+
+  const login = (tokens: AuthTokens) => {
+    setToLocalStorage('accessToken', tokens.access_token);
+    setToLocalStorage('refreshToken', tokens.refresh_token);
+    setToLocalStorage('userId', tokens.id);
+    setToLocalStorage('userRole', tokens.role); // Store user role
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    removeFromLocalStorage('accessToken');
+    removeFromLocalStorage('refreshToken');
+    removeFromLocalStorage('userId');
+    removeFromLocalStorage('userRole'); // Clear role
+    setIsAuthenticated(false);
+    router.push('/signin');
+  };
+
+  // Role-based helpers
+  const isAdmin = user?.role === 'admin';
+  const isUser = user?.role === 'user';
+  const hasRole = (requiredRole: string) => user?.role === requiredRole;
+
+  return { 
+    user, 
+    isAuthenticated, 
+    isLoading, 
+    login, 
+    logout,
+    isAdmin,
+    isUser,
+    hasRole
+  };
+}
+```
+
+### Admin Features Implementation
+
+#### Admin Dashboard Hook
+```typescript
+// admin/dashboard/_hooks/useAdminStats.ts
+export function useAdminStats() {
+  const trpc = useTRPC();
+  
+  return useQuery(
+    trpc.admin.getSystemStats.queryOptions(void 0, {
+      refetchInterval: 30000, // Refetch every 30 seconds
+    })
+  );
+}
+```
+
+#### User Management Hook
+```typescript
+// admin/users/_hooks/useUserManagement.ts
+export function useUserManagement() {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  
+  const getUsersQuery = (page: number, search?: string) => 
+    useQuery(
+      trpc.admin.getAllUsers.queryOptions({ page, limit: 10, search })
+    );
+    
+  const deleteUserMutation = useMutation(
+    trpc.admin.deleteUser.mutationOptions({
+      onSuccess: () => {
+        toast.success("User deleted successfully");
+        queryClient.invalidateQueries(['admin', 'getAllUsers']);
+      },
+      onError: (err) => {
+        toast.error("Failed to delete user", { description: err.message });
+      },
+    })
+  );
+  
+  return {
+    getUsersQuery,
+    deleteUser: deleteUserMutation.mutate,
+    isDeletingUser: deleteUserMutation.isPending
+  };
+}
+```
+
+### Route Protection
+
+#### Admin Route Groups
+- **`(admin)`**: Automatically protected for admin users only
+- **`(protected)`**: Protected for authenticated users
+- **`(public)`**: Open access routes
+
+#### Admin Layout Example
+```typescript
+// (admin)/layout.tsx
+export default function AdminLayout({ children }) {
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && (!isAuthenticated || !isAdmin)) {
+      router.push("/signin");
+    }
+  }, [isAuthenticated, isAdmin, isLoading, router]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated || !isAdmin) {
+    return <div>Access denied. Admin privileges required.</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AdminSidebar />
+      <div className="md:ml-[200px] min-h-screen">
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+#### Navigation Based on Role
+```typescript
+// components/ContextSidebar.tsx
+export function ContextSidebar() {
+  const { user, isAdmin } = useAuth();
+  
+  return (
+    <div className="sidebar">
+      {isAdmin ? (
+        <AdminSidebar />
+      ) : (
+        <UserSidebar />
+      )}
+    </div>
+  );
+}
+```
+
+### Security Features
+
+#### Client-Side Protection
+- Role guards at component level
+- Route-level authentication checks
+- Dynamic navigation based on user role
+- Automatic redirection for unauthorized access
+
+#### API Integration
+- Role-based tRPC endpoint access
+- Admin-specific mutation hooks
+- Secure token validation with role information
+- Consistent error handling for unauthorized access
+
+### Admin Dashboard Features
+
+#### System Overview
+- Total user count
+- New registrations (daily/weekly/monthly)
+- System health metrics
+- Recent user activity
+
+#### User Management
+- Search and filter users
+- View user profiles
+- Update user roles
+- Delete user accounts
+- Bulk operations
+
+This template provides a solid foundation for building modern, type-safe React applications with comprehensive role-based access control, tRPC, and Next.js 15.

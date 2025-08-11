@@ -13,57 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Home,
-  Settings,
-  User,
-  LogOut,
-  ChevronUp,
-  BarChart3,
-  X,
-} from "lucide-react";
+import { User, LogOut, ChevronUp, Settings, X } from "lucide-react";
 import Link from "next/link";
+import { USER_NAVIGATION_ITEMS } from "../_constants";
 
-// Only include routes that actually exist
-const userItems = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-];
-
-const adminItems = [
-  {
-    title: "Admin Dashboard",
-    url: "/admin/dashboard",
-    icon: BarChart3,
-  },
-  {
-    title: "User Management",
-    url: "/admin/users",
-    icon: User,
-  },
-  {
-    title: "Admin Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
-];
-
-interface AppSidebarProps {
+interface UserSidebarProps {
   className?: string;
   onClose?: () => void;
 }
 
-export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
+export function UserSidebar({ className = "", onClose }: UserSidebarProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const trpc = useTRPC();
-
-  // Determine which navigation items to show based on user role
-  const navigationItems = user?.role === "admin" ? adminItems : userItems;
 
   const logoutMutation = useMutation(
     trpc.auth.logout.mutationOptions({
@@ -116,7 +79,7 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
           <div className="px-2 py-1 text-xs font-medium text-sidebar-foreground/70 uppercase tracking-wider">
             Menu
           </div>
-          {navigationItems.map((item) => (
+          {USER_NAVIGATION_ITEMS.map((item) => (
             <Link
               key={item.title}
               href={item.url}

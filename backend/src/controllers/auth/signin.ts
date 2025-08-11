@@ -28,7 +28,7 @@ export const signin = async (input: z.infer<typeof signinSchema>) => {
     });
   }
 
-  const tokens = await getTokens(user.id, user.email);
+  const tokens = await getTokens(user.id, user.email, user.role);
   await updateRefreshToken(user.id, tokens.refresh_token);
 
   return {
@@ -36,6 +36,7 @@ export const signin = async (input: z.infer<typeof signinSchema>) => {
     last_name: user.last_name,
     email: user.email,
     id: user.id,
+    role: user.role,
     ...tokens,
   };
 };

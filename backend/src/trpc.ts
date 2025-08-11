@@ -1,7 +1,7 @@
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { TRPCError, initTRPC } from "@trpc/server";
 import jwt from "jsonwebtoken";
-import { IUser, UserModel } from "./model/user";
+import { IUser, UserModel, UserRole } from "./model/user";
 
 const decodeAndVerifyJwtToken = async (token: string) => {
   try {
@@ -15,11 +15,16 @@ const decodeAndVerifyJwtToken = async (token: string) => {
   }
 };
 
-const createContext = async ({ req, res }: trpcExpress.CreateExpressContextOptions) => {
+const createContext = async ({
+  req,
+  res,
+}: trpcExpress.CreateExpressContextOptions) => {
   async function getTokenFromHeader() {
     if (req.headers.authorization) {
-      const decodedToken = await decodeAndVerifyJwtToken(req.headers.authorization?.split(" ")[1]);
-      return decodedToken as { userId: string; email: string };
+      const decodedToken = await decodeAndVerifyJwtToken(
+        req.headers.authorization?.split(" ")[1],
+      );
+      return decodedToken as { userId: string; email: string; role: string };
     }
     return null;
   }
@@ -49,6 +54,22 @@ export const privateProcedure = publicProcedure.use(async (opts) => {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "You are not authorized to access this resource",
+    });
+  }
+  return opts.next({
+    ctx: {
+      user: ctx.user,
+    },
+  });
+});
+
+export const adminProcedure = privateProcedure.use(async (opts) => {
+  const { ctx } = opts;
+
+  if (ctx.user.role !== UserRole.ADMIN) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
     });
   }
   return opts.next({

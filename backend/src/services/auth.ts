@@ -1,21 +1,34 @@
 import jwt from "jsonwebtoken";
+import { UserRole } from "../model/user";
 
-export const generateAccessToken = (userId: string, email: string) => {
-  return jwt.sign({ userId, email }, process.env.ACCESS_TOKEN_SECRET!, {
+export const generateAccessToken = (
+  userId: string,
+  email: string,
+  role: UserRole,
+) => {
+  return jwt.sign({ userId, email, role }, process.env.ACCESS_TOKEN_SECRET!, {
     expiresIn: "15m",
   });
 };
 
-export const generateRefreshToken = (userId: string, email: string) => {
-  return jwt.sign({ userId, email }, process.env.REFRESH_TOKEN_SECRET!, {
+export const generateRefreshToken = (
+  userId: string,
+  email: string,
+  role: UserRole,
+) => {
+  return jwt.sign({ userId, email, role }, process.env.REFRESH_TOKEN_SECRET!, {
     expiresIn: "7d",
   });
 };
 
-export const getTokens = async (userId: string, email: string) => {
+export const getTokens = async (
+  userId: string,
+  email: string,
+  role: UserRole,
+) => {
   const [access_token, refresh_token] = await Promise.all([
-    generateAccessToken(userId, email),
-    generateRefreshToken(userId, email),
+    generateAccessToken(userId, email, role),
+    generateRefreshToken(userId, email, role),
   ]);
   return {
     access_token,

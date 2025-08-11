@@ -1,8 +1,14 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
 @modelOptions({
   schemaOptions: {
     collection: "users",
+    timestamps: true,
   },
 })
 export class UserClass {
@@ -29,6 +35,19 @@ export class UserClass {
 
   @prop({ type: String })
   public verify_token?: string | null;
+
+  @prop({
+    required: true,
+    enum: UserRole,
+    default: UserRole.USER,
+    type: String,
+    index: true,
+  })
+  public role: UserRole;
+
+  // Timestamps (automatically managed by Mongoose when timestamps: true)
+  public createdAt?: Date;
+  public updatedAt?: Date;
 }
 
 export type IUser = UserClass & { id: string };

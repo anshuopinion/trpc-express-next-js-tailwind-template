@@ -33,7 +33,7 @@ export const refreshToken = async (
     });
   }
 
-  const tokens = await getTokens(user.id, user.email);
+  const tokens = await getTokens(user.id, user.email, user.role);
   await updateRefreshToken(user.id, tokens.refresh_token);
 
   return {
@@ -41,6 +41,7 @@ export const refreshToken = async (
     last_name: user.last_name,
     email: user.email,
     id: user.id,
+    role: user.role,
     ...tokens,
   };
 };

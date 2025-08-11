@@ -31,7 +31,7 @@ export const signup = async (input: z.infer<typeof signupSchema>) => {
     password: hashedPassword,
   });
 
-  const tokens = await getTokens(user.id, user.email);
+  const tokens = await getTokens(user.id, user.email, user.role);
   await updateRefreshToken(user.id, tokens.refresh_token);
 
   return {
@@ -39,6 +39,7 @@ export const signup = async (input: z.infer<typeof signupSchema>) => {
     last_name: user.last_name,
     email: user.email,
     id: user.id,
+    role: user.role,
     ...tokens,
   };
 };

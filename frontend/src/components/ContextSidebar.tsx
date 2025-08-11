@@ -13,57 +13,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Home,
-  Settings,
-  User,
-  LogOut,
-  ChevronUp,
-  BarChart3,
-  X,
-} from "lucide-react";
+import { User, LogOut, ChevronUp, Settings, X, Shield } from "lucide-react";
 import Link from "next/link";
 
-// Only include routes that actually exist
-const userItems = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-];
+// Import navigation constants
+import { USER_NAVIGATION_ITEMS } from "@/app/(protected)/_constants";
+import { ADMIN_NAVIGATION_ITEMS } from "@/app/(admin)/_constants";
 
-const adminItems = [
-  {
-    title: "Admin Dashboard",
-    url: "/admin/dashboard",
-    icon: BarChart3,
-  },
-  {
-    title: "User Management",
-    url: "/admin/users",
-    icon: User,
-  },
-  {
-    title: "Admin Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
-];
-
-interface AppSidebarProps {
+interface ContextSidebarProps {
   className?: string;
   onClose?: () => void;
+  context: "user" | "admin";
 }
 
-export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
+export function ContextSidebar({
+  className = "",
+  onClose,
+  context,
+}: ContextSidebarProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const trpc = useTRPC();
-
-  // Determine which navigation items to show based on user role
-  const navigationItems = user?.role === "admin" ? adminItems : userItems;
 
   const logoutMutation = useMutation(
     trpc.auth.logout.mutationOptions({
@@ -82,6 +53,20 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
     logoutMutation.mutate();
   };
 
+  // Determine navigation items and branding based on context
+  const isAdmin = context === "admin";
+  const navigationItems = isAdmin
+    ? ADMIN_NAVIGATION_ITEMS
+    : USER_NAVIGATION_ITEMS;
+  const headerTitle = isAdmin ? "Admin Panel" : "tRPC Template";
+  const headerIcon = isAdmin ? (
+    <Shield className="h-4 w-4 text-primary-foreground" />
+  ) : (
+    <span className="text-primary-foreground font-bold text-xs">T</span>
+  );
+  const menuLabel = isAdmin ? "Admin Menu" : "Menu";
+  const userSubtitle = isAdmin ? "Administrator" : user?.email;
+
   return (
     <div
       className={`w-[200px] max-w-[200px] bg-sidebar border-r border-sidebar-border flex flex-col ${className}`}
@@ -90,11 +75,11 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
       <div className="flex items-center justify-between p-3 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-            <span className="text-primary-foreground font-bold text-xs">T</span>
+            {headerIcon}
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-sidebar-foreground">
-              tRPC Template
+              {headerTitle}
             </span>
           </div>
         </div>
@@ -114,7 +99,7 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
       <div className="flex-1 p-3">
         <div className="space-y-1">
           <div className="px-2 py-1 text-xs font-medium text-sidebar-foreground/70 uppercase tracking-wider">
-            Menu
+            {menuLabel}
           </div>
           {navigationItems.map((item) => (
             <Link
@@ -122,6 +107,7 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
               href={item.url}
               className="flex items-center gap-2 px-2 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors text-sm"
               onClick={onClose}
+              title={item.description}
             >
               <item.icon className="h-4 w-4 shrink-0" />
               <span className="font-medium truncate">{item.title}</span>
@@ -149,7 +135,7 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
                   {user?.first_name} {user?.last_name}
                 </div>
                 <div className="truncate text-xs text-sidebar-foreground/70">
-                  {user?.email}
+                  {userSubtitle}
                 </div>
               </div>
               <ChevronUp className="ml-auto h-3 w-3 shrink-0" />
@@ -161,13 +147,23 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuItem className="cursor-pointer">
-              <User className="mr-2 h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
+            {/* Context-specific menu items */}
+            {isAdmin ? (
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard" className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  User Dashboard
+                </Link>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem className="cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {isAdmin ? "Admin Settings" : "Settings"}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer text-red-600"

@@ -1,3 +1,5 @@
+import { UserRole } from "../../model/user";
+
 interface User {
   id: string;
   email: string;
@@ -5,6 +7,7 @@ interface User {
   last_name: string;
   avatar?: string | null;
   is_email_verified: boolean;
+  role: UserRole;
 }
 
 export const me = async (user: User) => {
@@ -15,5 +18,6 @@ export const me = async (user: User) => {
     last_name: user.last_name,
     avatar: user.avatar,
     is_email_verified: user.is_email_verified,
+    role: user.role,
   };
 };

@@ -1,8 +1,8 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useTRPC } from "@/trpc/client";
 import type { DashboardData } from "../_types";
 
 export function useDashboardData() {

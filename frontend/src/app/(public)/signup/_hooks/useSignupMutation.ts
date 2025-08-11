@@ -23,7 +23,7 @@ export function useSignupMutation() {
           description: err.message,
         });
       },
-    }),
+    })
   );
 
   const handleSignup = (values: SignupFormData) => {

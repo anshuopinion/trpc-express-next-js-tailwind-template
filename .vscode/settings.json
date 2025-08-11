@@ -1,0 +1,97 @@
+{
+  // Biome extension configuration
+  "biome.lsp.bin": "${workspaceFolder}/node_modules/.bin/biome",
+  
+  // Set Biome as the default formatter
+  "editor.defaultFormatter": "biomejs.biome",
+  
+  // Format on save
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  
+  // Code actions on save
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  
+  // JavaScript/TypeScript specific settings based on your screenshots
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "javascript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "javascript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+  
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+  
+  // Tab and indentation settings matching your screenshots
+  "editor.tabSize": 2,
+  "editor.indentSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  
+  // JavaScript-specific formatting options from your screenshots
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2,
+    "editor.indentSize": 2,
+    "editor.formatOnSave": true
+  },
+  
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2,
+    "editor.indentSize": 2,
+    "editor.formatOnSave": true
+  },
+  
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2,
+    "editor.indentSize": 2,
+    "editor.formatOnSave": true
+  },
+  
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2,
+    "editor.indentSize": 2,
+    "editor.formatOnSave": true
+  },
+  
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true
+  },
+  
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true
+  },
+  
+  // Disable competing formatters
+  "prettier.enable": false,
+  
+  // File associations
+  "files.associations": {
+    "*.json": "jsonc"
+  },
+  
+  // Additional editor settings for chained methods (matching your screenshot)
+  "javascript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  
+  // Workspace-specific Biome configuration
+  "[backend/**]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  
+  "[frontend/**]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
+}

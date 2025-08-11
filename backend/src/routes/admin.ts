@@ -1,12 +1,10 @@
-import { adminProcedure, router } from "../trpc";
 import { adminController } from "../controllers";
+import { adminProcedure, router } from "../trpc";
 
 export const adminRouter = router({
-  getAllUsers: adminProcedure
-    .input(adminController.getAllUsersSchema)
-    .query(async (opts) => {
-      return await adminController.getAllUsers(opts.input);
-    }),
+  getAllUsers: adminProcedure.input(adminController.getAllUsersSchema).query(async (opts) => {
+    return await adminController.getAllUsers(opts.input);
+  }),
 
   updateUserRole: adminProcedure
     .input(adminController.updateUserRoleSchema)
@@ -14,13 +12,11 @@ export const adminRouter = router({
       return await adminController.updateUserRole(opts.input, opts.ctx.user);
     }),
 
-  deleteUser: adminProcedure
-    .input(adminController.deleteUserSchema)
-    .mutation(async (opts) => {
-      return await adminController.deleteUser(opts.input, opts.ctx.user);
-    }),
+  deleteUser: adminProcedure.input(adminController.deleteUserSchema).mutation(async (opts) => {
+    return await adminController.deleteUser(opts.input, opts.ctx.user);
+  }),
 
-  getSystemStats: adminProcedure.query(async (opts) => {
+  getSystemStats: adminProcedure.query(async (_opts) => {
     return await adminController.getSystemStats();
   }),
 });

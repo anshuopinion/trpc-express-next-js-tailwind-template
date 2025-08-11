@@ -1,13 +1,7 @@
-import { Input } from "@/components/ui/input";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Control, FieldPath, FieldValues } from "react-hook-form";
+import type { Control, FieldPath, FieldValues } from "react-hook-form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 interface PasswordFieldProps<T extends FieldValues> {
   control: Control<T>;

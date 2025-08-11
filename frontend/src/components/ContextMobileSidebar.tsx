@@ -27,9 +27,11 @@ export function ContextMobileSidebar({ context }: ContextMobileSidebarProps) {
 
       {/* Mobile Backdrop */}
       {sidebarOpen && (
-        <div
+        <button
+          type="button"
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
+          aria-label="Close sidebar"
         />
       )}
     </>

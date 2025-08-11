@@ -1,13 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AdminStatsCard } from "./AdminStatsCard";
-import { Users, UserCheck, Shield, AlertCircle } from "lucide-react";
+import { AlertCircle, Shield, UserCheck, Users } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SystemStats } from "../_types";
+import { AdminStatsCard } from "./AdminStatsCard";
 
 interface SystemOverviewProps {
   systemStats?: SystemStats;
@@ -18,7 +12,7 @@ export function SystemOverview({ systemStats }: SystemOverviewProps) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={`loading-${i}`} className="animate-pulse">
             <CardHeader>
               <div className="h-4 bg-muted rounded w-3/4"></div>
             </CardHeader>
@@ -45,7 +39,7 @@ export function SystemOverview({ systemStats }: SystemOverviewProps) {
         <AdminStatsCard
           title="Verified Users"
           value={systemStats.verifiedUsers}
-          description={`${Math.round((systemStats.verifiedUsers / systemStats.totalUsers) * 100)}% verification rate`}
+          description={`${systemStats.totalUsers > 0 ? Math.round((systemStats.verifiedUsers / systemStats.totalUsers) * 100) : 0}% verification rate`}
           icon={UserCheck}
         />
 
@@ -88,9 +82,7 @@ export function SystemOverview({ systemStats }: SystemOverviewProps) {
                       <p className="font-medium text-sm">
                         {user.first_name} {user.last_name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {user.email}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">

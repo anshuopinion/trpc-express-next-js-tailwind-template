@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel } from "../../model/user";
 import { comparePassword } from "../../services/password";
 
@@ -11,10 +11,7 @@ interface User {
   id: string;
 }
 
-export const deleteAccount = async (
-  input: z.infer<typeof deleteAccountSchema>,
-  user: User,
-) => {
+export const deleteAccount = async (input: z.infer<typeof deleteAccountSchema>, user: User) => {
   const { password } = input;
 
   const dbUser = await UserModel.findById(user.id);

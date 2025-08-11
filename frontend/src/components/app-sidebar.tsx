@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { BarChart3, ChevronUp, Home, LogOut, Settings, User, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,17 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Home,
-  Settings,
-  User,
-  LogOut,
-  ChevronUp,
-  BarChart3,
-  X,
-} from "lucide-react";
-import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import { useTRPC } from "@/trpc/client";
 
 // Only include routes that actually exist
 const userItems = [
@@ -74,7 +66,7 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
       onSettled: () => {
         setIsLoggingOut(false);
       },
-    }),
+    })
   );
 
   const handleLogout = () => {
@@ -93,18 +85,11 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
             <span className="text-primary-foreground font-bold text-xs">T</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-sidebar-foreground">
-              tRPC Template
-            </span>
+            <span className="text-xs font-semibold text-sidebar-foreground">tRPC Template</span>
           </div>
         </div>
         {onClose && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 md:hidden"
-          >
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 md:hidden">
             <X className="h-4 w-4" />
           </Button>
         )}
@@ -148,19 +133,12 @@ export function AppSidebar({ className = "", onClose }: AppSidebarProps) {
                 <div className="truncate font-semibold">
                   {user?.first_name} {user?.last_name}
                 </div>
-                <div className="truncate text-xs text-sidebar-foreground/70">
-                  {user?.email}
-                </div>
+                <div className="truncate text-xs text-sidebar-foreground/70">{user?.email}</div>
               </div>
               <ChevronUp className="ml-auto h-3 w-3 shrink-0" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-48 rounded-lg"
-            side="top"
-            align="end"
-            sideOffset={4}
-          >
+          <DropdownMenuContent className="w-48 rounded-lg" side="top" align="end" sideOffset={4}>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               Profile

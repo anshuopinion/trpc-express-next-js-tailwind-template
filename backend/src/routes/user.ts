@@ -1,5 +1,5 @@
-import { privateProcedure, router } from "../trpc";
 import { userController } from "../controllers";
+import { privateProcedure, router } from "../trpc";
 
 export const userRouter = router({
   updateProfile: privateProcedure

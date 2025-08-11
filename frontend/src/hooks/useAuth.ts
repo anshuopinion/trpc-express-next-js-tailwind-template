@@ -1,15 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getFromLocalStorage,
-  setToLocalStorage,
-  removeFromLocalStorage,
-} from "@/lib/utils";
-import { setAuthCookies, clearAuthCookies } from "@/lib/auth-utils";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { clearAuthCookies, setAuthCookies } from "@/lib/auth-utils";
+import { getFromLocalStorage, removeFromLocalStorage, setToLocalStorage } from "@/lib/utils";
+import { useTRPC } from "@/trpc/client";
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,7 +21,7 @@ export function useAuth() {
     trpc.auth.me.queryOptions(void 0, {
       enabled: !!getFromLocalStorage("accessToken"),
       retry: false,
-    }),
+    })
   );
 
   useEffect(() => {

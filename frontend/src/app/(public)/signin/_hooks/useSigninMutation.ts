@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useTRPC } from "@/trpc/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useTRPC } from "@/trpc/client";
 import type { SigninFormData } from "../_schema";
 
 export function useSigninMutation() {
@@ -24,7 +24,7 @@ export function useSigninMutation() {
           description: err.message,
         });
       },
-    }),
+    })
   );
 
   const handleSignin = (values: SigninFormData) => {

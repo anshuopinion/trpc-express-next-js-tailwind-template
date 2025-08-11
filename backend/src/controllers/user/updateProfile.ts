@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel } from "../../model/user";
 
 const updateProfileSchema = z.object({
@@ -12,13 +12,10 @@ interface User {
   id: string;
 }
 
-export const updateProfile = async (
-  input: z.infer<typeof updateProfileSchema>,
-  user: User,
-) => {
+export const updateProfile = async (input: z.infer<typeof updateProfileSchema>, user: User) => {
   const { first_name, last_name, avatar } = input;
 
-  const updateData: any = {};
+  const updateData: Record<string, unknown> = {};
   if (first_name) updateData.first_name = first_name;
   if (last_name) updateData.last_name = last_name;
   if (avatar !== undefined) updateData.avatar = avatar;

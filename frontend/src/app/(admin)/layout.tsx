@@ -1,20 +1,13 @@
-import { ServerAdminGuard } from "@/lib/server-auth";
-import { ContextSidebar } from "@/components/ContextSidebar";
 import { ContextMobileSidebar } from "@/components/ContextMobileSidebar";
+import { ContextSidebar } from "@/components/ContextSidebar";
+import { ServerAdminGuard } from "@/lib/server-auth";
 
-export default function AdminRouteGroupLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminRouteGroupLayout({ children }: { children: React.ReactNode }) {
   return (
     <ServerAdminGuard>
       <div className="min-h-screen bg-background">
         {/* Desktop Sidebar - Server Component */}
-        <ContextSidebar
-          context="admin"
-          className="hidden md:flex fixed inset-y-0 left-0 z-30"
-        />
+        <ContextSidebar context="admin" className="hidden md:flex fixed inset-y-0 left-0 z-30" />
 
         {/* Mobile Sidebar - Client Component */}
         <ContextMobileSidebar context="admin" />

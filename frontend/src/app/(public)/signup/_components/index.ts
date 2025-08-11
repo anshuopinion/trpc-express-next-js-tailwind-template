@@ -1,4 +1,4 @@
-export { SignupForm } from "./SignupForm";
+export { ConfirmPasswordField } from "./ConfirmPasswordField";
 export { NameFields } from "./NameFields";
 export { SignupButton } from "./SignupButton";
-export { ConfirmPasswordField } from "./ConfirmPasswordField";
+export { SignupForm } from "./SignupForm";

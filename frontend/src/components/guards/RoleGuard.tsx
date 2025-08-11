@@ -1,8 +1,8 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -53,9 +53,7 @@ export function RoleGuard({
       fallback || (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <p className="text-lg font-semibold text-destructive">
-              Access Denied
-            </p>
+            <p className="text-lg font-semibold text-destructive">Access Denied</p>
             <p className="text-sm text-muted-foreground mt-1">
               You don&apos;t have permission to access this page.
             </p>

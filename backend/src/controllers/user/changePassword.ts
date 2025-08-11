@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel } from "../../model/user";
 import { comparePassword, hashPassword } from "../../services/password";
 
@@ -12,10 +12,7 @@ interface User {
   id: string;
 }
 
-export const changePassword = async (
-  input: z.infer<typeof changePasswordSchema>,
-  user: User,
-) => {
+export const changePassword = async (input: z.infer<typeof changePasswordSchema>, user: User) => {
   const { currentPassword, newPassword } = input;
 
   const dbUser = await UserModel.findById(user.id);
@@ -26,10 +23,7 @@ export const changePassword = async (
     });
   }
 
-  const passwordMatches = await comparePassword(
-    currentPassword,
-    dbUser.password,
-  );
+  const passwordMatches = await comparePassword(currentPassword, dbUser.password);
   if (!passwordMatches) {
     throw new TRPCError({
       code: "UNAUTHORIZED",

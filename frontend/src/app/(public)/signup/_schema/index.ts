@@ -1,1 +1,1 @@
-export { signupSchema, type SignupFormData } from "./signupSchema";
+export { type SignupFormData, signupSchema } from "./signupSchema";

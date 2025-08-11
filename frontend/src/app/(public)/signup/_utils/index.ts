@@ -1,11 +1,11 @@
 export {
-  validateEmailFormat,
-  validatePasswordStrength,
-  validatePasswordMatch,
-} from "./validation";
-export {
-  generatePasswordStrengthColor,
-  generatePasswordStrengthBg,
-  passwordRequirements,
   checkPasswordRequirements,
+  generatePasswordStrengthBg,
+  generatePasswordStrengthColor,
+  passwordRequirements,
 } from "./passwordUtils";
+export {
+  validateEmailFormat,
+  validatePasswordMatch,
+  validatePasswordStrength,
+} from "./validation";

@@ -19,9 +19,7 @@ export function AdminStatsCard({
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground">{description}</p>
           {trend && (
-            <div
-              className={`text-xs ${trend.isPositive ? "text-green-600" : "text-red-600"}`}
-            >
+            <div className={`text-xs ${trend.isPositive ? "text-green-600" : "text-red-600"}`}>
               {trend.isPositive ? "+" : ""}
               {trend.value}%
             </div>

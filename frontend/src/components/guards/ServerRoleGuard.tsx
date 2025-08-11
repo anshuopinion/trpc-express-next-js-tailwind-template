@@ -1,10 +1,7 @@
 import "server-only";
-import React from "react";
 import { redirect } from "next/navigation";
-import {
-  getServerAuthTokens,
-  isServerAuthenticated,
-} from "@/lib/server-auth-utils";
+import type React from "react";
+import { getServerAuthTokens, isServerAuthenticated } from "@/lib/server-auth-utils";
 
 // Server-side role check component
 export async function ServerRoleGuard({
@@ -28,20 +25,12 @@ export async function ServerRoleGuard({
 }
 
 // Server-side admin guard component
-export async function ServerAdminGuard({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export async function ServerAdminGuard({ children }: { children: React.ReactNode }) {
   return <ServerRoleGuard roles={["admin"]}>{children}</ServerRoleGuard>;
 }
 
 // Server-side user authentication guard component (any authenticated user)
-export async function ServerUserGuard({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export async function ServerUserGuard({ children }: { children: React.ReactNode }) {
   if (!(await isServerAuthenticated())) {
     redirect("/signin");
   }

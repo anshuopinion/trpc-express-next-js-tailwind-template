@@ -1,14 +1,14 @@
 export {
-  validateEmailFormat,
-  validateCredentials,
-  sanitizeEmail,
-} from "./validation";
-export {
-  getFromLocalStorage,
-  setToLocalStorage,
-  removeFromLocalStorage,
   clearAuthTokens,
-  setAuthTokens,
   getAccessToken,
+  getFromLocalStorage,
   hasValidTokens,
+  removeFromLocalStorage,
+  setAuthTokens,
+  setToLocalStorage,
 } from "./storage";
+export {
+  sanitizeEmail,
+  validateCredentials,
+  validateEmailFormat,
+} from "./validation";

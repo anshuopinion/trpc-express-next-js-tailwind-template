@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { QueryClient } from '@tanstack/react-query';
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
-import { useMemo } from 'react';
-import type { AppRouter } from '../../../backend/types/routes';
+import { QueryClient } from "@tanstack/react-query";
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import { useMemo } from "react";
+import type { AppRouter } from "../../../backend/types/routes";
 
 // Create a query client
 export const queryClient = new QueryClient({
@@ -25,9 +25,9 @@ export const queryClient = new QueryClient({
 export const trpcClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/trpc` || 'http://localhost:4005/trpc',
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/trpc` || "http://localhost:4005/trpc",
       headers: () => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+        const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
         return token ? { authorization: `Bearer ${token}` } : {};
       },
     }),
@@ -46,9 +46,9 @@ export function useTRPC() {
 }
 
 // Export types for type inference
-export type { AppRouter } from '../../../backend/types/routes';
+export type { AppRouter } from "../../../backend/types/routes";
 
 // Type inference helpers
-import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 export type RouterInputs = inferRouterInputs<AppRouter>;
 export type RouterOutputs = inferRouterOutputs<AppRouter>;

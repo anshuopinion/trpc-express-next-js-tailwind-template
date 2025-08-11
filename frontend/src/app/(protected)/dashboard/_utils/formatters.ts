@@ -21,19 +21,13 @@ export const formatTimestamp = (timestamp: string): string => {
   return new Date(timestamp).toLocaleString();
 };
 
-export const formatUserInitials = (
-  firstName?: string,
-  lastName?: string,
-): string => {
+export const formatUserInitials = (firstName?: string, lastName?: string): string => {
   const first = firstName?.charAt(0)?.toUpperCase() || "";
   const last = lastName?.charAt(0)?.toUpperCase() || "";
   return `${first}${last}` || "??";
 };
 
-export const formatFullName = (
-  firstName?: string,
-  lastName?: string,
-): string => {
+export const formatFullName = (firstName?: string, lastName?: string): string => {
   return `${firstName || ""} ${lastName || ""}`.trim() || "Unknown User";
 };
 

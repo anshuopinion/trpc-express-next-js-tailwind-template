@@ -1,17 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
-import { formatUserInitials, formatFullName } from "../_utils";
-import { getVerificationStatus } from "../_utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { User as UserType } from "../_types";
+import { formatFullName, formatUserInitials, getVerificationStatus } from "../_utils";
 
 interface UserProfileCardProps {
   user: UserType | null;
 }
 
 export function UserProfileCard({ user }: UserProfileCardProps) {
-  const verificationInfo = getVerificationStatus(
-    user?.is_email_verified || false,
-  );
+  const verificationInfo = getVerificationStatus(user?.is_email_verified || false);
 
   return (
     <Card>
@@ -30,9 +27,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
               {formatUserInitials(user?.first_name, user?.last_name)}
             </span>
           </div>
-          <span className={`text-sm ${verificationInfo.color}`}>
-            {verificationInfo.label}
-          </span>
+          <span className={`text-sm ${verificationInfo.color}`}>{verificationInfo.label}</span>
         </div>
       </CardContent>
     </Card>

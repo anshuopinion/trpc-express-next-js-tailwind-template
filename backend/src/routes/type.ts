@@ -1,5 +1,5 @@
-import { publicProcedure, router } from "../trpc";
 import { typeController } from "../controllers";
+import { publicProcedure, router } from "../trpc";
 
 export const typeRouter = router({
   getAppInfo: publicProcedure.query(() => {
@@ -10,11 +10,9 @@ export const typeRouter = router({
     return typeController.getEnvironment();
   }),
 
-  validateEmail: publicProcedure
-    .input(typeController.validateEmailSchema)
-    .query(({ input }) => {
-      return typeController.validateEmail(input);
-    }),
+  validateEmail: publicProcedure.input(typeController.validateEmailSchema).query(({ input }) => {
+    return typeController.validateEmail(input);
+  }),
 
   healthCheck: publicProcedure.query(() => {
     return typeController.healthCheck();

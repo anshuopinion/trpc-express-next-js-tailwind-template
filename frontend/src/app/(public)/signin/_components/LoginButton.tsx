@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface LoginButtonProps {
   isPending: boolean;
@@ -7,12 +7,7 @@ interface LoginButtonProps {
 
 export function LoginButton({ isPending }: LoginButtonProps) {
   return (
-    <Button
-      className="w-full font-medium"
-      variant="default"
-      type="submit"
-      disabled={isPending}
-    >
+    <Button className="w-full font-medium" variant="default" type="submit" disabled={isPending}>
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

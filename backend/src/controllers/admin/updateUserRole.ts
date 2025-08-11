@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel, UserRole } from "../../model/user";
 
 const updateUserRoleSchema = z.object({
@@ -9,7 +9,7 @@ const updateUserRoleSchema = z.object({
 
 export const updateUserRole = async (
   input: z.infer<typeof updateUserRoleSchema>,
-  adminUser: { id: string },
+  adminUser: { id: string }
 ) => {
   const { userId, role } = input;
 

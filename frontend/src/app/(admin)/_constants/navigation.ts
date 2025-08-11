@@ -1,11 +1,4 @@
-import {
-  BarChart3,
-  Users,
-  Settings,
-  Shield,
-  Activity,
-  Database,
-} from "lucide-react";
+import { BarChart3, Settings, Users } from "lucide-react";
 
 // Admin-specific navigation routes (only routes that exist in (admin)/)
 export const ADMIN_NAVIGATION_ITEMS = [

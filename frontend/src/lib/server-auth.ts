@@ -1,13 +1,9 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import {
-  isServerAdmin,
-  isServerAuthenticated,
-  getServerAuthTokens,
-} from "./server-auth-utils";
 import { getServerTrpcClient, serverTrpcCall } from "@/trpc/server";
 import type { UserRole } from "../../../backend/types/model/user";
+import { getServerAuthTokens, isServerAdmin, isServerAuthenticated } from "./server-auth-utils";
 
 // Server-side authentication verification
 export async function requireAuth() {
@@ -33,9 +29,7 @@ export async function getServerUser() {
     return null;
   }
 
-  const { data: user, error } = await serverTrpcCall(() =>
-    getServerTrpcClient().auth.me.query(),
-  );
+  const { data: user, error } = await serverTrpcCall(() => getServerTrpcClient().auth.me.query());
 
   if (error) {
     console.error("Failed to fetch user on server:", error);
@@ -85,7 +79,7 @@ export async function getServerUserList(options?: {
       page: options?.page || 1,
       limit: options?.limit || 10,
       role: options?.role,
-    }),
+    })
   );
 
   return { userList, error };
@@ -93,7 +87,7 @@ export async function getServerUserList(options?: {
 
 // Export guard components from separate files
 export {
-  ServerRoleGuard,
   ServerAdminGuard,
+  ServerRoleGuard,
   ServerUserGuard,
 } from "@/components/guards/ServerRoleGuard";

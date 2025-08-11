@@ -1,13 +1,7 @@
-import { Input } from "@/components/ui/input";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import type { SignupFormData } from "../_schema";
 
 interface ConfirmPasswordFieldProps {
@@ -16,11 +10,7 @@ interface ConfirmPasswordFieldProps {
   onToggle: () => void;
 }
 
-export function ConfirmPasswordField({
-  form,
-  showPassword,
-  onToggle,
-}: ConfirmPasswordFieldProps) {
+export function ConfirmPasswordField({ form, showPassword, onToggle }: ConfirmPasswordFieldProps) {
   return (
     <FormField
       control={form.control}

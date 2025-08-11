@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity } from "lucide-react";
-import { formatVersion } from "../_utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AppInfo } from "../_types";
+import { formatVersion } from "../_utils";
 
 interface AppInfoCardProps {
   appInfo: AppInfo | null;
@@ -15,16 +15,13 @@ export function AppInfoCard({ appInfo }: AppInfoCardProps) {
         <Activity className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">
-          {appInfo?.name || "tRPC Template"}
-        </div>
+        <div className="text-2xl font-bold">{appInfo?.name || "tRPC Template"}</div>
         <p className="text-xs text-muted-foreground">
           Version {formatVersion(appInfo?.version || "1.0.0")}
         </p>
         <div className="mt-4">
           <span className="text-sm text-muted-foreground">
-            {appInfo?.description ||
-              "Modern tRPC template with role-based authentication"}
+            {appInfo?.description || "Modern tRPC template with role-based authentication"}
           </span>
         </div>
       </CardContent>

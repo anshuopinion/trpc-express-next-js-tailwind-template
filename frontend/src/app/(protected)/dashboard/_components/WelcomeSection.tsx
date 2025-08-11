@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface WelcomeSectionProps {
   firstName?: string;
@@ -18,8 +12,7 @@ export function WelcomeSection({ firstName }: WelcomeSectionProps) {
           🎉 Welcome to your Dashboard{firstName ? `, ${firstName}` : ""}!
         </CardTitle>
         <CardDescription>
-          You've successfully authenticated using tRPC and JWT tokens. This
-          dashboard demonstrates:
+          You've successfully authenticated using tRPC and JWT tokens. This dashboard demonstrates:
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -27,9 +20,7 @@ export function WelcomeSection({ firstName }: WelcomeSectionProps) {
           <li>Type-safe API calls with tRPC and React Query</li>
           <li>JWT-based authentication with automatic token management</li>
           <li>Protected routes that redirect unauthenticated users</li>
-          <li>
-            Modern Next.js 15 app structure with server and client components
-          </li>
+          <li>Modern Next.js 15 app structure with server and client components</li>
           <li>Real-time data fetching and caching</li>
           <li>shadcn/ui components with Tailwind CSS styling</li>
         </ul>
@@ -38,14 +29,11 @@ export function WelcomeSection({ firstName }: WelcomeSectionProps) {
           <div className="flex items-start space-x-3">
             <div className="text-2xl">✨</div>
             <div>
-              <h4 className="font-semibold text-primary mb-1">
-                This is a clean template!
-              </h4>
+              <h4 className="font-semibold text-primary mb-1">This is a clean template!</h4>
               <p className="text-sm text-muted-foreground">
-                You can use this as a starting point for your own tRPC
-                applications. The template includes authentication, user
-                management, and a solid foundation for building type-safe
-                full-stack applications.
+                You can use this as a starting point for your own tRPC applications. The template
+                includes authentication, user management, and a solid foundation for building
+                type-safe full-stack applications.
               </p>
             </div>
           </div>

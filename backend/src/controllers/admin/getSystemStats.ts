@@ -1,13 +1,12 @@
 import { UserModel, UserRole } from "../../model/user";
 
 export const getSystemStats = async () => {
-  const [totalUsers, adminUsers, regularUsers, verifiedUsers] =
-    await Promise.all([
-      UserModel.countDocuments({}),
-      UserModel.countDocuments({ role: UserRole.ADMIN }),
-      UserModel.countDocuments({ role: UserRole.USER }),
-      UserModel.countDocuments({ is_email_verified: true }),
-    ]);
+  const [totalUsers, adminUsers, regularUsers, verifiedUsers] = await Promise.all([
+    UserModel.countDocuments({}),
+    UserModel.countDocuments({ role: UserRole.ADMIN }),
+    UserModel.countDocuments({ role: UserRole.USER }),
+    UserModel.countDocuments({ is_email_verified: true }),
+  ]);
 
   const recentUsersRaw = await UserModel.find({})
     .select("-password -refresh_token -verify_token")

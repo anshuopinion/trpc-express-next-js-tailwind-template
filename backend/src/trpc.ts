@@ -1,13 +1,19 @@
+import { initTRPC, TRPCError } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { TRPCError, initTRPC } from "@trpc/server";
 import jwt from "jsonwebtoken";
-import { IUser, UserModel, UserRole } from "./model/user";
+import { type IUser, UserModel, UserRole } from "./model/user";
 
 const decodeAndVerifyJwtToken = async (token: string) => {
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!);
+    const secret = process.env.ACCESS_TOKEN_SECRET;
+    if (!secret)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "ACCESS_TOKEN_SECRET is not defined",
+      });
+    const decoded = jwt.verify(token, secret);
     return decoded;
-  } catch (error) {
+  } catch (_error) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Invalid token",
@@ -15,15 +21,11 @@ const decodeAndVerifyJwtToken = async (token: string) => {
   }
 };
 
-const createContext = async ({
-  req,
-  res,
-}: trpcExpress.CreateExpressContextOptions) => {
+const createContext = async ({ req }: trpcExpress.CreateExpressContextOptions) => {
   async function getTokenFromHeader() {
     if (req.headers.authorization) {
-      const decodedToken = await decodeAndVerifyJwtToken(
-        req.headers.authorization?.split(" ")[1],
-      );
+      const token = req.headers.authorization.split(" ")[1];
+      const decodedToken = await decodeAndVerifyJwtToken(token);
       return decodedToken as { userId: string; email: string; role: string };
     }
     return null;

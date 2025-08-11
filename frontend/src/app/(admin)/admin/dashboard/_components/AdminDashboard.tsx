@@ -1,19 +1,25 @@
-
-import { SystemOverview } from "./SystemOverview";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Activity, Server } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SystemStats } from "../_types";
+import { SystemOverview } from "./SystemOverview";
+
+interface HealthCheck {
+  status: string;
+  uptime: number;
+  timestamp: string;
+}
+
+interface AppInfo {
+  name: string;
+  version: string;
+  description: string;
+  environment: string;
+}
 
 interface AdminDashboardProps {
   initialSystemStats?: SystemStats | null;
-  initialHealthCheck?: any;
-  initialAppInfo?: any;
+  initialHealthCheck?: HealthCheck | null;
+  initialAppInfo?: AppInfo | null;
   serverErrors: {
     stats: string | null;
     health: string | null;
@@ -33,15 +39,12 @@ export function AdminDashboard({
   const appInfo = initialAppInfo;
 
   // Show errors if server failed
-  const hasErrors =
-    serverErrors.stats || serverErrors.health || serverErrors.app;
+  const hasErrors = serverErrors.stats || serverErrors.health || serverErrors.app;
 
   if (hasErrors) {
     return (
       <div className="text-center py-8">
-        <p className="text-lg font-semibold text-destructive">
-          Error loading admin dashboard
-        </p>
+        <p className="text-lg font-semibold text-destructive">Error loading admin dashboard</p>
         <p className="text-sm text-muted-foreground mt-1">
           {serverErrors.stats ||
             serverErrors.health ||
@@ -83,14 +86,10 @@ export function AdminDashboard({
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Uptime</span>
                 <span className="text-sm text-muted-foreground">
-                  {healthCheck?.uptime
-                    ? Math.floor(healthCheck.uptime / 60) + " minutes"
-                    : "N/A"}
+                  {healthCheck?.uptime ? `${Math.floor(healthCheck.uptime / 60)} minutes` : "N/A"}
                 </span>
               </div>
-              {serverErrors.health && (
-                <p className="text-xs text-red-600">{serverErrors.health}</p>
-              )}
+              {serverErrors.health && <p className="text-xs text-red-600">{serverErrors.health}</p>}
             </div>
           </CardContent>
         </Card>
@@ -114,13 +113,10 @@ export function AdminDashboard({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Version</span>
-                <span className="text-sm text-muted-foreground">
-                  {appInfo?.version || "1.0.0"}
-                </span>
+                <span className="text-sm text-muted-foreground">{appInfo?.version || "1.0.0"}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                {appInfo?.description ||
-                  "Modern tRPC template with role-based authentication"}
+                {appInfo?.description || "Modern tRPC template with role-based authentication"}
               </p>
             </div>
           </CardContent>

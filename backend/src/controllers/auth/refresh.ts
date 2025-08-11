@@ -1,17 +1,15 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel } from "../../model/user";
-import { comparePassword, updateRefreshToken } from "../../services/password";
 import { getTokens } from "../../services/auth";
+import { comparePassword, updateRefreshToken } from "../../services/password";
 
 const refreshTokenSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
   refreshToken: z.string().min(1, "Refresh token is required"),
 });
 
-export const refreshToken = async (
-  input: z.infer<typeof refreshTokenSchema>,
-) => {
+export const refreshToken = async (input: z.infer<typeof refreshTokenSchema>) => {
   const { userId, refreshToken: refreshTokenInput } = input;
 
   const user = await UserModel.findById(userId);
@@ -22,10 +20,7 @@ export const refreshToken = async (
     });
   }
 
-  const refreshTokenMatches = await comparePassword(
-    refreshTokenInput,
-    user.refresh_token || "",
-  );
+  const refreshTokenMatches = await comparePassword(refreshTokenInput, user.refresh_token || "");
   if (!refreshTokenMatches) {
     throw new TRPCError({
       code: "UNAUTHORIZED",

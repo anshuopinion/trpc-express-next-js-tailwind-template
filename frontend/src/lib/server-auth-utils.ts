@@ -45,22 +45,22 @@ export async function isServerAuthenticated(): Promise<boolean> {
 }
 
 // Hybrid authentication utilities (works on both server and client)
-export function getAuthToken(): string | null {
+export async function getAuthToken(): Promise<string | null> {
   // Server-side: get from cookies
   if (typeof window === "undefined") {
-    const { accessToken } = getServerAuthTokens();
-    return accessToken;
+    const { accessToken } = await getServerAuthTokens();
+    return accessToken || null;
   }
 
   // This shouldn't be called from client components
   return null;
 }
 
-export function getUserRole(): string | null {
+export async function getUserRole(): Promise<string | null> {
   // Server-side: get from cookies
   if (typeof window === "undefined") {
-    const { userRole } = getServerAuthTokens();
-    return userRole;
+    const { userRole } = await getServerAuthTokens();
+    return userRole || null;
   }
 
   // This shouldn't be called from client components

@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { ChevronUp, LogOut, Settings, Shield, User, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ADMIN_NAVIGATION_ITEMS } from "@/app/(admin)/_constants";
+// Import navigation constants
+import { USER_NAVIGATION_ITEMS } from "@/app/(protected)/_constants";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,13 +16,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, LogOut, ChevronUp, Settings, X, Shield } from "lucide-react";
-import Link from "next/link";
-
-// Import navigation constants
-import { USER_NAVIGATION_ITEMS } from "@/app/(protected)/_constants";
-import { ADMIN_NAVIGATION_ITEMS } from "@/app/(admin)/_constants";
+import { useAuth } from "@/hooks/useAuth";
+import { useTRPC } from "@/trpc/client";
 
 interface ContextSidebarProps {
   className?: string;
@@ -26,11 +25,7 @@ interface ContextSidebarProps {
   context: "user" | "admin";
 }
 
-export function ContextSidebar({
-  className = "",
-  onClose,
-  context,
-}: ContextSidebarProps) {
+export function ContextSidebar({ className = "", onClose, context }: ContextSidebarProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -45,7 +40,7 @@ export function ContextSidebar({
       onSettled: () => {
         setIsLoggingOut(false);
       },
-    }),
+    })
   );
 
   const handleLogout = () => {
@@ -55,9 +50,7 @@ export function ContextSidebar({
 
   // Determine navigation items and branding based on context
   const isAdmin = context === "admin";
-  const navigationItems = isAdmin
-    ? ADMIN_NAVIGATION_ITEMS
-    : USER_NAVIGATION_ITEMS;
+  const navigationItems = isAdmin ? ADMIN_NAVIGATION_ITEMS : USER_NAVIGATION_ITEMS;
   const headerTitle = isAdmin ? "Admin Panel" : "tRPC Template";
   const headerIcon = isAdmin ? (
     <Shield className="h-4 w-4 text-primary-foreground" />
@@ -78,18 +71,11 @@ export function ContextSidebar({
             {headerIcon}
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-sidebar-foreground">
-              {headerTitle}
-            </span>
+            <span className="text-xs font-semibold text-sidebar-foreground">{headerTitle}</span>
           </div>
         </div>
         {onClose && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 md:hidden"
-          >
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 md:hidden">
             <X className="h-4 w-4" />
           </Button>
         )}
@@ -134,19 +120,12 @@ export function ContextSidebar({
                 <div className="truncate font-semibold">
                   {user?.first_name} {user?.last_name}
                 </div>
-                <div className="truncate text-xs text-sidebar-foreground/70">
-                  {userSubtitle}
-                </div>
+                <div className="truncate text-xs text-sidebar-foreground/70">{userSubtitle}</div>
               </div>
               <ChevronUp className="ml-auto h-3 w-3 shrink-0" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-48 rounded-lg"
-            side="top"
-            align="end"
-            sideOffset={4}
-          >
+          <DropdownMenuContent className="w-48 rounded-lg" side="top" align="end" sideOffset={4}>
             {/* Context-specific menu items */}
             {isAdmin ? (
               <DropdownMenuItem asChild>

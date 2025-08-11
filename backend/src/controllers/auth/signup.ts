@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel } from "../../model/user";
-import { hashPassword, updateRefreshToken } from "../../services/password";
 import { getTokens } from "../../services/auth";
+import { hashPassword, updateRefreshToken } from "../../services/password";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email format"),

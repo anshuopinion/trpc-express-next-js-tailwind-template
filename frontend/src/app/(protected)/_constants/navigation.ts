@@ -1,4 +1,4 @@
-import { Home, Settings, User, Bell } from "lucide-react";
+import { Home } from "lucide-react";
 
 // User-specific navigation routes (only routes that exist in (protected)/)
 export const USER_NAVIGATION_ITEMS = [

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { AdminSidebar } from "./AdminSidebar";
 import { MobileTopBar } from "@/components/mobile-top-bar";
+import { AdminSidebar } from "./AdminSidebar";
 
 export function AdminMobileSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,7 +24,14 @@ export function AdminMobileSidebar() {
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          role="button"
+          tabIndex={0}
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+              setSidebarOpen(false);
+            }
+          }}
         />
       )}
     </>

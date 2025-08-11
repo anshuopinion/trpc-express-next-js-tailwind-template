@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { UserModel } from "../../model/user";
 
 const deleteUserSchema = z.object({
@@ -8,7 +8,7 @@ const deleteUserSchema = z.object({
 
 export const deleteUser = async (
   input: z.infer<typeof deleteUserSchema>,
-  adminUser: { id: string },
+  adminUser: { id: string }
 ) => {
   const { userId } = input;
 

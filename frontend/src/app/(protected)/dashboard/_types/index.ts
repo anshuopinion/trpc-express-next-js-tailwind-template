@@ -1,8 +1,8 @@
 export type {
-  User,
-  HealthCheck,
   AppInfo,
-  StatsCardProps,
-  DashboardData,
   CardVariant,
+  DashboardData,
+  HealthCheck,
+  StatsCardProps,
+  User,
 } from "./dashboard.types";

@@ -4,7 +4,7 @@ export const validateEmailFormat = (email: string): boolean => {
 };
 
 export const validatePasswordStrength = (
-  password: string,
+  password: string
 ): {
   isValid: boolean;
   message: string;
@@ -31,12 +31,9 @@ export const validatePasswordStrength = (
   const hasNumbers = /\d/.test(password);
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-  const strengthScore = [
-    hasUpperCase,
-    hasLowerCase,
-    hasNumbers,
-    hasSpecialChar,
-  ].filter(Boolean).length;
+  const strengthScore = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecialChar].filter(
+    Boolean
+  ).length;
 
   if (strengthScore >= 3 && password.length >= 12) {
     return {
@@ -61,9 +58,6 @@ export const validatePasswordStrength = (
   };
 };
 
-export const validatePasswordMatch = (
-  password: string,
-  confirmPassword: string,
-): boolean => {
+export const validatePasswordMatch = (password: string, confirmPassword: string): boolean => {
   return password === confirmPassword;
 };

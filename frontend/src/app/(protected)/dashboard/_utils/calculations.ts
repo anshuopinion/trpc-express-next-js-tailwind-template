@@ -1,8 +1,6 @@
 import type { CardVariant } from "../_types";
 
-export const getStatusColor = (
-  status: string,
-): "success" | "warning" | "error" => {
+export const getStatusColor = (status: string): "success" | "warning" | "error" => {
   switch (status.toLowerCase()) {
     case "healthy":
     case "active":
@@ -20,9 +18,7 @@ export const getStatusColor = (
   }
 };
 
-export const getCardVariant = (
-  type: "user" | "server" | "app",
-): CardVariant => {
+export const getCardVariant = (type: "user" | "server" | "app"): CardVariant => {
   switch (type) {
     case "user":
       return {
@@ -58,7 +54,7 @@ export const calculateUptimePercentage = (uptime: number): number => {
 };
 
 export const getVerificationStatus = (
-  isEmailVerified: boolean,
+  isEmailVerified: boolean
 ): {
   status: "verified" | "unverified";
   label: string;

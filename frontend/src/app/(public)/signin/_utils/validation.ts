@@ -5,7 +5,7 @@ export const validateEmailFormat = (email: string): boolean => {
 
 export const validateCredentials = (
   email: string,
-  password: string,
+  password: string
 ): {
   isValid: boolean;
   errors: string[];

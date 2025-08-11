@@ -1,20 +1,13 @@
-import { ServerUserGuard } from "@/lib/server-auth";
-import { ContextSidebar } from "@/components/ContextSidebar";
 import { ContextMobileSidebar } from "@/components/ContextMobileSidebar";
+import { ContextSidebar } from "@/components/ContextSidebar";
+import { ServerUserGuard } from "@/lib/server-auth";
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <ServerUserGuard>
       <div className="min-h-screen bg-background">
         {/* Desktop Sidebar - Server Component */}
-        <ContextSidebar
-          context="user"
-          className="hidden md:flex fixed inset-y-0 left-0 z-30"
-        />
+        <ContextSidebar context="user" className="hidden md:flex fixed inset-y-0 left-0 z-30" />
 
         {/* Mobile Sidebar - Client Component */}
         <ContextMobileSidebar context="user" />

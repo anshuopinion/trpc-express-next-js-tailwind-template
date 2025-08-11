@@ -1,6 +1,4 @@
-export const generatePasswordStrengthColor = (
-  strength: "weak" | "medium" | "strong",
-): string => {
+export const generatePasswordStrengthColor = (strength: "weak" | "medium" | "strong"): string => {
   switch (strength) {
     case "weak":
       return "text-red-500";
@@ -13,9 +11,7 @@ export const generatePasswordStrengthColor = (
   }
 };
 
-export const generatePasswordStrengthBg = (
-  strength: "weak" | "medium" | "strong",
-): string => {
+export const generatePasswordStrengthBg = (strength: "weak" | "medium" | "strong"): string => {
   switch (strength) {
     case "weak":
       return "bg-red-100 border-red-200";

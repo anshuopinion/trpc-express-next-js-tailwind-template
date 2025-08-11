@@ -9,6 +9,7 @@ Comprehensive guide to the backend architecture using Express.js, tRPC, and Mong
 - [Core Components](#core-components)
 - [Database Layer](#database-layer)
 - [Security Implementation](#security-implementation)
+- [Testing Architecture](#testing-architecture)
 - [Type Generation](#type-generation)
 
 ## Overview
@@ -53,6 +54,8 @@ backend/src/
 │   └── index.ts              # Database configuration
 ├── controllers/              # Business logic (MVC)
 │   ├── auth/                # Authentication logic
+│   │   ├── __tests__/       # Auth controller tests
+│   │   │   └── signin.test.ts # Signin controller tests
 │   │   ├── signin.ts        # Login controller
 │   │   ├── signup.ts        # Registration controller
 │   │   ├── logout.ts        # Logout controller
@@ -60,33 +63,44 @@ backend/src/
 │   │   ├── refresh.ts      # Token refresh
 │   │   └── index.ts        # Auth exports
 │   ├── admin/              # Admin management
+│   │   ├── __tests__/       # Admin controller tests
 │   │   ├── getAllUsers.ts  # Get all users
 │   │   ├── deleteUser.ts   # Delete user
 │   │   ├── updateUserRole.ts # Update roles
 │   │   ├── getSystemStats.ts # System statistics
 │   │   └── index.ts        # Admin exports
 │   ├── user/               # User management
+│   │   ├── __tests__/       # User controller tests
 │   │   ├── updateProfile.ts # Profile updates
 │   │   ├── changePassword.ts # Password change
 │   │   ├── deleteAccount.ts # Account deletion
 │   │   └── index.ts        # User exports
 │   ├── type/               # Utility controllers
+│   │   ├── __tests__/       # Type controller tests
 │   │   ├── healthCheck.ts  # Health check
 │   │   ├── appInfo.ts      # App information
 │   │   ├── validateEmail.ts # Email validation
 │   │   └── index.ts        # Type exports
 │   └── index.ts            # Main controller exports
 ├── model/
+│   ├── __tests__/           # Model tests
 │   └── user.ts             # User model with Typegoose
 ├── routes/                 # tRPC route definitions
+│   ├── __tests__/           # Route integration tests
 │   ├── auth.ts            # Auth routes
 │   ├── admin.ts           # Admin routes  
 │   ├── user.ts            # User routes
 │   ├── type.ts            # Utility routes
 │   └── index.ts           # Main router
 ├── services/              # Shared utilities
+│   ├── __tests__/          # Service tests
+│   │   └── auth.test.ts    # JWT service tests
 │   ├── auth.ts           # JWT utilities
 │   └── password.ts       # Password hashing
+├── test-utils/            # Testing utilities
+│   ├── auth-helpers.ts    # JWT & user creation helpers
+│   ├── trpc-helpers.ts    # tRPC testing utilities
+│   └── index.ts          # Test utility exports
 ├── server.ts             # Express server setup
 └── trpc.ts              # tRPC configuration
 ```
@@ -395,6 +409,277 @@ throw new TRPCError({
   message: "Invalid input data",
 });
 ```
+
+## Testing Architecture
+
+The backend uses **Vitest 3.x** with comprehensive testing patterns including unit tests, integration tests, and database testing with MongoDB Memory Server.
+
+### Testing Stack
+- **Vitest 3.x** - Modern testing framework with TypeScript support
+- **MongoDB Memory Server** - In-memory database for isolated testing
+- **Supertest** - HTTP assertion library for API testing
+- **JWT Testing** - Real token generation and validation
+- **Coverage Reporting** - v8 provider with 80% thresholds
+
+### Testing Structure
+
+```
+backend/
+├── src/
+│   ├── controllers/
+│   │   └── auth/
+│   │       └── __tests__/
+│   │           └── signin.test.ts    # Controller tests
+│   ├── services/
+│   │   └── __tests__/
+│   │       └── auth.test.ts         # Service tests
+│   └── test-utils/
+│       ├── auth-helpers.ts          # JWT & user helpers
+│       ├── trpc-helpers.ts          # tRPC mock utilities
+│       └── index.ts                 # Test exports
+├── vitest.config.ts                 # Vitest configuration
+└── vitest.setup.ts                  # Global test setup
+```
+
+### Test Configuration
+
+#### vitest.config.ts
+```typescript
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    environment: "node",
+    setupFiles: ["./vitest.setup.ts"],
+    globals: true,
+    include: [
+      "src/**/*.{test,spec}.{js,ts}",
+      "src/**/__tests__/**/*.{js,ts}"
+    ],
+    testTimeout: 30000,
+    coverage: {
+      provider: "v8",
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80
+        }
+      }
+    }
+  }
+});
+```
+
+#### vitest.setup.ts
+```typescript
+import { beforeAll, afterAll, afterEach } from "vitest";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+
+let mongod: MongoMemoryServer;
+
+beforeAll(async () => {
+  mongod = await MongoMemoryServer.create();
+  const uri = mongod.getUri();
+  await mongoose.connect(uri);
+  
+  // Set test environment variables
+  process.env.NODE_ENV = "test";
+  process.env.ACCESS_TOKEN_SECRET = "test-access-secret";
+  process.env.REFRESH_TOKEN_SECRET = "test-refresh-secret";
+}, 60000);
+
+afterEach(async () => {
+  // Clean database between tests
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    await collections[key].deleteMany({});
+  }
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongod.stop();
+});
+```
+
+### Testing Patterns
+
+#### 1. Controller Testing
+```typescript
+// controllers/auth/__tests__/signin.test.ts
+import { describe, it, expect } from "vitest";
+import { signin } from "../signin";
+import { createTestUser } from "../../../test-utils";
+
+describe("Auth Controller - Signin", () => {
+  it("should successfully sign in with valid credentials", async () => {
+    // Arrange
+    const { user, rawPassword } = await createTestUser();
+    const signinData = { email: user.email, password: rawPassword };
+
+    // Act
+    const result = await signin(signinData);
+
+    // Assert
+    expect(result.email).toBe(user.email);
+    expect(result.access_token).toBeDefined();
+    expect(result.refresh_token).toBeDefined();
+  });
+
+  it("should throw UNAUTHORIZED for invalid credentials", async () => {
+    // Arrange
+    const invalidData = {
+      email: "nonexistent@example.com",
+      password: "WrongPassword"
+    };
+
+    // Act & Assert
+    await expect(signin(invalidData)).rejects.toThrow(
+      expect.objectContaining({
+        code: "UNAUTHORIZED",
+        message: "Invalid credentials"
+      })
+    );
+  });
+});
+```
+
+#### 2. Service Testing
+```typescript
+// services/__tests__/auth.test.ts
+import { describe, it, expect } from "vitest";
+import jwt from "jsonwebtoken";
+import { generateAccessToken, generateRefreshToken } from "../auth";
+
+describe("Auth Service", () => {
+  it("should generate valid JWT tokens", () => {
+    // Act
+    const accessToken = generateAccessToken("user-id", "test@example.com", "user");
+    const refreshToken = generateRefreshToken("user-id", "test@example.com", "user");
+
+    // Assert
+    expect(accessToken).toBeDefined();
+    expect(refreshToken).toBeDefined();
+    
+    const accessDecoded = jwt.decode(accessToken) as any;
+    const refreshDecoded = jwt.decode(refreshToken) as any;
+    
+    expect(accessDecoded.userId).toBe("user-id");
+    expect(refreshDecoded.exp).toBeGreaterThan(accessDecoded.exp);
+  });
+});
+```
+
+### Test Utilities
+
+#### Authentication Helpers
+```typescript
+// test-utils/auth-helpers.ts
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { User } from "../model/user";
+
+export const generateTestAccessToken = (
+  userId: string, 
+  email: string, 
+  role: UserRole = "user"
+) => {
+  return jwt.sign(
+    { userId, email, role },
+    process.env.ACCESS_TOKEN_SECRET!,
+    { expiresIn: "15m" }
+  );
+};
+
+export const createTestUser = async (userData?: Partial<any>) => {
+  const rawPassword = userData?.password || "TestPassword123!";
+  const hashedPassword = await bcrypt.hash(rawPassword, 12);
+  
+  const user = new User({
+    email: "test@example.com",
+    password: hashedPassword,
+    first_name: "Test",
+    last_name: "User",
+    role: "user",
+    is_email_verified: true,
+    ...userData,
+    password: hashedPassword,
+  });
+  
+  await user.save();
+  return { user, rawPassword };
+};
+```
+
+#### tRPC Testing Helpers
+```typescript
+// test-utils/trpc-helpers.ts
+export const createMockTRPCContext = (overrides: any = {}) => ({
+  user: null,
+  isAuthenticated: false,
+  ...overrides,
+});
+
+export const createMockAuthenticatedContext = (user: any) => ({
+  user,
+  isAuthenticated: true,
+});
+
+export const mockTRPCData = {
+  user: {
+    id: "test-user-id",
+    email: "test@example.com",
+    first_name: "Test",
+    last_name: "User",
+    role: "user" as const,
+  },
+  tokens: {
+    access_token: "mock-access-token",
+    refresh_token: "mock-refresh-token",
+    expires_at: Math.floor(Date.now() / 1000) + 60 * 15,
+  },
+};
+```
+
+### Testing Commands
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Testing Best Practices
+
+1. **Isolation**: Each test runs with clean database state
+2. **Real Dependencies**: Use MongoDB Memory Server, not mocks
+3. **JWT Testing**: Generate real tokens for authentication tests
+4. **Error Testing**: Test all error paths and edge cases
+5. **Coverage**: Maintain 80% coverage across all metrics
+6. **Fast Execution**: Tests complete in < 30 seconds
+7. **Descriptive Names**: Clear test descriptions and expectations
+
+### Integration with CI/CD
+
+The testing setup is designed to work seamlessly with CI/CD pipelines:
+
+- **Environment Variables**: Set automatically by vitest.setup.ts
+- **Database Isolation**: No external dependencies required
+- **Coverage Reports**: Generate coverage reports for CI
+- **Fast Execution**: Parallel test execution supported
+
+**See**: [Backend Testing Guide](../../testing/backend-testing.md) for comprehensive testing patterns and examples.
 
 ## Type Generation
 

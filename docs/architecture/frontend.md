@@ -11,6 +11,7 @@ Comprehensive guide to the frontend architecture using Next.js 15, React 19, and
 - [Data Fetching](#data-fetching)
 - [UI Components](#ui-components)
 - [State Management](#state-management)
+- [Testing Architecture](#testing-architecture)
 
 ## Overview
 
@@ -581,6 +582,421 @@ export function useSigninForm() {
   });
 }
 ```
+
+## Testing Architecture
+
+The frontend uses **Vitest** with **Happy DOM** environment for comprehensive component testing, following the page-centric modularization pattern.
+
+### Testing Stack
+- **Vitest** - Modern testing framework with TypeScript support
+- **React Testing Library** - Component testing utilities
+- **Happy DOM** - Fast DOM implementation for testing
+- **tRPC Client Testing** - Type-safe API mocking and testing
+- **@testing-library/jest-dom** - Extended Jest matchers
+- **Coverage Reporting** - Built-in coverage with v8 provider
+
+### Testing Structure
+
+```
+frontend/src/
+├── app/
+│   ├── (admin)/
+│   │   └── admin/dashboard/
+│   │       ├── _components/
+│   │       │   └── __tests__/           # Page-specific component tests
+│   │       └── _hooks/
+│   │           └── __tests__/           # Page-specific hook tests
+│   ├── (protected)/
+│   │   └── dashboard/
+│   │       ├── _components/
+│   │       │   └── __tests__/           # Page-specific component tests
+│   │       └── _hooks/
+│   │           └── __tests__/           # Page-specific hook tests
+│   └── (public)/
+│       ├── signin/
+│       │   ├── _components/
+│       │   │   └── __tests__/           # Page-specific component tests
+│       │   └── _hooks/
+│       │       └── __tests__/           # Page-specific hook tests
+│       └── signup/
+│           └── _components/
+│               └── __tests__/           # Page-specific component tests
+├── components/
+│   ├── ui/
+│   │   └── __tests__/                   # Shared UI component tests
+│   ├── forms/
+│   │   └── __tests__/                   # Shared form component tests
+│   └── guards/
+│       └── __tests__/                   # Auth guard component tests
+├── hooks/
+│   └── __tests__/                       # Shared hook tests
+├── lib/
+│   └── __tests__/                       # Utility function tests
+├── test-utils/                          # Testing utilities
+│   ├── trpc-mock.tsx                   # tRPC client mocking
+│   ├── auth-mock.tsx                   # Auth context mocking
+│   └── render-helpers.tsx              # Custom render functions
+├── vitest.config.ts                    # Vitest configuration
+└── vitest.setup.ts                     # Test setup file
+```
+
+### Test Configuration
+
+#### vitest.config.ts
+```typescript
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: "happy-dom",
+    setupFiles: ["./vitest.setup.ts"],
+    globals: true,
+    include: ["src/**/*.{test,spec}.{js,ts,jsx,tsx}"],
+    coverage: {
+      provider: "v8",
+      exclude: [
+        "node_modules/",
+        "src/test-utils/**",
+        "**/*.d.ts",
+        "**/*.config.{ts,js}",
+      ],
+    },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});
+```
+
+#### vitest.setup.ts
+```typescript
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
+
+// Mock Next.js router
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
+
+// Mock tRPC client
+vi.mock("@/trpc/client", () => ({
+  trpc: {
+    // Mock tRPC procedures
+  },
+}));
+```
+
+### Testing Patterns
+
+#### 1. Page-Centric Component Testing
+```typescript
+// app/(public)/signin/_components/__tests__/SigninForm.test.tsx
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { SigninForm } from "../SigninForm";
+import { createMockTRPCProvider } from "@/test-utils/trpc-mock";
+
+const MockedSigninForm = () => (
+  <MockTRPCProvider>
+    <SigninForm />
+  </MockTRPCProvider>
+);
+
+describe("SigninForm", () => {
+  it("should render signin form with email and password fields", () => {
+    render(<MockedSigninForm />);
+    
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+  });
+
+  it("should call signin mutation on form submission", async () => {
+    const mockSignin = vi.fn().mockResolvedValue({
+      access_token: "token",
+      user: { id: "1", email: "test@example.com" }
+    });
+
+    render(
+      <MockTRPCProvider mutations={{ auth: { signin: mockSignin } }}>
+        <SigninForm />
+      </MockTRPCProvider>
+    );
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "test@example.com" }
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" }
+    });
+    
+    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+
+    await waitFor(() => {
+      expect(mockSignin).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123"
+      });
+    });
+  });
+
+  it("should display validation errors", async () => {
+    render(<MockedSigninForm />);
+    
+    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    
+    await waitFor(() => {
+      expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+      expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+#### 2. Hook Testing
+```typescript
+// app/(protected)/dashboard/_hooks/__tests__/useDashboardData.test.tsx
+import { renderHook, waitFor } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { useDashboardData } from "../useDashboardData";
+import { createMockTRPCProvider } from "@/test-utils/trpc-mock";
+
+describe("useDashboardData", () => {
+  it("should fetch dashboard data on mount", async () => {
+    const mockData = {
+      stats: { totalUsers: 10, activeUsers: 8 },
+      recentActivity: []
+    };
+
+    const { result } = renderHook(() => useDashboardData(), {
+      wrapper: ({ children }) => (
+        <MockTRPCProvider queries={{ admin: { getSystemStats: mockData } }}>
+          {children}
+        </MockTRPCProvider>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual(mockData);
+      expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  it("should handle loading state", () => {
+    const { result } = renderHook(() => useDashboardData(), {
+      wrapper: ({ children }) => (
+        <MockTRPCProvider loading={true}>
+          {children}
+        </MockTRPCProvider>
+      ),
+    });
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.data).toBeUndefined();
+  });
+});
+```
+
+#### 3. Integration Testing
+```typescript
+// app/(admin)/admin/dashboard/__tests__/page.test.tsx
+import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import AdminDashboard from "../page";
+import { createMockTRPCProvider, createMockAuthProvider } from "@/test-utils";
+
+const MockedAdminDashboard = () => (
+  <MockAuthProvider user={{ role: "admin" }}>
+    <MockTRPCProvider>
+      <AdminDashboard />
+    </MockTRPCProvider>
+  </MockAuthProvider>
+);
+
+describe("Admin Dashboard Page", () => {
+  it("should render admin dashboard with system stats", async () => {
+    render(<MockedAdminDashboard />);
+    
+    expect(screen.getByText(/admin dashboard/i)).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText(/total users/i)).toBeInTheDocument();
+      expect(screen.getByText(/system statistics/i)).toBeInTheDocument();
+    });
+  });
+
+  it("should redirect non-admin users", async () => {
+    render(
+      <MockAuthProvider user={{ role: "user" }}>
+        <MockTRPCProvider>
+          <AdminDashboard />
+        </MockTRPCProvider>
+      </MockAuthProvider>
+    );
+
+    // Should not render admin content
+    expect(screen.queryByText(/admin dashboard/i)).not.toBeInTheDocument();
+  });
+});
+```
+
+### Test Utilities
+
+#### tRPC Client Mocking
+```typescript
+// test-utils/trpc-mock.tsx
+import { createTRPCMsw } from "msw-trpc";
+import { AppRouter } from "../../../../backend/types/routes";
+
+export const trpcMsw = createTRPCMsw<AppRouter>();
+
+export const createMockTRPCProvider = ({ 
+  queries = {}, 
+  mutations = {},
+  loading = false 
+}: MockTRPCOptions) => {
+  return ({ children }: { children: React.ReactNode }) => (
+    <TRPCProvider
+      client={mockTRPCClient({ queries, mutations, loading })}
+      queryClient={new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })}
+    >
+      {children}
+    </TRPCProvider>
+  );
+};
+```
+
+#### Auth Context Mocking
+```typescript
+// test-utils/auth-mock.tsx
+import { AuthContext } from "@/lib/auth/context";
+
+export const createMockAuthProvider = ({ 
+  user = null, 
+  isLoading = false 
+}: MockAuthOptions = {}) => {
+  return ({ children }: { children: React.ReactNode }) => (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login: vi.fn(),
+        logout: vi.fn(),
+        signup: vi.fn(),
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+```
+
+#### Custom Render Helpers
+```typescript
+// test-utils/render-helpers.tsx
+import { render, RenderOptions } from "@testing-library/react";
+import { createMockTRPCProvider, createMockAuthProvider } from "./";
+
+interface CustomRenderOptions extends RenderOptions {
+  user?: { role: string; email: string } | null;
+  trpcMocks?: MockTRPCOptions;
+}
+
+export const renderWithProviders = (
+  ui: React.ReactElement,
+  options: CustomRenderOptions = {}
+) => {
+  const { user, trpcMocks, ...renderOptions } = options;
+
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <MockAuthProvider user={user}>
+      <MockTRPCProvider {...trpcMocks}>
+        {children}
+      </MockTRPCProvider>
+    </MockAuthProvider>
+  );
+
+  return render(ui, { wrapper: Wrapper, ...renderOptions });
+};
+```
+
+### Testing Commands
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test file
+npm test -- SigninForm.test.tsx
+
+# Run tests for specific pattern
+npm test -- --grep "signin"
+```
+
+### Testing Best Practices
+
+1. **Page-Centric Organization**: Tests live alongside the components they test
+2. **Mock External Dependencies**: Mock tRPC calls, Next.js router, and external APIs
+3. **Test User Interactions**: Focus on user behavior rather than implementation details
+4. **Accessibility Testing**: Include accessibility checks in component tests
+5. **Integration Tests**: Test complete user flows across page boundaries
+6. **Role-Based Testing**: Test different user roles and permissions
+7. **Error Handling**: Test loading states, error states, and edge cases
+
+### Testing Checklist
+
+#### Component Tests
+- [ ] Renders correctly with default props
+- [ ] Handles user interactions (clicks, form submissions)
+- [ ] Displays loading and error states
+- [ ] Validates form inputs and displays errors
+- [ ] Calls appropriate API endpoints
+- [ ] Handles different user roles properly
+
+#### Hook Tests
+- [ ] Returns expected data structure
+- [ ] Handles loading states correctly
+- [ ] Manages error states appropriately
+- [ ] Updates data on dependency changes
+- [ ] Cleans up subscriptions and effects
+
+#### Integration Tests
+- [ ] Complete user flows work end-to-end
+- [ ] Authentication redirects function properly
+- [ ] Role-based access control works
+- [ ] Navigation between pages functions
+- [ ] Data persistence across page changes
+
+**See**: [Frontend Testing Guide](../../testing/frontend-testing.md) for comprehensive testing patterns and examples.
 
 ## Styling System
 

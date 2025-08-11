@@ -11,6 +11,7 @@ For detailed implementation guides, see the [docs/ folder](./docs/README.md):
 - **[Frontend Architecture](./docs/architecture/frontend.md)** - Next.js 15, route groups, authentication
 - **[Page Modularization](./docs/architecture/page-modularization.md)** - Page-centric organization patterns
 - **[Frontend Testing Guide](./docs/testing/frontend-testing.md)** - Vitest setup, patterns, and examples
+- **[Backend Testing Guide](./docs/testing/backend-testing.md)** - Vitest setup, MongoDB testing, and API patterns
 - **[Linting & Code Quality](./docs/development/linting.md)** - BiomeJS setup and rules
 
 *This file provides a quick reference overview. For comprehensive implementation details, consult the specific documentation files.*
@@ -51,7 +52,7 @@ template-folder/
 ## Technology Stack
 **Backend**: Express.js, tRPC 11.4, MongoDB, Typegoose, JWT (role-based auth), bcryptjs, Zod, BiomeJS
 **Frontend**: Next.js 15, React 19, TanStack React Query, shadcn/ui, Tailwind CSS v4, TypeScript, BiomeJS
-**Testing**: Vitest, React Testing Library, Happy DOM, @testing-library/jest-dom
+**Testing**: Vitest, React Testing Library, Happy DOM, MongoDB Memory Server, Supertest, @testing-library/jest-dom
 
 ## Modern tRPC Implementation
 - **tRPC 11.4** with React Query integration
@@ -169,7 +170,7 @@ cd frontend && npm run dev   # Terminal 2
 ```
 
 ### Commands
-**Backend**: `dev`, `build`, `build:types`, `typecheck`, `lint`  
+**Backend**: `dev`, `build`, `build:types`, `typecheck`, `lint`, `test`, `test:watch`, `test:ui`, `test:coverage`
 **Frontend**: `dev`, `build`, `lint`, `type-check`, `test`, `test:watch`, `test:ui`, `test:coverage`
 
 ## API Reference
@@ -241,8 +242,28 @@ cd frontend && npm run dev   # Terminal 2
 - Admin dashboard with comprehensive interface
 - Audit logging and session management
 
+## Testing Strategy
+
+### Backend Testing
+- **Vitest 3.x** with Node.js environment
+- **MongoDB Memory Server** for isolated database testing
+- **JWT Testing** with real token generation and validation
+- **Controller Testing** with full integration coverage
+- **Service Testing** for utility functions and auth flows
+- **Coverage Thresholds**: 80% for branches, functions, lines, statements
+
+### Frontend Testing  
+- **Vitest** with Happy DOM environment
+- **React Testing Library** for component testing
+- **tRPC Client Testing** with mock procedures
+- **Page-Centric Testing** following modular structure
+- **E2E Testing** patterns for complete user flows
+
+**Testing Commands**: `npm test`, `npm run test:watch`, `npm run test:ui`, `npm run test:coverage`
+
+**See**: [Backend Testing Guide](./docs/testing/backend-testing.md) | [Frontend Testing Guide](./docs/testing/frontend-testing.md)
+
 ## Future Enhancements
-- Testing setup (Jest, React Testing Library)
 - CI/CD pipeline with GitHub Actions  
 - Docker support and API documentation
 - Real-time features and file upload

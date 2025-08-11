@@ -9,10 +9,10 @@
     "emitDecoratorMetadata": true,
     "composite": true,
     "strictPropertyInitialization": false,
-    "rootDir": "./src",
+    "rootDir": "./",
     "allowSyntheticDefaultImports": true,
-    "types": ["jest", "node"]
+    "types": ["vitest/globals", "node"]
   },
-  "include": ["src/**/*.ts", "**/*.test.ts"],
+  "include": ["src/**/*.ts", "**/*.test.ts", "vitest.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules"]
 }

@@ -8,7 +8,9 @@ const getAllUsersSchema = z.object({
 });
 
 export const getAllUsers = async (input: z.infer<typeof getAllUsersSchema>) => {
-  const { page, limit, role } = input;
+  // Validate input with schema
+  const validatedInput = getAllUsersSchema.parse(input);
+  const { page, limit, role } = validatedInput;
   const skip = (page - 1) * limit;
 
   const filter = role ? { role } : {};

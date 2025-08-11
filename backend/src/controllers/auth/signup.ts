@@ -12,7 +12,9 @@ const signupSchema = z.object({
 });
 
 export const signup = async (input: z.infer<typeof signupSchema>) => {
-  const { email, first_name, last_name, password } = input;
+  // Validate input with schema
+  const validatedInput = signupSchema.parse(input);
+  const { email, first_name, last_name, password } = validatedInput;
 
   const existingUser = await UserModel.findOne({ email });
   if (existingUser) {

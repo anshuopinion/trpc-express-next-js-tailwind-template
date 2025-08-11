@@ -5,15 +5,26 @@ import { UserModel } from "../../model/user";
 const updateProfileSchema = z.object({
   first_name: z.string().min(1, "First name is required").optional(),
   last_name: z.string().min(1, "Last name is required").optional(),
-  avatar: z.string().url("Invalid avatar URL").optional(),
+  avatar: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || val === "" || z.string().url().safeParse(val).success,
+      "Invalid avatar URL",
+    ),
 });
 
 interface User {
   id: string;
 }
 
-export const updateProfile = async (input: z.infer<typeof updateProfileSchema>, user: User) => {
-  const { first_name, last_name, avatar } = input;
+export const updateProfile = async (
+  input: z.infer<typeof updateProfileSchema>,
+  user: User,
+) => {
+  // Validate input with schema
+  const validatedInput = updateProfileSchema.parse(input);
+  const { first_name, last_name, avatar } = validatedInput;
 
   const updateData: Record<string, unknown> = {};
   if (first_name) updateData.first_name = first_name;

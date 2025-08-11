@@ -12,8 +12,13 @@ interface User {
   id: string;
 }
 
-export const changePassword = async (input: z.infer<typeof changePasswordSchema>, user: User) => {
-  const { currentPassword, newPassword } = input;
+export const changePassword = async (
+  input: z.infer<typeof changePasswordSchema>,
+  user: User,
+) => {
+  // Validate input with schema
+  const validatedInput = changePasswordSchema.parse(input);
+  const { currentPassword, newPassword } = validatedInput;
 
   const dbUser = await UserModel.findById(user.id);
   if (!dbUser) {
@@ -23,7 +28,10 @@ export const changePassword = async (input: z.infer<typeof changePasswordSchema>
     });
   }
 
-  const passwordMatches = await comparePassword(currentPassword, dbUser.password);
+  const passwordMatches = await comparePassword(
+    currentPassword,
+    dbUser.password,
+  );
   if (!passwordMatches) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
